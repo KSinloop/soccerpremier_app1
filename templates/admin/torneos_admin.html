@@ -1,0 +1,136 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de torneos{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">CONTROL</span>
+                <h3 class="admin-panel-title">Torneos registrados</h3>
+            </div>
+            <a href="#" class="admin-chip admin-chip-gold">Nuevo torneo</a>
+        </div>
+
+        <div class="admin-toolbar">
+            <a href="#" class="toolbar-pill active">Todos</a>
+            <a href="#" class="toolbar-pill">Activos</a>
+            <a href="#" class="toolbar-pill">Próximos</a>
+            <a href="#" class="toolbar-pill">Finalizados</a>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Torneo</th>
+                        <th>Temporada</th>
+                        <th>Estatus</th>
+                        <th>Equipos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>01</td>
+                        <td>Clausura Premier</td>
+                        <td>2026</td>
+                        <td><span class="status-badge status-active">Activo</span></td>
+                        <td>12</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="#" class="admin-action-link">Editar</a>
+                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>02</td>
+                        <td>Copa Juvenil de Verano</td>
+                        <td>2026</td>
+                        <td><span class="status-badge status-soon">Próximo</span></td>
+                        <td>16</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="#" class="admin-action-link">Editar</a>
+                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>03</td>
+                        <td>Torneo Relámpago Nocturno</td>
+                        <td>2026</td>
+                        <td><span class="status-badge status-soon">Próximo</span></td>
+                        <td>8</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="#" class="admin-action-link">Editar</a>
+                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>04</td>
+                        <td>Copa Invierno Regional</td>
+                        <td>2025</td>
+                        <td><span class="status-badge status-end">Finalizado</span></td>
+                        <td>10</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="#" class="admin-action-link">Editar</a>
+                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <aside class="admin-side-stack">
+        <article class="admin-panel-card">
+            <span class="section-kicker">RESUMEN</span>
+            <h3 class="admin-panel-title">Indicadores rápidos</h3>
+
+            <div class="admin-mini-grid single-col">
+                <div class="admin-mini-card">
+                    <h4>Torneos activos</h4>
+                    <p>4 competencias visibles actualmente.</p>
+                </div>
+                <div class="admin-mini-card">
+                    <h4>Próximos torneos</h4>
+                    <p>2 registros pendientes de inicio.</p>
+                </div>
+                <div class="admin-mini-card">
+                    <h4>Histórico</h4>
+                    <p>1 torneo finalizado disponible para consulta.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="admin-panel-card">
+            <span class="section-kicker">ACCIONES</span>
+            <h3 class="admin-panel-title">Operaciones disponibles</h3>
+            <div class="admin-links-list compact">
+                <a href="#" class="admin-link-row">
+                    <div>
+                        <h4>Crear torneo</h4>
+                        <p>Registrar una nueva competencia.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+                <a href="#" class="admin-link-row">
+                    <div>
+                        <h4>Editar temporadas</h4>
+                        <p>Actualizar datos y configuración.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+            </div>
+        </article>
+    </aside>
+</section>
+{% endblock %}

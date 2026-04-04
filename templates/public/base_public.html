@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Premier Juárez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="site-body">
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <div class="brand-mark">SPJ</div>
+                <div class="brand-text">
+                    <span class="brand-kicker">Portal deportivo</span>
+                    <h1>Soccer Premier Juárez</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="{{ url_for('public.index') }}">Inicio</a>
+                <a href="{{ url_for('public.pagina_torneos') }}">Torneos</a>
+                <a href="{{ url_for('public.pagina_equipos') }}">Equipos</a>
+                <a href="{{ url_for('public.pagina_posiciones') }}">Posiciones</a>
+                <a href="{{ url_for('public.pagina_estadisticas') }}">Estadísticas</a>
+                <a href="{{ url_for('public.pagina_canchas') }}">Canchas</a>
+                <a href="{{ url_for('public.pagina_anuncios') }}">Anuncios</a>
+                <a href="{{ url_for('public.pagina_partidos') }}">Partidos</a>
+                <a href="{{ url_for('public.pagina_resultados') }}">Resultados</a>
+                <a href="{{ url_for('admin.login_admin') }}" class="nav-admin">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

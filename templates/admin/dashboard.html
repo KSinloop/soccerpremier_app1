@@ -1,0 +1,171 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="admin-stats-grid">
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Torneos activos</p>
+        <strong class="admin-stat-number">04</strong>
+        <span class="admin-stat-note">Competencias en curso</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Equipos registrados</p>
+        <strong class="admin-stat-number">48</strong>
+        <span class="admin-stat-note">Participantes totales</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Partidos programados</p>
+        <strong class="admin-stat-number">17</strong>
+        <span class="admin-stat-note">Agenda vigente</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Anuncios activos</p>
+        <strong class="admin-stat-number">06</strong>
+        <span class="admin-stat-note">Difusión disponible</span>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <article class="admin-panel-card">
+        <span class="section-kicker">RESUMEN</span>
+        <h3 class="admin-panel-title">Estado general del sistema</h3>
+        <p class="admin-panel-text">
+            Desde este panel podrás centralizar la operación general de Soccer Premier Juárez:
+            control de torneos, administración de equipos, programación de partidos, gestión
+            de canchas, anuncios y seguimiento operativo.
+        </p>
+
+        <div class="admin-mini-grid">
+            <div class="admin-mini-card">
+                <h4>Operación</h4>
+                <p>Control general de ligas, jornadas y partidos.</p>
+            </div>
+            <div class="admin-mini-card">
+                <h4>Difusión</h4>
+                <p>Publicación de avisos y anuncios oficiales.</p>
+            </div>
+            <div class="admin-mini-card">
+                <h4>Control interno</h4>
+                <p>Seguimiento administrativo de módulos y registros.</p>
+            </div>
+            <div class="admin-mini-card">
+                <h4>Escalabilidad</h4>
+                <p>Base preparada para estadísticas y reportes.</p>
+            </div>
+        </div>
+    </article>
+
+    <article class="admin-panel-card">
+        <span class="section-kicker">ACCESOS RÁPIDOS</span>
+        <h3 class="admin-panel-title">Módulos principales</h3>
+
+        <div class="admin-links-list">
+            <a href="{{ url_for('torneos_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Torneos</h4>
+                    <p>Alta, edición y control general de torneos.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('equipos_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Equipos</h4>
+                    <p>Consulta y administración de participantes.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('partidos_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Partidos</h4>
+                    <p>Programación, reprogramación y resultados.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('canchas_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Canchas</h4>
+                    <p>Disponibilidad, ocupación y control de espacios.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('estadisticas_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Estadísticas</h4>
+                    <p>Seguimiento de goles, tarjetas y rendimiento.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('anuncios_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Anuncios</h4>
+                    <p>Gestión de avisos y difusión pública.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+        </div>
+    </article>
+</section>
+
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ACTIVIDAD</span>
+            <h3 class="admin-panel-title">Movimientos recientes</h3>
+        </div>
+        <a href="#" class="admin-chip">Ver historial</a>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Módulo</th>
+                    <th>Movimiento</th>
+                    <th>Responsable</th>
+                    <th>Estatus</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>08/05/2026</td>
+                    <td>Torneos</td>
+                    <td>Alta de Copa Juvenil de Verano</td>
+                    <td>Administrador</td>
+                    <td><span class="status-badge status-active">Aplicado</span></td>
+                </tr>
+                <tr>
+                    <td>08/05/2026</td>
+                    <td>Partidos</td>
+                    <td>Reprogramación de jornada 5</td>
+                    <td>Administrador</td>
+                    <td><span class="status-badge status-soon">Pendiente</span></td>
+                </tr>
+                <tr>
+                    <td>07/05/2026</td>
+                    <td>Anuncios</td>
+                    <td>Publicación de preinscripciones</td>
+                    <td>Administrador</td>
+                    <td><span class="status-badge status-active">Visible</span></td>
+                </tr>
+                <tr>
+                    <td>07/05/2026</td>
+                    <td>Canchas</td>
+                    <td>Actualización de estado operativo</td>
+                    <td>Administrador</td>
+                    <td><span class="status-badge status-end">Cerrado</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

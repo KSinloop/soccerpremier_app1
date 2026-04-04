@@ -1,0 +1,177 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">RENDIMIENTO</span>
+            <h2 class="section-title">Estadísticas generales</h2>
+            <p class="page-description">
+                Consulta indicadores clave del torneo, líderes en goles, disciplina, rendimiento ofensivo
+                y resumen competitivo de la temporada actual.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Registros visibles</span>
+            <strong>24</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="stats-grid stats-grid-3">
+        <article class="stat-card">
+            <p class="stat-label">Goles anotados</p>
+            <strong class="stat-number">96</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Tarjetas amarillas</p>
+            <strong class="stat-number">41</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Tarjetas rojas</p>
+            <strong class="stat-number">07</strong>
+        </article>
+    </section>
+
+    <section class="stats-panels-grid">
+        <article class="stats-panel">
+            <div class="panel-title-row">
+                <div>
+                    <span class="section-kicker">GOLEO</span>
+                    <h3>Máximos goleadores</h3>
+                </div>
+                <span class="panel-season">Clausura 2026</span>
+            </div>
+
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">1</span>
+                        <div>
+                            <h4>Javier Martínez</h4>
+                            <p>Tigres Juárez</p>
+                        </div>
+                    </div>
+                    <strong>12</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">2</span>
+                        <div>
+                            <h4>Luis Herrera</h4>
+                            <p>Rayados Premier</p>
+                        </div>
+                    </div>
+                    <strong>10</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">3</span>
+                        <div>
+                            <h4>Marco Flores</h4>
+                            <p>Lobos FC</p>
+                        </div>
+                    </div>
+                    <strong>9</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">4</span>
+                        <div>
+                            <h4>Fernanda Ruiz</h4>
+                            <p>Panteras Femenil</p>
+                        </div>
+                    </div>
+                    <strong>8</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="stats-panel">
+            <div class="panel-title-row">
+                <div>
+                    <span class="section-kicker">DISCIPLINA</span>
+                    <h3>Jugadores con más tarjetas</h3>
+                </div>
+                <span class="panel-season">Clausura 2026</span>
+            </div>
+
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">1</span>
+                        <div>
+                            <h4>Daniel Reyes</h4>
+                            <p>Halcones Liga</p>
+                        </div>
+                    </div>
+                    <strong>5A / 1R</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">2</span>
+                        <div>
+                            <h4>Eduardo León</h4>
+                            <p>Guerreros Liga</p>
+                        </div>
+                    </div>
+                    <strong>4A / 1R</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">3</span>
+                        <div>
+                            <h4>Pedro Navarro</h4>
+                            <p>Atlético Xolos</p>
+                        </div>
+                    </div>
+                    <strong>4A / 0R</strong>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">4</span>
+                        <div>
+                            <h4>Juan Salinas</h4>
+                            <p>Cantera Real</p>
+                        </div>
+                    </div>
+                    <strong>3A / 1R</strong>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="stats-summary-grid">
+        <article class="summary-card">
+            <span class="section-kicker">OFENSIVA</span>
+            <h3>Equipo con mejor ataque</h3>
+            <p class="summary-main">Tigres Juárez</p>
+            <p class="summary-sub">18 goles anotados en 7 partidos</p>
+        </article>
+
+        <article class="summary-card">
+            <span class="section-kicker">DEFENSIVA</span>
+            <h3>Equipo con mejor defensa</h3>
+            <p class="summary-main">Lobos FC</p>
+            <p class="summary-sub">6 goles recibidos en 7 partidos</p>
+        </article>
+
+        <article class="summary-card">
+            <span class="section-kicker">EFECTIVIDAD</span>
+            <h3>Mayor rendimiento</h3>
+            <p class="summary-main">Rayados Premier</p>
+            <p class="summary-sub">71% de efectividad en puntos</p>
+        </article>
+    </section>
+</section>
+{% endblock %}

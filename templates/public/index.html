@@ -1,0 +1,144 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="hero-publico">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <span class="section-kicker section-kicker-light">PORTAL PÚBLICO DEPORTIVO</span>
+            <h2 class="hero-title">Consulta toda la actividad de la liga en un solo lugar</h2>
+            <p class="hero-text">
+                Visualiza torneos activos, equipos inscritos, posiciones, estadísticas, disponibilidad de canchas
+                y anuncios importantes dentro de una sola plataforma con identidad clara y acceso rápido.
+            </p>
+
+            <div class="hero-actions">
+                <a href="{{ url_for('public.pagina_torneos') }}" class="btn btn-primary">Ver torneos</a>
+                <a href="{{ url_for('admin.login_admin') }}" class="btn btn-secondary">Acceso administrativo</a>
+            </div>
+        </div>
+
+        <aside class="hero-panel">
+            <span class="panel-kicker">PRÓXIMO TORNEO</span>
+            <h3>Copa Juvenil de Verano 2026</h3>
+            <p>
+                Inscripciones abiertas para categorías juveniles. Próximamente se publicarán grupos,
+                reglamento, calendario inicial y proceso de registro.
+            </p>
+
+            <div class="panel-tags">
+                <span>Inscripciones abiertas</span>
+                <span>Fase liga</span>
+                <span>Juárez, N.L.</span>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<section class="container">
+    <section class="stats-grid">
+        <article class="stat-card">
+            <p class="stat-label">Torneos activos</p>
+            <strong class="stat-number">04</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Equipos registrados</p>
+            <strong class="stat-number">48</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Partidos programados</p>
+            <strong class="stat-number">17</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Canchas activas</p>
+            <strong class="stat-number">05</strong>
+        </article>
+    </section>
+
+    <section class="section-head">
+        <span class="section-kicker">CONSULTA PÚBLICA</span>
+        <h2 class="section-title">Accesos principales</h2>
+    </section>
+
+    <section class="cards-grid">
+        <a href="{{ url_for('public.pagina_torneos') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Torneos</h3>
+            <p>Consulta torneos actuales, convocatorias, estatus y etapas de competencia.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_equipos') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Equipos</h3>
+            <p>Revisa los equipos registrados, información general y participación por torneo.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_posiciones') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Tabla de posiciones</h3>
+            <p>Visualiza el avance de grupos, victorias, puntos y diferencia de goles.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_estadisticas') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Estadísticas</h3>
+            <p>Consulta rendimiento, goles, tarjetas, registros de juego y datos competitivos.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_canchas') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Canchas</h3>
+            <p>Consulta disponibilidad, ocupación, organización y datos generales de espacios.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_anuncios') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Anuncios</h3>
+            <p>Entérate de avisos, próximos eventos, periodos de inscripción y novedades.</p>
+        </a>
+    </section>
+
+    <section class="highlight-box">
+        <div class="highlight-copy">
+            <span class="section-kicker">DIFUSIÓN</span>
+            <h2 class="section-title">Anuncio destacado</h2>
+            <p>
+                Ya se encuentra disponible la preinscripción para los próximos torneos de verano.
+                La publicación de grupos y horarios preliminares se realizará en esta plataforma.
+            </p>
+        </div>
+
+        <div class="highlight-action">
+            <a href="{{ url_for('public.pagina_anuncios') }}" class="btn btn-dark">Ver más información</a>
+        </div>
+    </section>
+</section>
+
+<footer class="footer-publico">
+    <div class="container footer-grid">
+        <div>
+            <h3>Soccer Premier Juárez</h3>
+            <p>Sistema público de consulta deportiva y difusión de torneos.</p>
+        </div>
+
+        <div>
+            <h4>Contacto</h4>
+            <p>81 2011 2194</p>
+            <p>Somos Primer Soccer Juárez</p>
+            <p>gmunizesparza@gmail.com</p>
+        </div>
+
+        <div>
+            <h4>Ubicación</h4>
+            <p>Teófilo Salinas #322, Juárez, Nuevo León, México.</p>
+        </div>
+
+        <div>
+            <h4>Horario</h4>
+            <p>Lunes a domingo de 9:00 a 18:00</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

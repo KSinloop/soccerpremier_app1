@@ -1,0 +1,100 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de estadísticas{% endblock %}
+
+{% block content %}
+<section class="admin-stats-grid">
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Goles capturados</p>
+        <strong class="admin-stat-number">96</strong>
+        <span class="admin-stat-note">Temporada actual</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Tarjetas amarillas</p>
+        <strong class="admin-stat-number">41</strong>
+        <span class="admin-stat-note">Disciplina registrada</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Tarjetas rojas</p>
+        <strong class="admin-stat-number">07</strong>
+        <span class="admin-stat-note">Incidencias críticas</span>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <article class="admin-panel-card">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">RENDIMIENTO</span>
+                <h3 class="admin-panel-title">Líderes del torneo</h3>
+            </div>
+            <a href="#" class="admin-chip">Actualizar datos</a>
+        </div>
+
+        <div class="ranking-list">
+            <div class="ranking-item">
+                <div class="ranking-left">
+                    <span class="ranking-position">1</span>
+                    <div>
+                        <h4>Javier Martínez</h4>
+                        <p>Tigres Juárez</p>
+                    </div>
+                </div>
+                <strong>12 goles</strong>
+            </div>
+
+            <div class="ranking-item">
+                <div class="ranking-left">
+                    <span class="ranking-position">2</span>
+                    <div>
+                        <h4>Luis Herrera</h4>
+                        <p>Rayados Premier</p>
+                    </div>
+                </div>
+                <strong>10 goles</strong>
+            </div>
+
+            <div class="ranking-item">
+                <div class="ranking-left">
+                    <span class="ranking-position">3</span>
+                    <div>
+                        <h4>Fernanda Ruiz</h4>
+                        <p>Panteras Femenil</p>
+                    </div>
+                </div>
+                <strong>8 goles</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="admin-panel-card">
+        <span class="section-kicker">CONTROL</span>
+        <h3 class="admin-panel-title">Operaciones disponibles</h3>
+        <div class="admin-links-list compact">
+            <a href="#" class="admin-link-row">
+                <div>
+                    <h4>Capturar goles</h4>
+                    <p>Registrar anotaciones por partido.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+            <a href="#" class="admin-link-row">
+                <div>
+                    <h4>Capturar tarjetas</h4>
+                    <p>Actualizar disciplina por jugador.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+            <a href="#" class="admin-link-row">
+                <div>
+                    <h4>Recalcular tabla</h4>
+                    <p>Actualizar resumen y posiciones.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+        </div>
+    </article>
+</section>
+{% endblock %}

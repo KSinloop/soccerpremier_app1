@@ -1,0 +1,103 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de equipos{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">PARTICIPANTES</span>
+                <h3 class="admin-panel-title">Equipos registrados</h3>
+            </div>
+            <a href="#" class="admin-chip admin-chip-gold">Nuevo equipo</a>
+        </div>
+
+        <div class="admin-toolbar">
+            <a href="#" class="toolbar-pill active">Todos</a>
+            <a href="#" class="toolbar-pill">Juvenil</a>
+            <a href="#" class="toolbar-pill">Libre</a>
+            <a href="#" class="toolbar-pill">Femenil</a>
+        </div>
+
+        <div class="admin-cards-list">
+            <article class="admin-record-card">
+                <div class="admin-record-head">
+                    <div class="admin-record-id">TJ</div>
+                    <div>
+                        <h4>Tigres Juárez</h4>
+                        <p>Categoría Juvenil · Clausura Premier 2026</p>
+                    </div>
+                </div>
+                <div class="admin-record-meta">
+                    <span>12 jugadores</span>
+                    <span>Grupo A</span>
+                    <span class="status-badge status-active">Activo</span>
+                </div>
+                <div class="admin-actions">
+                    <a href="#" class="admin-action-link">Editar</a>
+                    <a href="#" class="admin-action-link">Jugadores</a>
+                    <a href="#" class="admin-action-link danger">Eliminar</a>
+                </div>
+            </article>
+
+            <article class="admin-record-card">
+                <div class="admin-record-head">
+                    <div class="admin-record-id">RP</div>
+                    <div>
+                        <h4>Rayados Premier</h4>
+                        <p>Categoría Libre · Copa Verano 2026</p>
+                    </div>
+                </div>
+                <div class="admin-record-meta">
+                    <span>15 jugadores</span>
+                    <span>Grupo B</span>
+                    <span class="status-badge status-active">Activo</span>
+                </div>
+                <div class="admin-actions">
+                    <a href="#" class="admin-action-link">Editar</a>
+                    <a href="#" class="admin-action-link">Jugadores</a>
+                    <a href="#" class="admin-action-link danger">Eliminar</a>
+                </div>
+            </article>
+
+            <article class="admin-record-card">
+                <div class="admin-record-head">
+                    <div class="admin-record-id">PF</div>
+                    <div>
+                        <h4>Panteras Femenil</h4>
+                        <p>Categoría Femenil · Copa Regional 2026</p>
+                    </div>
+                </div>
+                <div class="admin-record-meta">
+                    <span>14 jugadoras</span>
+                    <span>Grupo A</span>
+                    <span class="status-badge status-active">Activo</span>
+                </div>
+                <div class="admin-actions">
+                    <a href="#" class="admin-action-link">Editar</a>
+                    <a href="#" class="admin-action-link">Jugadoras</a>
+                    <a href="#" class="admin-action-link danger">Eliminar</a>
+                </div>
+            </article>
+        </div>
+    </article>
+
+    <aside class="admin-side-stack">
+        <article class="admin-panel-card">
+            <span class="section-kicker">RESUMEN</span>
+            <h3 class="admin-panel-title">Vista rápida</h3>
+            <div class="admin-mini-grid single-col">
+                <div class="admin-mini-card">
+                    <h4>Equipos activos</h4>
+                    <p>48 registros visibles en sistema.</p>
+                </div>
+                <div class="admin-mini-card">
+                    <h4>Categorías</h4>
+                    <p>Juvenil, Libre y Femenil.</p>
+                </div>
+            </div>
+        </article>
+    </aside>
+</section>
+{% endblock %}
