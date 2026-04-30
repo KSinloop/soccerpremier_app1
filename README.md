@@ -11,7 +11,7 @@ Sigue estos pasos exactamente en orden para levantar el proyecto en tu computado
 ### 1. Clonar el repositorio y entrar a la carpeta
 
 ```bash
-git clone https://github.com/Samuel-Bravo/soccerpremier_app1.git
+git clone https://github.com/KSinloop/soccerpremier_app1.git
 cd soccerpremier_app1
 ```
 Si no especificas que se guarde en el escritorio o donde sea que te sea fácil encontrarlo, se guardara en tu user de windows
