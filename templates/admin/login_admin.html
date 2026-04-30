@@ -22,12 +22,26 @@
             <span class="section-kicker">INICIAR SESIÓN</span>
             <h2>Panel administrativo</h2>
 
-            <form class="admin-login-form">
+<form class="admin-login-form" action="{{ url_for('auth.login') }}" method="POST">
+                
+                <!-- Error si te equivocas de contraseña -->
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div style="color: #d9534f; margin-bottom: 15px; background-color: #fdf7f7; padding: 10px; border-radius: 5px; border: 1px solid #d9534f;">
+                    {% for message in messages %}
+                      {{ message }}
+                    {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+
                 <label for="usuario">Usuario</label>
-                <input type="text" id="usuario" placeholder="Ingresa tu usuario">
+                <!-- Para el usuario -->
+                <input type="text" id="usuario" name="username" placeholder="Ingresa tu usuario" required>
 
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="Ingresa tu contraseña">
+                <!-- Para la contraseña -->
+                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
 
                 <button type="submit" class="btn btn-primary">Entrar</button>
             </form>

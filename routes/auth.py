@@ -1,14 +1,17 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from db import db
 from models import Admin
 
 auth_bp = Blueprint("auth", __name__)
 
-
 @auth_bp.post("/login")
 def login():
-    data = request.get_json(silent=True) or {}
+    # detectar si es JSON o form data
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form
 
     username = data.get("username", "").strip()
     password = data.get("password", "")
@@ -21,26 +24,20 @@ def login():
     ).scalar_one_or_none()
 
     if not admin or not admin.check_password(password):
-        return jsonify({"ok": False, "error": "Credenciales inválidas"}), 401
+        # Si la contraseña es incorrecta, regresar a login
+        flash("Credenciales inválidas")
+        return redirect(url_for('public.pagina_login'))
 
     login_user(admin)
 
-    return jsonify({
-        "ok": True,
-        "mensaje": "Sesión iniciada",
-        "admin": {
-            "id": admin.id,
-            "username": admin.username
-        }
-    })
-
+    #mandar directo al dasjboard del admin
+    return redirect(url_for('admin.dashboard'))
 
 @auth_bp.post("/logout")
 @login_required
 def logout():
     logout_user()
-    return jsonify({"ok": True, "mensaje": "Sesión cerrada"})
-
+    return redirect(url_for('public.index'))
 
 @auth_bp.get("/me")
 def me():
@@ -52,5 +49,4 @@ def me():
                 "username": current_user.username
             }
         })
-
     return jsonify({"autenticado": False})
