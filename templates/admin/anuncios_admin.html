@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Gestión de Anuncios{% endblock %}
+<!-- Este template muestra una tabla con los anuncios publicados, permitiendo al administrador editarlos o cambiar su estado de visibilidad. -->
+{% block content %}
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">COMUNICACIÓN</span>
+            <h3 class="admin-panel-title">Anuncios publicados</h3>
+        </div>
+        
+        <a href="#" class="admin-chip admin-chip-gold">+ Crear nuevo anuncio</a>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Fecha de publicación</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>1</td>
+                    <td>Apertura de inscripciones Verano 2026</td>
+                    <td>30/04/2026</td>
+                    <td><span class="status-badge status-active">Visible</span></td>
+                    <td>
+                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Ocultar</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Junta de capitanes obligatoria</td>
+                    <td>25/04/2026</td>
+                    <td><span class="status-badge status-end">Archivado</span></td>
+                    <td>
+                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Visible</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+<!-- Comentarios para el administrador -->
+<!-- 
+    - El botón "Crear nuevo anuncio" debe redirigir a un formulario de creación.
+    - Las acciones de "Editar" y "Ocultar/Visible" deben estar conectadas a funciones del backend para actualizar el estado del anuncio.
+-->
