@@ -1,0 +1,128 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">MARCADORES</span>
+            <h2 class="section-title">Resultados recientes</h2>
+            <p class="page-description">
+                Consulta los marcadores finales de los partidos jugados en la temporada actual.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Partidos jugados</span>
+            <strong>14</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="toolbar-simple"> 
+        <a href="#" class="toolbar-pill active">Todos</a>
+        <a href="#" class="toolbar-pill">Relámpago</a>
+        <a href="#" class="toolbar-pill">Clausura Premier</a>
+        <a href="#" class="toolbar-pill">Copa Femenil</a>
+    </section>
+
+    <section class="results-grid">
+        <article class="result-card">
+            <div class="result-top">
+                <span class="result-meta">10 May · J7</span>
+            </div>
+
+            <div class="result-match">
+                <div class="team-score">
+                    <h3>Tigres Juárez</h3>
+                    <strong>3</strong>
+                </div>
+
+                <div>
+                    <span class="vs-sep">vs</span>
+                </div>
+
+                <div class="team-score">
+                    <h3>Lobos FC</h3>
+                    <strong>1</strong>
+                </div>
+            </div>
+
+            <p>Clausura Premier · Cancha Principal Norte</p>
+        </article>
+
+        <article class="result-card">
+            <div class="result-top">
+                <span class="result-meta">10 May · J7</span>
+            </div>
+
+            <div class="result-match">
+                <div class="team-score">
+                    <h3>Rayados Premier</h3>
+                    <strong>2</strong>
+                </div>
+
+                <div>
+                    <span class="vs-sep">vs</span>
+                </div>
+
+                <div class="team-score">
+                    <h3>Halcones Liga</h3>
+                    <strong>2</strong>
+                </div>
+            </div>
+
+            <p>Clausura Premier · Cancha Oriente</p>
+        </article>
+
+        <article class="result-card">
+            <div class="result-top">
+                <span class="result-meta">08 May · J6</span>
+            </div>
+
+            <div class="result-match">
+                <div class="team-score">
+                    <h3>Panteras Femenil</h3>
+                    <strong>4</strong>
+                </div>
+
+                <div>
+                    <span class="vs-sep">vs</span>
+                </div>
+
+                <div class="team-score">
+                    <h3>Guerreros Liga</h3>
+                    <strong>0</strong>
+                </div>
+            </div>
+
+            <p>Copa Femenil · Cancha Juvenil Sur</p>
+        </article>
+
+        <article class="result-card">
+            <div class="result-top">
+                <span class="result-meta">08 May · J6</span>
+            </div>
+
+            <div class="result-match">
+                <div class="team-score">
+                    <h3>Atlético Xolos</h3>
+                    <strong>1</strong>
+                </div>
+
+                <div>
+                    <span class="vs-sep">vs</span>
+                </div>
+
+                <div class="team-score">
+                    <h3>Cantera Real</h3>
+                    <strong>3</strong>
+                </div>
+            </div>
+
+            <p>Clausura Premier · Cancha Alterna</p>
+        </article>
+    </section>
+</section>
+
+{% endblock %}

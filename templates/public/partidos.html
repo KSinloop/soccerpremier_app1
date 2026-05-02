@@ -1,0 +1,80 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">CALENDARIO</span>
+            <h2 class="section-title">Próximos partidos</h2>
+            <p class="page-description">
+                Consulta los encuentros programados, jornadas y canchas asignadas para la temporada actual.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Partidos prog.</span>
+            <strong>08</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="toolbar-simple"> 
+        <a href="#" class="toolbar-pill active">Todos</a>
+        <a href="#" class="toolbar-pill">Esta semana</a>
+        <a href="#" class="toolbar-pill">Clausura Premier</a>
+        <a href="#" class="toolbar-pill">Copa Femenil</a>
+    </section>
+
+    <section class="matches-list">
+        <article class="match-card">
+            <div class="match-date-box">
+                <span>14</span>
+                <small>MAY</small>
+                <p>19:00 hrs</p>
+            </div>
+            <div class="match-content">
+                <div class="match-top">
+                    <span class="status_scheduled">Programado</span>
+                    <span class="match-tag">Clausura Premier · J8</span>
+                </div>
+                <h3>Tigres Juárez vs Rayados Premier</h3>
+                <p>Cancha Principal Norte · Fútbol 7</p>
+            </div>
+        </article>
+
+        <article class="match-card">
+            <div class="match-date-box">
+                <span>15</span>
+                <small>MAY</small>
+                <p>17:30 hrs</p>
+            </div>
+            <div class="match-content">
+                <div class="match-top">
+                    <span class="status_scheduled">Programado</span>
+                    <span class="match-tag">Copa Femenil · J4</span>
+                </div>
+                <h3>Panteras Femenil vs Cantera Real</h3>
+                <p>Cancha Juvenil Sur · Fútbol 7</p>
+            </div>
+        </article>
+
+        <article class="match-card">
+            <div class="match-date-box">
+                <span>17</span>
+                <small>MAY</small>
+                <p>20:00 hrs</p>
+            </div>
+            <div class="match-content">
+                <div class="match-top">
+                    <span class="status_scheduled">Programado</span>
+                    <span class="match-tag">Clausura Premier · J8</span>
+                </div>
+                <h3>Lobos FC vs Guerreros Liga</h3>
+                <p>Cancha Oriente · Fútbol 7</p>
+            </div>
+        </article>
+    </section>
+</section>
+
+{% endblock %}

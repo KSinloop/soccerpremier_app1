@@ -1,0 +1,68 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">NOTICIAS</span>
+            <h2 class="section-title">Anuncios y avisos</h2>
+            <p class="page-description">
+                Mantente informado sobre los eventos, cambios y novedades de la liga Soccer Premier Juárez.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Anuncios activos</span>
+            <strong>3</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="toolbar-simple">
+        <a href="#" class="toolbar-pill active">Todos</a>
+        <a href="#" class="toolbar-pill">Importantes</a>
+        <a href="#" class="toolbar-pill">Eventos</a>
+        <a href="#" class="toolbar-pill">Resultados</a>
+    </section>
+
+    <section class="anuncios-list">
+        <article class="anuncio-item">
+            <div class="anuncio-date">
+                <span>12</span>
+                <small>MAY</small>
+            </div>
+            <div class="anuncio-content">
+                <span class="section-kicker">AVISO IMPORTANTE</span>
+                <h3>Cambio de sede en Jornada 8</h3>
+                <p>El partido Tigres vs Rayados se traslada a Cancha Alterna Central por mantenimiento en la cancha principal.</p>
+            </div>
+        </article>
+
+        <article class="anuncio-item">
+            <div class="anuncio-date">
+                <span>09</span>
+                <small>MAY</small>
+            </div>
+            <div class="anuncio-content">
+                <span class="section-kicker">REGISTRO</span>
+                <h3>Cambio de sede en Jornada 8</h3>
+                <p>Los equipos interesados en participar deben registrarse antes del 20 de mayo. Cupo limitado a 8 equipos.</p>
+            </div>
+        </article>
+
+        <article class="anuncio-item">
+            <div class="anuncio-date">
+                <span>05</span>
+                <small>MAY</small>
+            </div>
+            <div class="anuncio-content">
+                <span class="section-kicker">EVENTO</span>
+                <h3>Premiación Clausura Apertura 2025</h3>
+                <p>Se realizará la ceremonia de premiación del torneo anterior el próximo 22 de mayo a las 18:00 hrs.   </p>
+            </div>
+        </article>
+    </section>
+</section>
+
+{% endblock %}

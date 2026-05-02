@@ -548,6 +548,15 @@ a {
     color: #53627e;
 }
 
+.status_scheduled{
+    background: var(--line);
+    color: #185fa5;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
 .torneo-season {
     color: var(--muted);
     font-weight: 700;
@@ -1124,6 +1133,12 @@ a {
     border-radius: 28px;
     box-shadow: var(--shadow);
     padding: 28px 30px;
+}
+
+.result-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
 }
 
 .result-top {
