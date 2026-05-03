@@ -35,9 +35,10 @@
                     <span class="status-badge {% if equipo.activo %}status-active{% else %}status-end{% endif %}">
                         {% if equipo.activo %}Activo{% else %}Inactivo{% endif %}
                     </span>
+                    {% if equipo.telefono %}<span>Tel: {{ equipo.telefono }}</span>{% endif %}
                 </div>
                 <div class="admin-actions">
-                    <button class="admin-action-link" style="background:none; border:none; cursor:pointer;" onclick="editarEquipo({{ equipo.id }}, '{{ equipo.nombre }}', '{{ equipo.representante }}', '{{ equipo.categoria }}')">Editar</button>
+                    <button class="admin-action-link" style="background:none; border:none; cursor:pointer;" onclick="editarEquipo({{ equipo.id }}, '{{ equipo.nombre }}', '{{ equipo.representante }}', '{{ equipo.categoria }}', '{{ equipo.telefono or '' }}')">Editar</button>
                     <a href="#" class="admin-action-link">Jugadores</a>
                     <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('equipos', {{ equipo.id }})">Eliminar</button>
                 </div>
@@ -77,6 +78,10 @@ function abrirModalEquipo() {
             <input type="text" id="equipoRep" placeholder="Nombre del encargado">
         </div>
         <div class="modal-form-group">
+            <label>Teléfono</label>
+            <input type="text" id="equipoTel" placeholder="Ej. 656 123 4567">
+        </div>
+        <div class="modal-form-group">
             <label>Clasificación</label>
             <select id="equipoCat">
                 <option value="Libre">Libre</option>
@@ -89,16 +94,19 @@ function abrirModalEquipo() {
     document.getElementById('adminModal').style.display = 'flex';
     
     document.getElementById('modalConfirmBtn').onclick = function() {
-        const nombre = document.getElementById('equipoNombre').value;
-        const representante = document.getElementById('equipoRep').value;
-        const categoria = document.getElementById('equipoCat').value;
+        const data = {
+            nombre: document.getElementById('equipoNombre').value,
+            representante: document.getElementById('equipoRep').value,
+            telefono: document.getElementById('equipoTel').value,
+            categoria: document.getElementById('equipoCat').value
+        };
         
-        if (!nombre) return alert("El nombre es obligatorio");
+        if (!data.nombre) return alert("El nombre es obligatorio");
         
         fetch("/admin/api/equipos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombre, representante: representante, categoria: categoria })
+            body: JSON.stringify(data)
         })
         .then(res => res.json())
         .then(data => {
@@ -109,7 +117,7 @@ function abrirModalEquipo() {
     };
 }
 
-function editarEquipo(id, nombre, representante, categoria) {
+function editarEquipo(id, nombre, representante, categoria, telefono) {
     document.getElementById('modalTitle').innerText = 'Editar Equipo';
     document.getElementById('modalBody').innerHTML = `
         <div class="modal-form-group">
@@ -119,6 +127,10 @@ function editarEquipo(id, nombre, representante, categoria) {
         <div class="modal-form-group">
             <label>Representante</label>
             <input type="text" id="editRep" value="${representante}">
+        </div>
+        <div class="modal-form-group">
+            <label>Teléfono</label>
+            <input type="text" id="editTel" value="${telefono}">
         </div>
         <div class="modal-form-group">
             <label>Clasificación</label>
@@ -137,6 +149,7 @@ function editarEquipo(id, nombre, representante, categoria) {
             body: JSON.stringify({
                 nombre: document.getElementById('editNombre').value,
                 representante: document.getElementById('editRep').value,
+                telefono: document.getElementById('editTel').value,
                 categoria: document.getElementById('editCat').value
             })
         })

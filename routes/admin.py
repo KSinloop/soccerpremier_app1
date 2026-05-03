@@ -170,6 +170,20 @@ def crear_cancha():
     db.session.commit()
     return jsonify({"ok": True, "mensaje": "Cancha registrada"}), 201
 
+# ARBITROS
+@admin_bp.post("/api/arbitros")
+@login_required
+def crear_arbitro():
+    data = request.get_json()
+    arbitro = Arbitro(
+        nombre=data.get("nombre"),
+        apellidos=data.get("apellidos"),
+        telefono=data.get("telefono")
+    )
+    db.session.add(arbitro)
+    db.session.commit()
+    return jsonify({"ok": True, "mensaje": "Árbitro registrado"}), 201
+
 # ANUNCIOS
 @admin_bp.post("/api/anuncios")
 @login_required
@@ -207,5 +221,6 @@ def editar_equipo_api(id):
     equipo.nombre = data.get("nombre", equipo.nombre)
     equipo.representante = data.get("representante", equipo.representante)
     equipo.categoria = data.get("categoria", equipo.categoria)
+    equipo.telefono = data.get("telefono", equipo.telefono)
     db.session.commit()
     return jsonify({"ok": True})

@@ -49,11 +49,49 @@
 {% block scripts %}
 <script>
 function abrirModalArbitro() {
-    alert("Formulario de árbitro en desarrollo.");
+    document.getElementById('modalTitle').innerText = 'Nuevo Árbitro';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre</label>
+            <input type="text" id="arbNombre" placeholder="Ej. Roberto">
+        </div>
+        <div class="modal-form-group">
+            <label>Apellidos</label>
+            <input type="text" id="arbApellidos" placeholder="Ej. García">
+        </div>
+        <div class="modal-form-group">
+            <label>Teléfono</label>
+            <input type="text" id="arbTel" placeholder="Ej. 656 123 4567">
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const data = {
+            nombre: document.getElementById('arbNombre').value,
+            apellidos: document.getElementById('arbApellidos').value,
+            telefono: document.getElementById('arbTel').value
+        };
+        
+        if (!data.nombre || !data.apellidos) return alert("Nombre y apellidos son obligatorios");
+        
+        fetch("/admin/api/arbitros", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error || "Error al registrar árbitro");
+        })
+        .catch(err => alert("Error de conexión"));
+    };
 }
 
 function eliminarRegistro(modelo, id) {
-    if (confirm("¿Estás seguro de eliminar este registro?")) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
         fetch(`/admin/api/${modelo}/${id}`, {
             method: "DELETE"
         })
@@ -62,7 +100,7 @@ function eliminarRegistro(modelo, id) {
             if (data.ok) location.reload();
             else alert("Error al eliminar");
         });
-    }
+    });
 }
 </script>
 {% endblock %}

@@ -65,20 +65,32 @@ function abrirModalCancha() {
             <label>Ubicación</label>
             <input type="text" id="canchaUbicacion" placeholder="Ej. Sector Norte">
         </div>
+        <div class="modal-form-group">
+            <label>Tipo de Superficie</label>
+            <select id="canchaTipo">
+                <option value="Sintético">Sintético</option>
+                <option value="Natural">Natural</option>
+                <option value="Duela">Duela</option>
+                <option value="Cemento">Cemento</option>
+            </select>
+        </div>
     `;
     
     document.getElementById('adminModal').style.display = 'flex';
     
     document.getElementById('modalConfirmBtn').onclick = function() {
-        const nombre = document.getElementById('canchaNombre').value;
-        const ubicacion = document.getElementById('canchaUbicacion').value;
+        const data = {
+            nombre: document.getElementById('canchaNombre').value,
+            ubicacion: document.getElementById('canchaUbicacion').value,
+            tipo: document.getElementById('canchaTipo').value
+        };
         
-        if (!nombre) return alert("El nombre es obligatorio");
+        if (!data.nombre) return alert("El nombre es obligatorio");
         
         fetch("/admin/api/canchas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombre, ubicacion: ubicacion })
+            body: JSON.stringify(data)
         })
         .then(res => res.json())
         .then(data => {
