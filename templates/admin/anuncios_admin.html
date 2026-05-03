@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
 
 {% block admin_title %}Gestión de Anuncios{% endblock %}
-<!-- Este template muestra una tabla con los anuncios publicados, permitiendo al administrador editarlos o cambiar su estado de visibilidad. -->
+
 {% block content %}
 <section class="admin-table-card">
     <div class="admin-table-head">
@@ -10,7 +10,7 @@
             <h3 class="admin-panel-title">Anuncios publicados</h3>
         </div>
         
-        <a href="#" class="admin-chip admin-chip-gold">+ Crear nuevo anuncio</a>
+        <a href="#" class="admin-chip admin-chip-gold" onclick="crearAnuncio()">+ Crear nuevo anuncio</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -25,34 +25,49 @@
                 </tr>
             </thead>
             <tbody>
-                
+                {% for anuncio in anuncios %}
                 <tr>
-                    <td>1</td>
-                    <td>Apertura de inscripciones Verano 2026</td>
-                    <td>30/04/2026</td>
-                    <td><span class="status-badge status-active">Visible</span></td>
+                    <td>{{ anuncio.id }}</td>
+                    <td>{{ anuncio.titulo }}</td>
+                    <td>{{ anuncio.fecha_publicacion.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        {% if anuncio.activo %}
+                        <span class="status-badge status-active">Visible</span>
+                        {% else %}
+                        <span class="status-badge status-end">Archivado</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Ocultar</a>
+                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Archivar</a>
                     </td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>2</td>
-                    <td>Junta de capitanes obligatoria</td>
-                    <td>25/04/2026</td>
-                    <td><span class="status-badge status-end">Archivado</span></td>
-                    <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Visible</a>
-                    </td>
+                    <td colspan="5" style="text-align: center; padding: 20px;">No hay anuncios publicados.</td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </section>
-{% endblock %}
-<!-- Comentarios para el administrador -->
-<!-- 
-    - El botón "Crear nuevo anuncio" debe redirigir a un formulario de creación.
-    - Las acciones de "Editar" y "Ocultar/Visible" deben estar conectadas a funciones del backend para actualizar el estado del anuncio.
--->
+
+<script>
+function crearAnuncio() {
+    const titulo = prompt("Título del anuncio:");
+    const contenido = prompt("Contenido del anuncio:");
+    if (titulo && contenido) {
+        fetch("/admin/api/anuncios", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ titulo: titulo, contenido: contenido })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error);
+        });
+    }
+}
+</script>
+{% endblock %}

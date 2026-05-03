@@ -100,21 +100,34 @@
         </a>
     </section>
 
+    {% if anuncios %}
+    <section class="section-head" style="margin-top: 40px;">
+        <span class="section-kicker">DIFUSIÓN</span>
+        <h2 class="section-title">Últimos anuncios</h2>
+    </section>
+
+    <section class="cards-grid">
+        {% for anuncio in anuncios %}
+        <div class="menu-card" style="border: 1px solid var(--border-color);">
+            <span class="section-kicker">{{ anuncio.fecha_publicacion.strftime('%d/%m/%Y') }}</span>
+            <h3>{{ anuncio.titulo }}</h3>
+            <p>{{ anuncio.contenido[:150] }}{% if anuncio.contenido|length > 150 %}...{% endif %}</p>
+        </div>
+        {% endfor %}
+    </section>
+    {% else %}
     <section class="highlight-box">
         <div class="highlight-copy">
             <span class="section-kicker">DIFUSIÓN</span>
-            <h2 class="section-title">Anuncio destacado</h2>
+            <h2 class="section-title">Sin anuncios recientes</h2>
             <p>
-                Ya se encuentra disponible la preinscripción para los próximos torneos de verano.
-                La publicación de grupos y horarios preliminares se realizará en esta plataforma.
+                Mantente al tanto de las novedades de la liga Soccer Premier Juárez en esta sección.
             </p>
         </div>
-
-        <div class="highlight-action">
-            <a href="{{ url_for('public.pagina_anuncios') }}" class="btn btn-dark">Ver más información</a>
-        </div>
     </section>
+    {% endif %}
 </section>
+
 
 <footer class="footer-publico">
     <div class="container footer-grid">

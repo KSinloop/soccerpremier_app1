@@ -10,7 +10,7 @@
                 <span class="section-kicker">PARTICIPANTES</span>
                 <h3 class="admin-panel-title">Equipos registrados</h3>
             </div>
-            <a href="#" class="admin-chip admin-chip-gold">Nuevo equipo</a>
+            <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalEquipo()">Nuevo equipo</a>
         </div>
 
         <div class="admin-toolbar">
@@ -21,18 +21,20 @@
         </div>
 
         <div class="admin-cards-list">
+            {% for equipo in equipos %}
             <article class="admin-record-card">
                 <div class="admin-record-head">
-                    <div class="admin-record-id">TJ</div>
+                    <div class="admin-record-id">{{ equipo.nombre[:2]|upper }}</div>
                     <div>
-                        <h4>Tigres Juárez</h4>
-                        <p>Categoría Juvenil · Clausura Premier 2026</p>
+                        <h4>{{ equipo.nombre }}</h4>
+                        <p>Representante: {{ equipo.representante or 'N/A' }}</p>
                     </div>
                 </div>
                 <div class="admin-record-meta">
-                    <span>12 jugadores</span>
-                    <span>Grupo A</span>
-                    <span class="status-badge status-active">Activo</span>
+                    <span>{{ equipo.jugadores|length }} jugadores</span>
+                    <span class="status-badge {% if equipo.activo %}status-active{% else %}status-end{% endif %}">
+                        {% if equipo.activo %}Activo{% else %}Inactivo{% endif %}
+                    </span>
                 </div>
                 <div class="admin-actions">
                     <a href="#" class="admin-action-link">Editar</a>
@@ -40,46 +42,9 @@
                     <a href="#" class="admin-action-link danger">Eliminar</a>
                 </div>
             </article>
-
-            <article class="admin-record-card">
-                <div class="admin-record-head">
-                    <div class="admin-record-id">RP</div>
-                    <div>
-                        <h4>Rayados Premier</h4>
-                        <p>Categoría Libre · Copa Verano 2026</p>
-                    </div>
-                </div>
-                <div class="admin-record-meta">
-                    <span>15 jugadores</span>
-                    <span>Grupo B</span>
-                    <span class="status-badge status-active">Activo</span>
-                </div>
-                <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
-                    <a href="#" class="admin-action-link">Jugadores</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
-                </div>
-            </article>
-
-            <article class="admin-record-card">
-                <div class="admin-record-head">
-                    <div class="admin-record-id">PF</div>
-                    <div>
-                        <h4>Panteras Femenil</h4>
-                        <p>Categoría Femenil · Copa Regional 2026</p>
-                    </div>
-                </div>
-                <div class="admin-record-meta">
-                    <span>14 jugadoras</span>
-                    <span>Grupo A</span>
-                    <span class="status-badge status-active">Activo</span>
-                </div>
-                <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
-                    <a href="#" class="admin-action-link">Jugadoras</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
-                </div>
-            </article>
+            {% else %}
+            <p style="text-align: center; padding: 20px;">No hay equipos registrados.</p>
+            {% endfor %}
         </div>
     </article>
 
@@ -89,15 +54,30 @@
             <h3 class="admin-panel-title">Vista rápida</h3>
             <div class="admin-mini-grid single-col">
                 <div class="admin-mini-card">
-                    <h4>Equipos activos</h4>
-                    <p>48 registros visibles en sistema.</p>
-                </div>
-                <div class="admin-mini-card">
-                    <h4>Categorías</h4>
-                    <p>Juvenil, Libre y Femenil.</p>
+                    <h4>Equipos registrados</h4>
+                    <p>{{ equipos|length }} registros visibles en sistema.</p>
                 </div>
             </div>
         </article>
     </aside>
 </section>
-{% endblock %}
+
+<script>
+function abrirModalEquipo() {
+    const nombre = prompt("Nombre del nuevo equipo:");
+    if (nombre) {
+        const representante = prompt("Nombre del representante:");
+        fetch("/admin/api/equipos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre: nombre, representante: representante })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error);
+        });
+    }
+}
+</script>
+{% endblock %}

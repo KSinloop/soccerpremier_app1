@@ -14,17 +14,19 @@
 
         <div class="page-hero-badge">
             <span>Equipos en tabla</span>
-            <strong>08</strong>
+            <strong>{{ tabla|length }}</strong>
         </div>
     </div>
 </section>
 
 <section class="container page-body">
     <section class="toolbar-simple">
-        <a href="#" class="toolbar-pill active">General</a>
-        <a href="#" class="toolbar-pill">Grupo A</a>
-        <a href="#" class="toolbar-pill">Grupo B</a>
-        <a href="#" class="toolbar-pill">Grupo C</a>
+        {% for torneo in torneos %}
+        <a href="{{ url_for('public.pagina_posiciones', torneo_id=torneo.id) }}" 
+           class="toolbar-pill {% if torneo.id == selected_torneo %}active{% endif %}">
+           {{ torneo.nombre }}
+        </a>
+        {% endfor %}
     </section>
 
     <section class="tabla-box">
@@ -33,7 +35,6 @@
                 <span class="section-kicker">ACTUALIZACIÓN</span>
                 <h3>Clasificación actual</h3>
             </div>
-            <p>Temporada 2026 · Clausura Premier</p>
         </div>
 
         <div class="tabla-wrap">
@@ -46,156 +47,30 @@
                         <th>G</th>
                         <th>E</th>
                         <th>P</th>
-                        <th>GF</th>
-                        <th>GC</th>
-                        <th>DG</th>
                         <th>PTS</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="top-row">
-                        <td>1</td>
+                    {% for item in tabla %}
+                    <tr class="{% if loop.index <= 3 %}top-row{% endif %}">
+                        <td>{{ loop.index }}</td>
                         <td>
                             <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">TJ</span>
-                                <span>Tigres Juárez</span>
+                                <span class="equipo-mini-avatar">{{ item.equipo[:2]|upper }}</span>
+                                <span>{{ item.equipo }}</span>
                             </div>
                         </td>
-                        <td>7</td>
-                        <td>5</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>18</td>
-                        <td>7</td>
-                        <td>+11</td>
-                        <td><strong>16</strong></td>
+                        <td>{{ item.pj }}</td>
+                        <td>{{ item.g }}</td>
+                        <td>{{ item.e }}</td>
+                        <td>{{ item.p }}</td>
+                        <td><strong>{{ item.pts }}</strong></td>
                     </tr>
-
-                    <tr class="top-row">
-                        <td>2</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">RP</span>
-                                <span>Rayados Premier</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>5</td>
-                        <td>0</td>
-                        <td>2</td>
-                        <td>15</td>
-                        <td>8</td>
-                        <td>+7</td>
-                        <td><strong>15</strong></td>
-                    </tr>
-
-                    <tr class="top-row">
-                        <td>3</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">LB</span>
-                                <span>Lobos FC</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>4</td>
-                        <td>2</td>
-                        <td>1</td>
-                        <td>13</td>
-                        <td>6</td>
-                        <td>+7</td>
-                        <td><strong>14</strong></td>
-                    </tr>
-
+                    {% else %}
                     <tr>
-                        <td>4</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">PF</span>
-                                <span>Panteras Femenil</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>3</td>
-                        <td>2</td>
-                        <td>2</td>
-                        <td>11</td>
-                        <td>9</td>
-                        <td>+2</td>
-                        <td><strong>11</strong></td>
+                        <td colspan="7" style="text-align: center; padding: 20px;">No hay datos para este torneo.</td>
                     </tr>
-
-                    <tr>
-                        <td>5</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">HL</span>
-                                <span>Halcones Liga</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>3</td>
-                        <td>1</td>
-                        <td>3</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>0</td>
-                        <td><strong>10</strong></td>
-                    </tr>
-
-                    <tr>
-                        <td>6</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">GL</span>
-                                <span>Guerreros Liga</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>2</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>9</td>
-                        <td>12</td>
-                        <td>-3</td>
-                        <td><strong>8</strong></td>
-                    </tr>
-
-                    <tr>
-                        <td>7</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">AX</span>
-                                <span>Atlético Xolos</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>4</td>
-                        <td>7</td>
-                        <td>14</td>
-                        <td>-7</td>
-                        <td><strong>5</strong></td>
-                    </tr>
-
-                    <tr>
-                        <td>8</td>
-                        <td>
-                            <div class="equipo-tabla">
-                                <span class="equipo-mini-avatar">CR</span>
-                                <span>Cantera Real</span>
-                            </div>
-                        </td>
-                        <td>7</td>
-                        <td>1</td>
-                        <td>0</td>
-                        <td>6</td>
-                        <td>5</td>
-                        <td>22</td>
-                        <td>-17</td>
-                        <td><strong>3</strong></td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -206,10 +81,6 @@
             <span class="legend-mark legend-top"></span>
             <p>Zona alta de clasificación</p>
         </div>
-        <div class="legend-item">
-            <span class="legend-mark legend-regular"></span>
-            <p>Posición regular</p>
-        </div>
     </section>
 </section>
-{% endblock %}
+{% endblock %}

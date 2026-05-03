@@ -13,7 +13,7 @@
 
         <div class="page-hero-badge">
             <span>Partidos prog.</span>
-            <strong>08</strong>
+            <strong>{{ partidos|length }}</strong>
         </div>
     </div>
 </section>
@@ -21,60 +21,29 @@
 <section class="container page-body">
     <section class="toolbar-simple"> 
         <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Esta semana</a>
-        <a href="#" class="toolbar-pill">Clausura Premier</a>
-        <a href="#" class="toolbar-pill">Copa Femenil</a>
     </section>
 
     <section class="matches-list">
+        {% for partido in partidos %}
         <article class="match-card">
             <div class="match-date-box">
-                <span>14</span>
-                <small>MAY</small>
-                <p>19:00 hrs</p>
+                <span>{{ partido.fecha_hora.strftime('%d') }}</span>
+                <small>{{ partido.fecha_hora.strftime('%b')|upper }}</small>
+                <p>{{ partido.fecha_hora.strftime('%H:%M') }} hrs</p>
             </div>
             <div class="match-content">
                 <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Clausura Premier · J8</span>
+                    <span class="status_scheduled">{{ partido.estado|capitalize }}</span>
+                    <span class="match-tag">{{ partido.torneo.nombre }} · {{ partido.jornada }}</span>
                 </div>
-                <h3>Tigres Juárez vs Rayados Premier</h3>
-                <p>Cancha Principal Norte · Fútbol 7</p>
+                <h3>{{ partido.local.nombre }} vs {{ partido.visitante.nombre }}</h3>
+                <p>{{ partido.cancha.nombre if partido.cancha else 'Cancha por definir' }} · {{ partido.cancha.tipo if partido.cancha else 'Fútbol' }}</p>
             </div>
         </article>
-
-        <article class="match-card">
-            <div class="match-date-box">
-                <span>15</span>
-                <small>MAY</small>
-                <p>17:30 hrs</p>
-            </div>
-            <div class="match-content">
-                <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Copa Femenil · J4</span>
-                </div>
-                <h3>Panteras Femenil vs Cantera Real</h3>
-                <p>Cancha Juvenil Sur · Fútbol 7</p>
-            </div>
-        </article>
-
-        <article class="match-card">
-            <div class="match-date-box">
-                <span>17</span>
-                <small>MAY</small>
-                <p>20:00 hrs</p>
-            </div>
-            <div class="match-content">
-                <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Clausura Premier · J8</span>
-                </div>
-                <h3>Lobos FC vs Guerreros Liga</h3>
-                <p>Cancha Oriente · Fútbol 7</p>
-            </div>
-        </article>
+        {% else %}
+        <p style="text-align: center; width: 100%; padding: 40px; color: #666;">No hay partidos programados actualmente.</p>
+        {% endfor %}
     </section>
 </section>
 
-{% endblock %}
+{% endblock %}
