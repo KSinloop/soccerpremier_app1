@@ -27,7 +27,7 @@
                     <div class="admin-record-id">{{ equipo.nombre[:2]|upper }}</div>
                     <div>
                         <h4>{{ equipo.nombre }}</h4>
-                        <p>Representante: {{ equipo.representante or 'N/A' }}</p>
+                        <p>Representante: {{ equipo.representante or 'N/A' }} | Categ: {{ equipo.categoria or 'Libre' }}</p>
                     </div>
                 </div>
                 <div class="admin-record-meta">
@@ -37,9 +37,9 @@
                     </span>
                 </div>
                 <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
+                    <button class="admin-action-link" style="background:none; border:none; cursor:pointer;" onclick="editarEquipo({{ equipo.id }}, '{{ equipo.nombre }}', '{{ equipo.representante }}', '{{ equipo.categoria }}')">Editar</button>
                     <a href="#" class="admin-action-link">Jugadores</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
+                    <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('equipos', {{ equipo.id }})">Eliminar</button>
                 </div>
             </article>
             {% else %}
@@ -76,6 +76,14 @@ function abrirModalEquipo() {
             <label>Representante</label>
             <input type="text" id="equipoRep" placeholder="Nombre del encargado">
         </div>
+        <div class="modal-form-group">
+            <label>Clasificación</label>
+            <select id="equipoCat">
+                <option value="Libre">Libre</option>
+                <option value="Juvenil">Juvenil</option>
+                <option value="Femenil">Femenil</option>
+            </select>
+        </div>
     `;
     
     document.getElementById('adminModal').style.display = 'flex';
@@ -83,13 +91,14 @@ function abrirModalEquipo() {
     document.getElementById('modalConfirmBtn').onclick = function() {
         const nombre = document.getElementById('equipoNombre').value;
         const representante = document.getElementById('equipoRep').value;
+        const categoria = document.getElementById('equipoCat').value;
         
         if (!nombre) return alert("El nombre es obligatorio");
         
         fetch("/admin/api/equipos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombre, representante: representante })
+            body: JSON.stringify({ nombre: nombre, representante: representante, categoria: categoria })
         })
         .then(res => res.json())
         .then(data => {
@@ -98,6 +107,58 @@ function abrirModalEquipo() {
         })
         .catch(err => alert("Error de conexión"));
     };
+}
+
+function editarEquipo(id, nombre, representante, categoria) {
+    document.getElementById('modalTitle').innerText = 'Editar Equipo';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre del Equipo</label>
+            <input type="text" id="editNombre" value="${nombre}">
+        </div>
+        <div class="modal-form-group">
+            <label>Representante</label>
+            <input type="text" id="editRep" value="${representante}">
+        </div>
+        <div class="modal-form-group">
+            <label>Clasificación</label>
+            <select id="editCat">
+                <option value="Libre" ${categoria === 'Libre' ? 'selected' : ''}>Libre</option>
+                <option value="Juvenil" ${categoria === 'Juvenil' ? 'selected' : ''}>Juvenil</option>
+                <option value="Femenil" ${categoria === 'Femenil' ? 'selected' : ''}>Femenil</option>
+            </select>
+        </div>
+    `;
+    document.getElementById('adminModal').style.display = 'flex';
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        fetch(`/admin/api/equipos/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nombre: document.getElementById('editNombre').value,
+                representante: document.getElementById('editRep').value,
+                categoria: document.getElementById('editCat').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al editar");
+        });
+    };
+}
+
+function eliminarRegistro(modelo, id) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
+        fetch(`/admin/api/${modelo}/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al eliminar");
+        });
+    });
 }
 </script>
 {% endblock %}

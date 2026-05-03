@@ -38,8 +38,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Archivar</a>
+                        <a href="#" class="admin-action-link">Editar</a>
+                        <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('anuncios', {{ anuncio.id }})">Eliminar</button>
                     </td>
                 </tr>
                 {% else %}
@@ -88,6 +88,19 @@ function crearAnuncio() {
         })
         .catch(err => alert("Error de conexión"));
     };
+}
+
+function eliminarRegistro(modelo, id) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
+        fetch(`/admin/api/${modelo}/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al eliminar");
+        });
+    });
 }
 </script>
 {% endblock %}

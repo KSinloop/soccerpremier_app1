@@ -31,7 +31,7 @@
                         <td>{{ jugador.equipo.nombre if jugador.equipo else 'Sin equipo' }}</td>
                         <td>
                             <a href="#" class="admin-action-link">Editar</a>
-                            <a href="#" class="admin-action-link danger">Eliminar</a>
+                            <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('jugadores', {{ jugador.id }})">Eliminar</button>
                         </td>
                     </tr>
                     {% else %}
@@ -110,6 +110,19 @@ function abrirModalJugador() {
         })
         .catch(err => alert("Error de conexión"));
     };
+}
+
+function eliminarRegistro(modelo, id) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
+        fetch(`/admin/api/${modelo}/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al eliminar");
+        });
+    });
 }
 </script>
 {% endblock %}

@@ -47,11 +47,12 @@
                         </span>
                     </td>
                     <td>
-                        {% if partido.estado != 'finalizado' %}
-                        <a href="#" onclick="registrarResultado({{ partido.id }}); return false;" style="color: #28a745; font-weight: bold; text-decoration: none;">Resultado</a>
-                        {% else %}
-                        <span style="color: #666;">Cerrado</span>
-                        {% endif %}
+                        <div class="admin-actions">
+                            {% if partido.estado != 'finalizado' %}
+                            <button class="admin-action-link" style="background:none; border:none; cursor:pointer; color:#28a745;" onclick="registrarResultado({{ partido.id }})">Resultado</button>
+                            {% endif %}
+                            <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('partidos', {{ partido.id }})">Eliminar</button>
+                        </div>
                     </td>
                 </tr>
                 {% else %}
@@ -68,7 +69,80 @@
 {% block scripts %}
 <script>
 function abrirModalPartido() {
-    alert("Función para abrir formulario de programación. Use la API /admin/api/partidos");
+    let torneosHtml = '';
+    {% for t in torneos %} torneosHtml += `<option value="{{ t.id }}">{{ t.nombre }}</option>`; {% endfor %}
+    
+    let equiposHtml = '';
+    {% for e in equipos %} equiposHtml += `<option value="{{ e.id }}">{{ e.nombre }}</option>`; {% endfor %}
+    
+    let canchasHtml = '<option value="">Sin asignar</option>';
+    {% for c in canchas %} canchasHtml += `<option value="{{ c.id }}">{{ c.nombre }}</option>`; {% endfor %}
+    
+    let arbitrosHtml = '<option value="">Sin asignar</option>';
+    {% for a in arbitros %} arbitrosHtml += `<option value="{{ a.id }}">{{ a.nombre }} {{ a.apellidos }}</option>`; {% endfor %}
+
+    document.getElementById('modalTitle').innerText = 'Programar Partido';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Torneo</label>
+            <select id="pTorneo">${torneosHtml}</select>
+        </div>
+        <div class="modal-form-group">
+            <label>Jornada</label>
+            <input type="text" id="pJornada" placeholder="Ej. Jornada 1">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="modal-form-group">
+                <label>Equipo Local</label>
+                <select id="pLocal">${equiposHtml}</select>
+            </div>
+            <div class="modal-form-group">
+                <label>Equipo Visitante</label>
+                <select id="pVisitante">${equiposHtml}</select>
+            </div>
+        </div>
+        <div class="modal-form-group">
+            <label>Fecha y Hora</label>
+            <input type="datetime-local" id="pFecha">
+        </div>
+        <div class="modal-form-group">
+            <label>Cancha</label>
+            <select id="pCancha">${canchasHtml}</select>
+        </div>
+        <div class="modal-form-group">
+            <label>Árbitro</label>
+            <select id="pArbitro">${arbitrosHtml}</select>
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const data = {
+            torneo_id: document.getElementById('pTorneo').value,
+            jornada: document.getElementById('pJornada').value,
+            local_id: document.getElementById('pLocal').value,
+            visitante_id: document.getElementById('pVisitante').value,
+            fecha_hora: document.getElementById('pFecha').value,
+            cancha_id: document.getElementById('pCancha').value || null,
+            arbitro_id: document.getElementById('pArbitro').value || null
+        };
+        
+        if (data.local_id === data.visitante_id) return alert("El equipo local y visitante no pueden ser el mismo.");
+        if (!data.fecha_hora) return alert("La fecha y hora son obligatorias.");
+
+        fetch("/admin/api/partidos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error || "Error al programar partido");
+        })
+        .catch(err => alert("Error de conexión"));
+    };
 }
 
 function registrarResultado(id) {
@@ -103,12 +177,18 @@ function registrarResultado(id) {
         .catch(err => alert("Error de conexión"));
     };
 }
+
+function eliminarRegistro(modelo, id) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
+        fetch(`/admin/api/${modelo}/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al eliminar");
+        });
+    });
+}
 </script>
 {% endblock %}
-
-<!--    Se necesita conectar:
-    Botones de crear partidos donde deje enfrentar a los equipos registrados, elegir fecha, hora y cancha.
-    Botones de editar para modificar detalles del partido. 
-    Que las canchas sean las que se tienen registradas en el sistema.
-    Tambien que los equipos, torneos y jornadas coincidan con las que se tienen registradas.
--->

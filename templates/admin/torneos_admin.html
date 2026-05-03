@@ -49,7 +49,7 @@
                         <td>
                             <div class="admin-actions">
                                 <a href="#" class="admin-action-link">Editar</a>
-                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                                <button class="admin-action-link danger" style="background:none; border:none; cursor:pointer;" onclick="eliminarRegistro('torneos', {{ torneo.id }})">Eliminar</button>
                             </div>
                         </td>
                     </tr>
@@ -80,7 +80,7 @@
             <span class="section-kicker">ACCIONES</span>
             <h3 class="admin-panel-title">Operaciones disponibles</h3>
             <div class="admin-links-list compact">
-                <a href="#" class="admin-link-row" onclick="abrirModalTorneo()">
+                <a href="#" class="admin-link-row" onclick="abrirModalTorneo(); return false;">
                     <div>
                         <h4>Crear torneo</h4>
                         <p>Registrar una nueva competencia.</p>
@@ -106,20 +106,43 @@ function abrirModalTorneo() {
             <label>Categoría</label>
             <input type="text" id="torneoCat" placeholder="Ej. Libre">
         </div>
+        <div class="modal-form-group">
+            <label>Tipo de Torneo</label>
+            <select id="torneoTipo">
+                <option value="Liga">Liga</option>
+                <option value="Eliminatoria">Eliminatoria</option>
+                <option value="Copa">Copa</option>
+            </select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="modal-form-group">
+                <label>Fecha Inicio</label>
+                <input type="date" id="torneoInicio">
+            </div>
+            <div class="modal-form-group">
+                <label>Fecha Fin</label>
+                <input type="date" id="torneoFin">
+            </div>
+        </div>
     `;
     
     document.getElementById('adminModal').style.display = 'flex';
     
     document.getElementById('modalConfirmBtn').onclick = function() {
-        const nombre = document.getElementById('torneoNombre').value;
-        const categoria = document.getElementById('torneoCat').value;
+        const data = {
+            nombre: document.getElementById('torneoNombre').value,
+            categoria: document.getElementById('torneoCat').value,
+            tipo: document.getElementById('torneoTipo').value,
+            fecha_inicio: document.getElementById('torneoInicio').value,
+            fecha_fin: document.getElementById('torneoFin').value
+        };
         
-        if (!nombre) return alert("El nombre es obligatorio");
+        if (!data.nombre) return alert("El nombre es obligatorio");
         
         fetch("/admin/api/torneos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombre, categoria: categoria })
+            body: JSON.stringify(data)
         })
         .then(res => res.json())
         .then(data => {
@@ -128,6 +151,19 @@ function abrirModalTorneo() {
         })
         .catch(err => alert("Error de conexión"));
     };
+}
+
+function eliminarRegistro(modelo, id) {
+    mostrarConfirm("¿Estás seguro de eliminar este registro?", function() {
+        fetch(`/admin/api/${modelo}/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert("Error al eliminar");
+        });
+    });
 }
 </script>
 {% endblock %}

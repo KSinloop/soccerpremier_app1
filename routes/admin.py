@@ -103,7 +103,8 @@ def crear_equipo():
     equipo = Equipo(
         nombre=data.get("nombre"),
         representante=data.get("representante"),
-        telefono=data.get("telefono")
+        telefono=data.get("telefono"),
+        categoria=data.get("categoria", "Libre")
     )
     db.session.add(equipo)
     db.session.commit()
@@ -180,4 +181,31 @@ def crear_anuncio():
     )
     db.session.add(anuncio)
     db.session.commit()
-    return jsonify({"ok": True, "mensaje": "Anuncio publicado"}), 201
+    return jsonify({"ok": True, "mensaje": "Anuncio publicado"}), 201
+
+# --- API ADICIONAL (BORRAR / EDITAR) ---
+
+@admin_bp.delete("/api/<string:modelo>/<int:id>")
+@login_required
+def eliminar_registro(modelo, id):
+    model_map = {
+        "torneos": Torneo, "equipos": Equipo, "jugadores": Jugador,
+        "partidos": Partido, "canchas": Cancha, "arbitros": Arbitro, "anuncios": Anuncio
+    }
+    if modelo not in model_map: return jsonify({"ok": False, "error": "No válido"}), 400
+    obj = model_map[modelo].query.get(id)
+    if not obj: return jsonify({"ok": False, "error": "No encontrado"}), 404
+    db.session.delete(obj)
+    db.session.commit()
+    return jsonify({"ok": True})
+
+@admin_bp.put("/api/equipos/<int:id>")
+@login_required
+def editar_equipo_api(id):
+    equipo = Equipo.query.get_or_404(id)
+    data = request.get_json()
+    equipo.nombre = data.get("nombre", equipo.nombre)
+    equipo.representante = data.get("representante", equipo.representante)
+    equipo.categoria = data.get("categoria", equipo.categoria)
+    db.session.commit()
+    return jsonify({"ok": True})
