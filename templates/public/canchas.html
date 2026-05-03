@@ -13,8 +13,8 @@
         </div>
 
         <div class="page-hero-badge">
-            <span>Canchas visibles</span>
-            <strong>05</strong>
+            <span>Cantidad de Canchas</span>
+            <strong>{{ canchas|length }}</strong>
         </div>
     </div>
 </section>
@@ -26,82 +26,30 @@
         <a href="#" class="toolbar-pill">En uso</a>
         <a href="#" class="toolbar-pill">Mantenimiento</a>
     </section>
-
+    
     <section class="cards-grid">
+
+        {% for c in canchas %}
         <article class="menu-card cancha-card">
             <div class="cancha-top">
+                {% if c.disponibilidad == "Disponible" %}
                 <span class="status-badge status-active">Disponible</span>
-                <span class="cancha-code">Cancha 01</span>
+                {% elif c.disponibilidad == "Clausurada" %}
+                <span class="status-badge status-end">Clausurada</span>
+                {% else %}
+                <span class="status-badge status-soon">En mantenimiento</span>
+                {% endif %}
+                <span class="cancha-code">Cancha {{ c.id }}</span>
             </div>
-            <h3>Cancha Principal Norte</h3>
-            <p>Espacio de uso competitivo con buena iluminación, gradería básica y acceso principal.</p>
+            <h3>{{ c.nombre }}</h3>
+            <p>{{ c.ubicacion }}</p>
             <div class="cancha-meta">
-                <span>Fútbol 7</span>
-                <span>Pasto sintético</span>
-                <span>Capacidad media</span>
+                <span>{{ c.tipo }}</span>
             </div>
             <a href="#" class="card-link">Ver detalles</a>
         </article>
+        {% endfor %}
 
-        <article class="menu-card cancha-card">
-            <div class="cancha-top">
-                <span class="status-badge status-soon">En uso</span>
-                <span class="cancha-code">Cancha 02</span>
-            </div>
-            <h3>Cancha Oriente</h3>
-            <p>Cancha destinada a partidos de fase regular y sesiones de entrenamiento programadas.</p>
-            <div class="cancha-meta">
-                <span>Fútbol 7</span>
-                <span>Uso frecuente</span>
-                <span>Horario ocupado</span>
-            </div>
-            <a href="#" class="card-link">Ver detalles</a>
-        </article>
-
-        <article class="menu-card cancha-card">
-            <div class="cancha-top">
-                <span class="status-badge status-active">Disponible</span>
-                <span class="cancha-code">Cancha 03</span>
-            </div>
-            <h3>Cancha Juvenil Sur</h3>
-            <p>Espacio orientado a categorías juveniles con programación flexible durante la semana.</p>
-            <div class="cancha-meta">
-                <span>Juvenil</span>
-                <span>Pasto sintético</span>
-                <span>Uso mixto</span>
-            </div>
-            <a href="#" class="card-link">Ver detalles</a>
-        </article>
-
-        <article class="menu-card cancha-card">
-            <div class="cancha-top">
-                <span class="status-badge status-end">Mantenimiento</span>
-                <span class="cancha-code">Cancha 04</span>
-            </div>
-            <h3>Cancha Poniente</h3>
-            <p>Área temporalmente inhabilitada por mantenimiento preventivo y ajustes operativos.</p>
-            <div class="cancha-meta">
-                <span>Revisión técnica</span>
-                <span>No disponible</span>
-                <span>Actualización</span>
-            </div>
-            <a href="#" class="card-link">Ver detalles</a>
-        </article>
-
-        <article class="menu-card cancha-card">
-            <div class="cancha-top">
-                <span class="status-badge status-active">Disponible</span>
-                <span class="cancha-code">Cancha 05</span>
-            </div>
-            <h3>Cancha Alterna Central</h3>
-            <p>Espacio complementario para torneos relámpago, entrenamientos y encuentros amistosos.</p>
-            <div class="cancha-meta">
-                <span>Uso alterno</span>
-                <span>Fútbol rápido</span>
-                <span>Acceso libre</span>
-            </div>
-            <a href="#" class="card-link">Ver detalles</a>
-        </article>
     </section>
 </section>
 {% endblock %}

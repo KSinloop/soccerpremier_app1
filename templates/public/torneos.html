@@ -13,7 +13,7 @@
 
         <div class="page-hero-badge">
             <span>Torneos visibles</span>
-            <strong>06</strong>
+            <strong>{{ torneos|length }}</strong>
         </div>
     </div>
 </section>
@@ -22,70 +22,35 @@
     <section class="toolbar-simple"> 
         <a href="#" class="toolbar-pill active">Todos</a>
         <a href="#" class="toolbar-pill">Activos</a>
-        <a href="#" class="toolbar-pill">Próximos</a>
-        <a href="#" class="toolbar-pill">Finalizados</a>
+        <a href="#" class="toolbar-pill">Finalizado</a>
     </section>
 
     <section class="cards-grid">
+
+        {% for t in torneos %}
         <article class="menu-card torneo-card">
             <div class="torneo-top">
+                {% if t.activo %}
                 <span class="status-badge status-active">Activo</span>
-                <span class="torneo-season">2026</span>
+                {% else %}
+                <span class="status-badge status-end">Finalizado</span>
+                {% endif %}
+                <span class="torneo-season">{{ t.fecha_inicio.year if t.fecha_inicio else '' }}</span>
             </div>
 
             <div>
-                <h3>Clausura Premier</h3>
-                <p>Liga principal de la temporada actual con 8 equipos participantes.</p>
+                <h3>{{ t.nombre }}</h3>
+                <p>{{ t.categoria }}</p>
             </div>
 
             <div class="torneo-meta">
-                <span>Fútbol 7</span>
-                <span>Libre</span>
-                <span>8 equipos</span>
+                <span>{{ t.tipo}}</span>
             </div>
 
             <a href="#" class="card-link">Ver torneo</a>
         </article>
+        {% endfor %}
 
-        <article class="menu-card torneo-card">
-            <div class="torneo-top">
-                <span class="status-badge status-active">Activo</span>
-                <span class="torneo-season">2026</span>
-            </div>
-
-            <div>
-                <h3>Copa Regional Femenil</h3>
-                <p>Torneo femenil con participación de equipos de la región norte.</p>
-            </div>
-
-            <div class="torneo-meta">
-                <span>Femenil</span>
-                <span>Regional</span>
-                <span>8 equipos</span>
-            </div>
-
-            <a href="#" class="card-link">Ver torneo</a>
-        </article>
-
-        <article class="menu-card torneo-card">
-            <div class="torneo-top">
-                <span class="status-badge status-soon">Próximo</span>
-                <span class="torneo-season">2026</span>
-            </div>
-
-            <div>
-                <h3>Torneo Relámpago</h3>
-                <p>Competencia de fase única con partidos rápidos de eliminación.</p>
-            </div>
-
-            <div class="torneo-meta">
-                <span>Juvenil</span>
-                <span>Fase única</span>
-                <span>4 equipos</span>
-            </div>
-
-            <a href="#" class="card-link">Ver torneo</a>
-        </article>
     </section>
 </section>
 

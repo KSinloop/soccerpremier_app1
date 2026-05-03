@@ -37,10 +37,10 @@ def vista_dashboard():
     anuncios_activos = len(db.session.execute(db.select(Anuncio).where(Anuncio.estado=='Visible')).scalars().all())
 
     return render_template("admin/dashboard.html", 
-                           tot_torneos=torneos_activos, 
-                           tot_equipos=equipos_registrados, 
-                           tot_partidos=partidos_programados, 
-                           tot_anuncios=anuncios_activos)
+                            tot_torneos=torneos_activos, 
+                            tot_equipos=equipos_registrados, 
+                            tot_partidos=partidos_programados, 
+                            tot_anuncios=anuncios_activos)
 
 @admin_bp.get("/login")
 def login_admin():
