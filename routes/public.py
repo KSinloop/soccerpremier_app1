@@ -74,6 +74,15 @@ def pagina_anuncios():
     anuncios = Anuncio.query.filter_by(activo=True).order_by(Anuncio.fecha_publicacion.desc()).all()
     return render_template("public/anuncios.html", anuncios=anuncios)
 
+@public_bp.get("/estadisticas")
+def pagina_estadisticas():
+    return render_template("public/estadisticas.html")
+
+@public_bp.get("/canchas")
+def pagina_canchas():
+    canchas = Cancha.query.all()
+    return render_template("public/canchas.html", canchas=canchas)
+
 @public_bp.get("/login")
 def pagina_login():
     return render_template("public/login.html")

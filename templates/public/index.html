@@ -126,6 +126,44 @@
         </div>
     </section>
     {% endif %}
+
+    <section class="cards-grid">
+        <a href="{{ url_for('public.pagina_torneos') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Torneos</h3>
+            <p>Consulta torneos actuales, convocatorias, estatus y etapas de competencia.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_equipos') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Equipos</h3>
+            <p>Revisa los equipos registrados, información general y participación por torneo.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_posiciones') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Tabla de posiciones</h3>
+            <p>Visualiza el avance de grupos, victorias, puntos y diferencia de goles.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_resultados') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Resultados</h3>
+            <p>Consulta rendimiento, goles, tarjetas, registros de juego y datos competitivos.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_partidos') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Partidos</h3>
+            <p>Consulta el calendario de encuentros programados y jornadas.</p>
+        </a>
+
+        <a href="{{ url_for('public.pagina_anuncios') }}" class="menu-card">
+            <div class="menu-icon">...</div>
+            <h3>Anuncios</h3>
+            <p>Entérate de avisos, próximos eventos, periodos de inscripción y novedades.</p>
+        </a>
+    </section>
 </section>
 
 

@@ -1,0 +1,45 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Gestión de Árbitros{% endblock %}
+
+{% block content %}
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">CUERPO TÉCNICO</span>
+            <h3 class="admin-panel-title">Árbitros registrados</h3>
+        </div>
+        <a href="#" class="admin-chip admin-chip-gold">+ Registrar árbitro</a>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Especialidad</th>
+                    <th>Partidos dirigidos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for arbitro in arbitros %}
+                <tr>
+                    <td>{{ arbitro.nombre }}</td>
+                    <td>{{ arbitro.especialidad or 'General' }}</td>
+                    <td>{{ arbitro.partidos|length }}</td>
+                    <td>
+                        <a href="#" class="admin-action-link">Editar</a>
+                        <a href="#" class="admin-action-link danger">Baja</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px;">No hay árbitros registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

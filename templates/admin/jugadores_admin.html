@@ -1,0 +1,92 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de Jugadores{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">REGISTRO</span>
+                <h3 class="admin-panel-title">Jugadores en sistema</h3>
+            </div>
+            <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalJugador(); return false;">+ Nuevo jugador</a>
+        </div>
+
+        <div class="admin-table-wrap" style="margin-top: 20px;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Posición</th>
+                        <th>Equipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for jugador in jugadores %}
+                    <tr>
+                        <td>{{ jugador.nombre }} {{ jugador.apellidos }}</td>
+                        <td>{{ jugador.posicion or 'N/A' }}</td>
+                        <td>{{ jugador.equipo.nombre if jugador.equipo else 'Sin equipo' }}</td>
+                        <td>
+                            <a href="#" class="admin-action-link">Editar</a>
+                            <a href="#" class="admin-action-link danger">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px;">No hay jugadores registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <aside class="admin-side-stack">
+        <article class="admin-panel-card">
+            <span class="section-kicker">FILTROS</span>
+            <h3 class="admin-panel-title">Filtrar por equipo</h3>
+            <div class="admin-mini-grid single-col">
+                {% for equipo in equipos %}
+                <div class="admin-mini-card" style="cursor: pointer;">
+                    <h4>{{ equipo.nombre }}</h4>
+                    <p>{{ equipo.jugadores|length }} jugadores</p>
+                </div>
+                {% endfor %}
+            </div>
+        </article>
+    </aside>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function abrirModalJugador() {
+    const nombre = prompt("Nombre:");
+    const apellidos = prompt("Apellidos:");
+    if (nombre && apellidos) {
+        const equipo_id = prompt("ID del equipo (ver lista de equipos):");
+        fetch("/admin/api/jugadores", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                nombre: nombre, 
+                apellidos: apellidos,
+                equipo_id: parseInt(equipo_id)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error || "Error al registrar el jugador");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión");
+        });
+    }
+}
+</script>
+{% endblock %}

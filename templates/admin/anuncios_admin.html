@@ -10,7 +10,7 @@
             <h3 class="admin-panel-title">Anuncios publicados</h3>
         </div>
         
-        <a href="#" class="admin-chip admin-chip-gold" onclick="crearAnuncio()">+ Crear nuevo anuncio</a>
+        <a href="#" class="admin-chip admin-chip-gold" onclick="crearAnuncio(); return false;">+ Crear nuevo anuncio</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -51,7 +51,9 @@
         </table>
     </div>
 </section>
+{% endblock %}
 
+{% block scripts %}
 <script>
 function crearAnuncio() {
     const titulo = prompt("Título del anuncio:");
@@ -65,9 +67,13 @@ function crearAnuncio() {
         .then(res => res.json())
         .then(data => {
             if (data.ok) location.reload();
-            else alert(data.error);
+            else alert(data.error || "Error al publicar anuncio");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión");
         });
     }
 }
 </script>
-{% endblock %}
+{% endblock %}

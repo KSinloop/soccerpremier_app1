@@ -10,7 +10,7 @@
                 <span class="section-kicker">PARTICIPANTES</span>
                 <h3 class="admin-panel-title">Equipos registrados</h3>
             </div>
-            <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalEquipo()">Nuevo equipo</a>
+            <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalEquipo(); return false;">Nuevo equipo</a>
         </div>
 
         <div class="admin-toolbar">
@@ -61,7 +61,9 @@
         </article>
     </aside>
 </section>
+{% endblock %}
 
+{% block scripts %}
 <script>
 function abrirModalEquipo() {
     const nombre = prompt("Nombre del nuevo equipo:");
@@ -75,9 +77,13 @@ function abrirModalEquipo() {
         .then(res => res.json())
         .then(data => {
             if (data.ok) location.reload();
-            else alert(data.error);
+            else alert(data.error || "Error al crear el equipo");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión");
         });
     }
 }
 </script>
-{% endblock %}
+{% endblock %}

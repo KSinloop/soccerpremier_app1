@@ -9,7 +9,7 @@
             <span class="section-kicker">CALENDARIO</span>
             <h3 class="admin-panel-title">Partidos programados</h3>
         </div>
-        <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalPartido()">+ Programar partido</a>
+        <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalPartido(); return false;">+ Programar partido</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         {% if partido.estado != 'finalizado' %}
-                        <a href="#" onclick="registrarResultado({{ partido.id }})" style="color: #28a745; font-weight: bold; text-decoration: none;">Resultado</a>
+                        <a href="#" onclick="registrarResultado({{ partido.id }}); return false;" style="color: #28a745; font-weight: bold; text-decoration: none;">Resultado</a>
                         {% else %}
                         <span style="color: #666;">Cerrado</span>
                         {% endif %}
@@ -63,7 +63,9 @@
         </table>
     </div>
 </section>
+{% endblock %}
 
+{% block scripts %}
 <script>
 function abrirModalPartido() {
     alert("Función para abrir formulario de programación. Use la API /admin/api/partidos");
@@ -81,7 +83,11 @@ function registrarResultado(id) {
         .then(res => res.json())
         .then(data => {
             if (data.ok) location.reload();
-            else alert(data.error);
+            else alert(data.error || "Error al registrar resultado");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión");
         });
     }
 }

@@ -9,8 +9,7 @@
             <span class="section-kicker">INFRAESTRUCTURA</span>
             <h3 class="admin-panel-title">Canchas registradas</h3>
         </div>
-        <!-- Botón para dar de alta una nueva cancha -->
-        <a href="#" class="admin-chip admin-chip-gold">+ Agregar cancha</a>
+        <a href="#" class="admin-chip admin-chip-gold" onclick="abrirModalCancha(); return false;">+ Agregar cancha</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -26,42 +25,54 @@
                 </tr>
             </thead>
             <tbody>
-                
+                {% for cancha in canchas %}
                 <tr>
-                    <td>1</td>
-                    <td>Cancha 1 (Central)</td>
-                    <td>Unidad Deportiva Principal</td>
-                    <td>Fútbol 11</td>
-                    <td><span class="status-badge status-active">Disponible</span></td>
+                    <td>{{ cancha.id }}</td>
+                    <td>{{ cancha.nombre }}</td>
+                    <td>{{ cancha.ubicacion or 'N/A' }}</td>
+                    <td>{{ cancha.tipo or 'N/A' }}</td>
                     <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Deshabilitar</a>
+                        <span class="status-badge {% if cancha.disponible %}status-active{% else %}status-end{% endif %}">
+                            {{ 'Disponible' if cancha.disponible else 'No disponible' }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="#" class="admin-action-link">Editar</a>
+                        <a href="#" class="admin-action-link danger">Eliminar</a>
                     </td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>2</td>
-                    <td>Cancha 2</td>
-                    <td>Unidad Deportiva Principal</td>
-                    <td>Fútbol 7</td>
-                    <td><span class="status-badge status-active">Disponible</span></td>
-                    <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #cc0000; font-weight: bold; text-decoration: none;">Deshabilitar</a>
-                    </td>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No hay canchas registradas.</td>
                 </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Cancha Sur</td>
-                    <td>Anexo Parque Juárez</td>
-                    <td>Fútbol 11</td>
-                    <td><span class="status-badge status-end">En mantenimiento</span></td>
-                    <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #28a745; font-weight: bold; text-decoration: none;">Habilitar</a>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function abrirModalCancha() {
+    const nombre = prompt("Nombre de la cancha:");
+    if (nombre) {
+        const ubicacion = prompt("Ubicación:");
+        fetch("/admin/api/canchas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre: nombre, ubicacion: ubicacion })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) location.reload();
+            else alert(data.error || "Error al registrar la cancha");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión");
+        });
+    }
+}
+</script>
 {% endblock %}

@@ -6,25 +6,25 @@
 <section class="admin-stats-grid">
     <article class="admin-stat-card">
         <p class="admin-stat-label">Torneos activos</p>
-        <strong class="admin-stat-number">04</strong>
+        <strong class="admin-stat-number">{{ stats.torneos if stats else '0' }}</strong>
         <span class="admin-stat-note">Competencias en curso</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Equipos registrados</p>
-        <strong class="admin-stat-number">48</strong>
+        <strong class="admin-stat-number">{{ stats.equipos if stats else '0' }}</strong>
         <span class="admin-stat-note">Participantes totales</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Partidos programados</p>
-        <strong class="admin-stat-number">17</strong>
+        <strong class="admin-stat-number">{{ stats.partidos if stats else '0' }}</strong>
         <span class="admin-stat-note">Agenda vigente</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Anuncios activos</p>
-        <strong class="admin-stat-number">06</strong>
+        <strong class="admin-stat-number">{{ stats.anuncios if stats else '0' }}</strong>
         <span class="admin-stat-note">Difusión disponible</span>
     </article>
 </section>
@@ -96,14 +96,6 @@
                 <span>Ir</span>
             </a>
 
-            <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Estadísticas</h4>
-                    <p>Seguimiento de goles, tarjetas y rendimiento.</p>
-                </div>
-                <span>Ir</span>
-            </a>
-
             <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Anuncios</h4>
@@ -114,6 +106,7 @@
         </div>
     </article>
 </section>
+
 
 <section class="admin-table-card">
     <div class="admin-table-head">

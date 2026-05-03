@@ -12,7 +12,13 @@ admin_bp = Blueprint("admin", __name__)
 @admin_bp.get("/")
 @login_required
 def dashboard():
-    return render_template("admin/dashboard.html")
+    stats = {
+        "torneos": Torneo.query.count(),
+        "equipos": Equipo.query.count(),
+        "partidos": Partido.query.count(),
+        "anuncios": Anuncio.query.count()
+    }
+    return render_template("admin/dashboard.html", stats=stats)
 
 @admin_bp.get("/login")
 def login_admin():
@@ -148,6 +154,20 @@ def registrar_resultado(partido_id):
     partido.estado = "finalizado"
     db.session.commit()
     return jsonify({"ok": True, "mensaje": "Resultado registrado"}), 200
+
+# CANCHAS
+@admin_bp.post("/api/canchas")
+@login_required
+def crear_cancha():
+    data = request.get_json()
+    cancha = Cancha(
+        nombre=data.get("nombre"),
+        ubicacion=data.get("ubicacion"),
+        tipo=data.get("tipo", "Fútbol")
+    )
+    db.session.add(cancha)
+    db.session.commit()
+    return jsonify({"ok": True, "mensaje": "Cancha registrada"}), 201
 
 # ANUNCIOS
 @admin_bp.post("/api/anuncios")
