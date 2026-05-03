@@ -10,7 +10,7 @@
             <h3 class="admin-panel-title">Partidos programados</h3>
         </div>
         <!-- Botón para agendar un nuevo encuentro -->
-        <a href="#" class="admin-chip admin-chip-gold">+ Programar partido</a>
+        <a href="{{ url_for('admin.crear_partido') }}" class="admin-chip admin-chip-gold">+ Programar partido</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -26,44 +26,39 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Datos de prueba para visualizar el diseño -->
+                <tbody>
+                {% for partido in partidos %}
                 <tr>
-                    <td>101</td>
-                    <td>Copa Juvenil - J1</td>
-                    <td><strong>Halcones FC</strong> vs <strong>Real Juárez</strong></td>
-                    <td>02/05/2026 - 18:00</td>
-                    <td>Cancha 1 (Central)</td>
-                    <td><span class="status-badge status-soon">Programado</span></td>
+                    <td>{{ '%03d' % partido.id }}</td>
+                    <td>{{ partido.torneo.nombre }} - {{ partido.jornada }}</td>
+                    <td><strong>{{ partido.local.nombre }}</strong> vs <strong>{{ partido.visitante.nombre }}</strong></td>
+                    <td>{{ partido.fecha_hora.strftime('%d/%m/%Y - %H:%M') }}</td>
+                    <td>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</td>
                     <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #28a745; font-weight: bold; text-decoration: none;">Resultado</a>
+                        {% if partido.estado|lower == 'programado' %}
+                            <span class="status-badge status-soon">{{ partido.estado }}</span>
+                        {% elif partido.estado|lower == 'finalizado' %}
+                            <span class="status-badge status-active">{{ partido.estado }}</span>
+                        {% else %}
+                            <span class="status-badge">{{ partido.estado }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.editar_partido', id=partido.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                        
+                        <!-- cambiar el # cuando se cree la página de resultados -->
+                        <a href="#" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;">Resultado</a>
+
+                        <a href="{{ url_for('admin.eliminar_partido', id=partido.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este partido?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                     </td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>102</td>
-                    <td>Copa Juvenil - J1</td>
-                    <td><strong>Deportivo Centro</strong> vs <strong>Atlético del Norte</strong></td>
-                    <td>02/05/2026 - 20:00</td>
-                    <td>Cancha 2</td>
-                    <td><span class="status-badge status-soon">Programado</span></td>
-                    <td>
-                        <a href="#" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="#" style="color: #28a745; font-weight: bold; text-decoration: none;">Resultado</a>
-                    </td>
+                    <td colspan="7" style="text-align: center; padding: 20px;">No hay partidos programados aún. ¡Abre el calendario!</td>
                 </tr>
-                <tr>
-                    <td>099</td>
-                    <td>Torneo Nocturno - Semifinal</td>
-                    <td><strong>Los Galácticos</strong> 2 - 1 <strong>Rayo FC</strong></td>
-                    <td>28/04/2026 - 21:00</td>
-                    <td>Cancha 1 (Central)</td>
-                    <td><span class="status-badge status-active">Finalizado</span></td>
-                    <td>
-                        <a href="#" style="color: #666; font-weight: bold; text-decoration: none;">Ver Detalles</a>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
+            
         </table>
     </div>
 </section>

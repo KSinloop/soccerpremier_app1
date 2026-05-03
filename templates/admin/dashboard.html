@@ -6,25 +6,25 @@
 <section class="admin-stats-grid">
     <article class="admin-stat-card">
         <p class="admin-stat-label">Torneos activos</p>
-        <strong class="admin-stat-number">04</strong>
+        <strong class="admin-stat-number">{{ '%02d' % tot_torneos }}</strong>
         <span class="admin-stat-note">Competencias en curso</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Equipos registrados</p>
-        <strong class="admin-stat-number">48</strong>
+        <strong class="admin-stat-number">{{ '%02d' % tot_equipos }}</strong>
         <span class="admin-stat-note">Participantes totales</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Partidos programados</p>
-        <strong class="admin-stat-number">17</strong>
+        <strong class="admin-stat-number">{{ '%02d' % tot_partidos }}</strong>
         <span class="admin-stat-note">Agenda vigente</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Anuncios activos</p>
-        <strong class="admin-stat-number">06</strong>
+        <strong class="admin-stat-number">{{ '%02d' % tot_anuncios }}</strong>
         <span class="admin-stat-note">Difusión disponible</span>
     </article>
 </section>
@@ -80,6 +80,24 @@
                 <span>Ir</span>
             </a>
 
+
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-link-row">
+                <div>
+                 <h4>Inscripciones</h4>
+                <p>Control de equipos registrados en cada torneo.</p>
+                 </div>
+                <span>Ir</span>
+            </a>
+
+
+            <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-link-row">
+                 <div>
+                     <h4>Jugadores</h4>
+                     <p>Gestiona todos los registros individuales del padrón.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Partidos</h4>
@@ -92,6 +110,14 @@
                 <div>
                     <h4>Canchas</h4>
                     <p>Disponibilidad, ocupación y control de espacios.</p>
+                </div>
+                <span>Ir</span>
+            </a>
+
+            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-link-row">
+                <div>
+                    <h4>Árbitros</h4>
+                    <p>Administración y seguimiento de árbitros.</p>
                 </div>
                 <span>Ir</span>
             </a>
@@ -136,34 +162,32 @@
                 </tr>
             </thead>
             <tbody>
+                {% for mov in movimientos %}
                 <tr>
-                    <td>08/05/2026</td>
-                    <td>Torneos</td>
-                    <td>Alta de Copa Juvenil de Verano</td>
-                    <td>Administrador</td>
-                    <td><span class="status-badge status-active">Aplicado</span></td>
+                    <td>{{ mov.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ mov.modulo }}</td>
+                    <td>{{ mov.movimiento }}</td>
+                    <td>{{ mov.responsable }}</td>
+                    <td>
+                        {# Mantenemos tus clases originales de badges según el estatus #}
+                        {% if mov.estatus == 'Aplicado' or mov.estatus == 'Visible' %}
+                            <span class="status-badge status-active">{{ mov.estatus }}</span>
+                        {% elif mov.estatus == 'Pendiente' %}
+                            <span class="status-badge status-soon">{{ mov.estatus }}</span>
+                        {% elif mov.estatus == 'Cerrado' or mov.estatus == 'Eliminado' %}
+                            <span class="status-badge status-end">{{ mov.estatus }}</span>
+                        {% else %}
+                            <span class="status-badge">{{ mov.estatus }}</span>
+                        {% endif %}
+                    </td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>08/05/2026</td>
-                    <td>Partidos</td>
-                    <td>Reprogramación de jornada 5</td>
-                    <td>Administrador</td>
-                    <td><span class="status-badge status-soon">Pendiente</span></td>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                        No se han registrado movimientos el día de hoy.
+                    </td>
                 </tr>
-                <tr>
-                    <td>07/05/2026</td>
-                    <td>Anuncios</td>
-                    <td>Publicación de preinscripciones</td>
-                    <td>Administrador</td>
-                    <td><span class="status-badge status-active">Visible</span></td>
-                </tr>
-                <tr>
-                    <td>07/05/2026</td>
-                    <td>Canchas</td>
-                    <td>Actualización de estado operativo</td>
-                    <td>Administrador</td>
-                    <td><span class="status-badge status-end">Cerrado</span></td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

@@ -1,0 +1,49 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de Jugadores{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card" style="grid-column: 1 / -1;">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">PADRÓN INDIVIDUAL</span>
+                <h3 class="admin-panel-title">Jugadores registrados</h3>
+            </div>
+            <a href="{{ url_for('admin.crear_jugador') }}" class="admin-chip admin-chip-gold">+ Alta de jugador</a>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Sexo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for jugador in jugadores %}
+                    <tr>
+                        <td>{{ '%04d' % jugador.id }}</td>
+                        <td><strong>{{ jugador.nombre }} {{ jugador.apellido_paterno }} {{ jugador.apellido_materno or '' }}</strong></td>
+                        <td>{{ jugador.fecha_nacimiento.strftime('%d/%m/%Y') if jugador.fecha_nacimiento else 'N/A' }}</td>
+                        <td>{{ jugador.sexo }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.editar_jugador', id=jugador.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                            <a href="{{ url_for('admin.eliminar_jugador', id=jugador.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este jugador?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">No hay jugadores registrados en el padrón.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

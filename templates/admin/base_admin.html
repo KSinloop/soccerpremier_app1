@@ -18,11 +18,14 @@
         </div>
 
         <nav class="admin-nav">
-            <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">Dashboard</a>
+            <a href="{{ url_for('admin.vista_dashboard') }}" class="admin-nav-link">Dashboard</a>
             <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-nav-link">Torneos</a>
             <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-nav-link">Equipos</a>
+            <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-nav-link">Jugadores</a>
+            <a href =" {{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">Inscripciones</a>
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-nav-link">Partidos</a>
             <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">Canchas</a>
+            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">Arbitros</a>
             <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-nav-link">Estadísticas</a>
             <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-nav-link">Anuncios</a>
         </nav>

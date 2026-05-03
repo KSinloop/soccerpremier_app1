@@ -1,0 +1,27 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Editar Inscripción{% endblock %}
+{% block content %}
+<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
+    <span class="section-kicker">OPERATIVO</span>
+    <h3 class="admin-panel-title">Actualizar estado de inscripción</h3>
+    
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #0044cc;">
+        <p style="margin: 0;"><strong>Torneo:</strong> {{ inscripcion.torneo.nombre }}</p>
+        <p style="margin: 5px 0 0 0;"><strong>Equipo:</strong> {{ inscripcion.equipo.nombre }}</p>
+    </div>
+
+    <form action="{{ url_for('admin.editar_inscripcion', id=inscripcion.id) }}" method="POST" class="admin-login-form">
+        <label for="estado_inscripcion">Estado actual:</label>
+        <select id="estado_inscripcion" name="estado_inscripcion" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="Pendiente" {% if inscripcion.estado_inscripcion == 'Pendiente' %}selected{% endif %}>Pendiente de Pago</option>
+            <option value="Pagada" {% if inscripcion.estado_inscripcion == 'Pagada' %}selected{% endif %}>Pagada</option>
+            <option value="Baja" {% if inscripcion.estado_inscripcion == 'Baja' %}selected{% endif %}>Baja / Retirado</option>
+        </select>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Actualizar Estado</button>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

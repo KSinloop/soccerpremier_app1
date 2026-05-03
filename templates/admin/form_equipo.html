@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Registrar Nuevo Equipo{% endblock %}
+
+{% block content %}
+<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
+    <span class="section-kicker">PARTICIPANTES</span>
+    <h3 class="admin-panel-title">Alta de equipo</h3>
+    
+    <form action="{{ url_for('admin.crear_equipo') }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
+        
+        <label for="nombre">Nombre del equipo:</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej. Halcones FC" required>
+
+        <label for="categoria">Categoría del equipo:</label>
+        <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="Juvenil">Juvenil</option>
+            <option value="Libre">Libre</option>
+            <option value="Femenil">Femenil</option>
+        </select>
+
+        <label for="representante">Nombre del DT o Representante:</label>
+        <input type="text" id="representante" name="representante" placeholder="Ej. Juan Pérez" required>
+
+        <label for="telefono">Teléfono de contacto:</label>
+        <input type="tel" id="telefono" name="telefono" placeholder="Ej. 656 123 4567" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar Equipo</button>
+            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -31,7 +31,7 @@ def login():
     login_user(admin)
 
     #mandar directo al dasjboard del admin
-    return redirect(url_for('admin.dashboard'))
+    return redirect(url_for('admin.vista_dashboard'))
 
 @auth_bp.post("/logout")
 @login_required

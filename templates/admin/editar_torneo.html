@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Editar Torneo{% endblock %}
+
+{% block content %}
+<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
+    <span class="section-kicker">COMPETENCIA</span>
+    <h3 class="admin-panel-title">Modificar datos del torneo</h3>
+    
+    
+    <form action="{{ url_for('admin.editar_torneo', id=torneo.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
+        
+        <label for="nombre">Nombre del torneo:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ torneo.nombre }}" placeholder="Ej. Clausura Premier 2026" required>
+
+        <label for="categoria">Categoría:</label>
+        <input type="text" id="categoria" name="categoria" value="{{ torneo.categoria }}" placeholder="Ej. Libre, Juvenil, Veteranos..." required>
+
+        <label for="tipo">Modalidad (Tipo):</label>
+        <select id="tipo" name="tipo" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="Fútbol 11">Fútbol 11</option>
+            <option value="Fútbol 7">Fútbol 7</option>
+            <option value="Fútbol Rápido">Fútbol Rápido</option>
+        </select>
+
+        <label for="fecha_inicio">Fecha de inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ torneo.fecha_inicio }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+
+        <label for="fecha_fin">Fecha de fin (Aproximada):</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" value="{{ torneo.fecha_fin }}" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar Torneo</button>
+            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

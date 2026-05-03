@@ -1,0 +1,39 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Editar Cancha{% endblock %}
+
+{% block content %}
+<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
+    <span class="section-kicker">INFRAESTRUCTURA</span>
+    <h3 class="admin-panel-title">Modificar datos de la cancha</h3>
+    
+    
+    <form action="{{ url_for('admin.editar_cancha', id=cancha.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
+        
+        <label for="nombre">Nombre de la cancha:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ cancha.nombre }}" required>
+
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="ubicacion" name="ubicacion" value="{{ cancha.ubicacion }}" required>
+
+        <label for="tipo">Tipo de fútbol:</label>
+        <select id="tipo" name="tipo" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="Fútbol 11" {% if cancha.tipo == 'Fútbol 11' %}selected{% endif %}>Fútbol 11</option>
+            <option value="Fútbol 7" {% if cancha.tipo == 'Fútbol 7' %}selected{% endif %}>Fútbol 7</option>
+            <option value="Fútbol Rápido" {% if cancha.tipo == 'Fútbol Rápido' %}selected{% endif %}>Fútbol Rápido</option>
+        </select>
+
+        <label for="disponibilidad">Estado de la cancha:</label>
+        <select id="disponibilidad" name="disponibilidad" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="Disponible" {% if cancha.disponibilidad == 'Disponible' %}selected{% endif %}>Disponible</option>
+            <option value="En mantenimiento" {% if cancha.disponibilidad == 'En mantenimiento' %}selected{% endif %}>En mantenimiento</option>
+            <option value="Clausurada" {% if cancha.disponibilidad == 'Clausurada' %}selected{% endif %}>Clausurada</option>
+        </select>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Actualizar Cancha</button>
+            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

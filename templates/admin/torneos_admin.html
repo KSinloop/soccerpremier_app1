@@ -10,7 +10,7 @@
                 <span class="section-kicker">CONTROL</span>
                 <h3 class="admin-panel-title">Torneos registrados</h3>
             </div>
-            <a href="#" class="admin-chip admin-chip-gold">Nuevo torneo</a>
+            <a href="{{ url_for('admin.crear_torneo') }}" class="admin-chip admin-chip-gold">Nuevo torneo</a>
         </div>
 
         <div class="admin-toolbar">
@@ -20,71 +20,44 @@
             <a href="#" class="toolbar-pill">Finalizados</a>
         </div>
 
-        <div class="admin-table-wrap">
+<div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Torneo</th>
-                        <th>Temporada</th>
+                        <th>Categoría / Tipo</th>
                         <th>Estatus</th>
                         <th>Equipos</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for torneo in torneos %}
                     <tr>
-                        <td>01</td>
-                        <td>Clausura Premier</td>
-                        <td>2026</td>
-                        <td><span class="status-badge status-active">Activo</span></td>
-                        <td>12</td>
+                        <td>{{ '%02d' % torneo.id }}</td>
+                        <td><strong>{{ torneo.nombre }}</strong></td>
+                        <td>{{ torneo.categoria or 'N/A' }} - {{ torneo.tipo or 'N/A' }}</td>
+                        <td>
+                            {% if torneo.activo %}
+                                <span class="status-badge status-active">Activo</span>
+                            {% else %}
+                                <span class="status-badge status-end">Finalizado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ torneo.equipos|length }}</td> 
                         <td>
                             <div class="admin-actions">
-                                <a href="#" class="admin-action-link">Editar</a>
-                                <a href="#" class="admin-action-link danger">Eliminar</a>
+                                <a href="{{ url_for('admin.editar_torneo', id=torneo.id) }}" class="admin-action-link">Editar</a>
+                                <a href="{{ url_for('admin.eliminar_torneo', id=torneo.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este torneo?');" class="admin-action-link danger">Eliminar</a>
                             </div>
                         </td>
                     </tr>
+                    {% else %}
                     <tr>
-                        <td>02</td>
-                        <td>Copa Juvenil de Verano</td>
-                        <td>2026</td>
-                        <td><span class="status-badge status-soon">Próximo</span></td>
-                        <td>16</td>
-                        <td>
-                            <div class="admin-actions">
-                                <a href="#" class="admin-action-link">Editar</a>
-                                <a href="#" class="admin-action-link danger">Eliminar</a>
-                            </div>
-                        </td>
+                        <td colspan="6" style="text-align: center; padding: 20px;">No hay torneos registrados.</td>
                     </tr>
-                    <tr>
-                        <td>03</td>
-                        <td>Torneo Relámpago Nocturno</td>
-                        <td>2026</td>
-                        <td><span class="status-badge status-soon">Próximo</span></td>
-                        <td>8</td>
-                        <td>
-                            <div class="admin-actions">
-                                <a href="#" class="admin-action-link">Editar</a>
-                                <a href="#" class="admin-action-link danger">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>04</td>
-                        <td>Copa Invierno Regional</td>
-                        <td>2025</td>
-                        <td><span class="status-badge status-end">Finalizado</span></td>
-                        <td>10</td>
-                        <td>
-                            <div class="admin-actions">
-                                <a href="#" class="admin-action-link">Editar</a>
-                                <a href="#" class="admin-action-link danger">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

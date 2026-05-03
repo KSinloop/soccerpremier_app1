@@ -1,0 +1,32 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Agregar Nueva Cancha{% endblock %}
+
+{% block content %}
+<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
+    <span class="section-kicker">INFRAESTRUCTURA</span>
+    <h3 class="admin-panel-title">Formulario de registro</h3>
+    
+    <!-- Este formulario manda los datos (POST) a la ruta crear_cancha -->
+    <form action="{{ url_for('admin.crear_cancha') }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
+        
+        <label for="nombre">Nombre de la cancha:</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej. Cancha 1 (Central)" required>
+
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Unidad Deportiva Principal" required>
+
+        <label for="tipo">Tipo de fútbol:</label>
+        <select id="tipo" name="tipo" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="Fútbol 11">Fútbol 11</option>
+            <option value="Fútbol 7">Fútbol 7</option>
+            <option value="Fútbol Rápido">Fútbol Rápido</option>
+        </select>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="submit" class="btn btn-primary">Guardar Cancha</button>
+            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="btn" style="background-color: #ccc; color: #333; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Inscripciones{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card" style="grid-column: 1 / -1;">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">CONTROL OPERATIVO</span>
+                <h3 class="admin-panel-title">Equipos Inscritos a Torneos</h3>
+            </div>
+            <a href="{{ url_for('admin.crear_inscripcion') }}" class="admin-chip admin-chip-gold">+ Nueva Inscripción</a>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID Inscripción</th>
+                        <th>Torneo</th>
+                        <th>Equipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for insc in inscripciones %}
+                    <tr>
+                        <td><strong>{{ '%04d' % insc.id }}</strong></td>
+                        <td>{{ insc.torneo.nombre }}</td>
+                        <td>{{ insc.equipo.nombre }}</td>
+                        <td>{{ insc.fecha_inscripcion.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if insc.estado_inscripcion == 'Pagada' %}
+                                <span class="status-badge status-active">Pagada</span>
+                            {% else %}
+                                <span class="status-badge status-inactive">{{ insc.estado_inscripcion }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.roster_inscripcion', id=insc.id) }}" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;"> Plantilla</a>
+                            <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Cambiar Estado</a>
+                            <a href="{{ url_for('admin.eliminar_inscripcion', id=insc.id) }}" onclick="return confirm('¿Seguro que deseas eliminar esta inscripción?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">No hay inscripciones registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

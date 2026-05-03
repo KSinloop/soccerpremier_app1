@@ -10,7 +10,7 @@
                 <span class="section-kicker">PARTICIPANTES</span>
                 <h3 class="admin-panel-title">Equipos registrados</h3>
             </div>
-            <a href="#" class="admin-chip admin-chip-gold">Nuevo equipo</a>
+            <a href="{{ url_for('admin.crear_equipo') }}" class="admin-chip admin-chip-gold">Nuevo equipo</a>
         </div>
 
         <div class="admin-toolbar">
@@ -21,66 +21,37 @@
         </div>
 
         <div class="admin-cards-list">
+            {% for equipo in equipos %}
             <article class="admin-record-card">
                 <div class="admin-record-head">
-                    <div class="admin-record-id">TJ</div>
+                    <!-- Sacamos las primeras dos letras del nombre para el ícono circular -->
+                    <div class="admin-record-id">{{ equipo.nombre[:2] | upper }}</div>
                     <div>
-                        <h4>Tigres Juárez</h4>
-                        <p>Categoría Juvenil · Clausura Premier 2026</p>
+                        <h4>{{ equipo.nombre }}</h4>
+                        <p>DT/Rep: {{ equipo.representante or 'Sin representante' }}</p>
                     </div>
                 </div>
                 <div class="admin-record-meta">
-                    <span>12 jugadores</span>
-                    <span>Grupo A</span>
-                    <span class="status-badge status-active">Activo</span>
+                    <span>Tel: {{ equipo.telefono or 'N/A' }}</span>
+                    {% if equipo.activo %}
+                        <span class="status-badge status-active">Activo</span>
+                    {% else %}
+                        <span class="status-badge status-end">Baja</span>
+                    {% endif %}
                 </div>
                 <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
-                    <a href="#" class="admin-action-link">Jugadores</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
+                    <a href="{{ url_for('admin.editar_equipo', id=equipo.id) }}" class="admin-action-link">Editar</a>
+                    <!-- <a href="#" class="admin-action-link">Jugadores</a> -->
+                    <a href="{{ url_for('admin.eliminar_equipo', id=equipo.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este equipo?');" class="admin-action-link danger">Eliminar</a>
                 </div>
             </article>
-
-            <article class="admin-record-card">
-                <div class="admin-record-head">
-                    <div class="admin-record-id">RP</div>
-                    <div>
-                        <h4>Rayados Premier</h4>
-                        <p>Categoría Libre · Copa Verano 2026</p>
-                    </div>
-                </div>
-                <div class="admin-record-meta">
-                    <span>15 jugadores</span>
-                    <span>Grupo B</span>
-                    <span class="status-badge status-active">Activo</span>
-                </div>
-                <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
-                    <a href="#" class="admin-action-link">Jugadores</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
-                </div>
-            </article>
-
-            <article class="admin-record-card">
-                <div class="admin-record-head">
-                    <div class="admin-record-id">PF</div>
-                    <div>
-                        <h4>Panteras Femenil</h4>
-                        <p>Categoría Femenil · Copa Regional 2026</p>
-                    </div>
-                </div>
-                <div class="admin-record-meta">
-                    <span>14 jugadoras</span>
-                    <span>Grupo A</span>
-                    <span class="status-badge status-active">Activo</span>
-                </div>
-                <div class="admin-actions">
-                    <a href="#" class="admin-action-link">Editar</a>
-                    <a href="#" class="admin-action-link">Jugadoras</a>
-                    <a href="#" class="admin-action-link danger">Eliminar</a>
-                </div>
-            </article>
+            {% else %}
+            <div style="text-align: center; padding: 20px; width: 100%;">
+                <p>No hay equipos registrados aún. ¡Crea el primero!</p>
+            </div>
+            {% endfor %}
         </div>
+
     </article>
 
     <aside class="admin-side-stack">
