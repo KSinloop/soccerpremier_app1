@@ -218,8 +218,8 @@ def crear_equipo():
 def crear_partido():
     if request.method == "POST":
         torneo_id = request.form.get("torneo_id")
-        local_id = request.form.get("local_id")
-        visitante_id = request.form.get("visitante_id")
+        inscripcion_1_id = request.form.get("inscripcion_1_id")
+        inscripcion_2_id = request.form.get("inscripcion_2_id")
         cancha_id = request.form.get("cancha_id")
         fecha_hora_str = request.form.get("fecha_hora")
         jornada = request.form.get("jornada")
@@ -229,8 +229,8 @@ def crear_partido():
 
         nuevo_partido = Partido( 
             torneo_id=torneo_id,
-            local_id=local_id,
-            visitante_id=visitante_id,
+            inscripcion_1_id=inscripcion_1_id,
+            inscripcion_2_id=inscripcion_2_id,
             cancha_id=cancha_id,
             fecha_hora=fecha_hora_obj,
             jornada=jornada,
@@ -245,8 +245,9 @@ def crear_partido():
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     equipos = db.session.execute(db.select(Equipo).where(Equipo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
+    inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
 
-    return render_template("admin/form_partido.html", torneos=torneos, equipos=equipos, canchas=canchas)
+    return render_template("admin/form_partido.html", torneos=torneos, equipos=equipos, canchas=canchas, inscripciones=inscripciones)
 
 
 
@@ -371,8 +372,8 @@ def editar_partido(id):
     
     if request.method == "POST":
         partido.torneo_id = request.form.get("torneo_id")
-        partido.local_id = request.form.get("local_id")
-        partido.visitante_id = request.form.get("visitante_id")
+        partido.inscripcion_1_id = request.form.get("inscripcion_1_id")
+        partido.inscripcion_2_id = request.form.get("inscripcion_2_id")
         # Si no seleccionan cancha, guardamos None
         cancha_sel = request.form.get("cancha_id")
         partido.cancha_id = cancha_sel if cancha_sel else None
@@ -392,8 +393,9 @@ def editar_partido(id):
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     equipos = db.session.execute(db.select(Equipo).where(Equipo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
+    inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
 
-    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, equipos=equipos, canchas=canchas)
+    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, equipos=equipos, canchas=canchas, inscripciones=inscripciones)
 
 @admin_bp.route("/partidos/eliminar/<int:id>")
 def eliminar_partido(id):

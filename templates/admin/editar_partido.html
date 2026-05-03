@@ -18,18 +18,18 @@
 
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
             <div style="flex: 1;">
-                <label for="local_id">Equipo Local:</label>
-                <select id="local_id" name="local_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for e in equipos %}
-                        <option value="{{ e.id }}" {% if partido.local_id == e.id %}selected{% endif %}>{{ e.nombre }}</option>
+                <label for="inscripcion_1_id">Equipo Local:</label>
+                <select id="inscripcion_1_id" name="inscripcion_1_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    {% for i in inscripciones %}
+                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div style="flex: 1;">
-                <label for="visitante_id">Equipo Visitante:</label>
-                <select id="visitante_id" name="visitante_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for e in equipos %}
-                        <option value="{{ e.id }}" {% if partido.visitante_id == e.id %}selected{% endif %}>{{ e.nombre }}</option>
+                <label for="inscripcion_2_id">Equipo Visitante:</label>
+                <select id="inscripcion_2_id" name="inscripcion_2_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    {% for i in inscripciones %}
+                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>

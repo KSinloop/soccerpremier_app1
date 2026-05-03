@@ -31,7 +31,7 @@
                 <tr>
                     <td>{{ '%03d' % partido.id }}</td>
                     <td>{{ partido.torneo.nombre }} - {{ partido.jornada }}</td>
-                    <td><strong>{{ partido.local.nombre }}</strong> vs <strong>{{ partido.visitante.nombre }}</strong></td>
+                    <td><strong>{{ partido.inscripcion_1.equipo.nombre }} vs {{ partido.inscripcion_2.equipo.nombre }}</strong></td>
                     <td>{{ partido.fecha_hora.strftime('%d/%m/%Y - %H:%M') }}</td>
                     <td>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</td>
                     <td>
