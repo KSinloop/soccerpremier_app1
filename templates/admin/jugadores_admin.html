@@ -64,17 +64,43 @@
 {% block scripts %}
 <script>
 function abrirModalJugador() {
-    const nombre = prompt("Nombre:");
-    const apellidos = prompt("Apellidos:");
-    if (nombre && apellidos) {
-        const equipo_id = prompt("ID del equipo (ver lista de equipos):");
+    let options = '<option value="">Sin equipo</option>';
+    {% for equipo in equipos %}
+    options += `<option value="{{ equipo.id }}">{{ equipo.nombre }}</option>`;
+    {% endfor %}
+
+    document.getElementById('modalTitle').innerText = 'Nuevo Jugador';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre(s)</label>
+            <input type="text" id="jNombre" placeholder="Ej. Juan">
+        </div>
+        <div class="modal-form-group">
+            <label>Apellidos</label>
+            <input type="text" id="jApellidos" placeholder="Ej. Pérez">
+        </div>
+        <div class="modal-form-group">
+            <label>Equipo</label>
+            <select id="jEquipo">${options}</select>
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const nombre = document.getElementById('jNombre').value;
+        const apellidos = document.getElementById('jApellidos').value;
+        const equipo_id = document.getElementById('jEquipo').value;
+        
+        if (!nombre || !apellidos) return alert("Nombre y apellidos son obligatorios");
+        
         fetch("/admin/api/jugadores", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 nombre: nombre, 
                 apellidos: apellidos,
-                equipo_id: parseInt(equipo_id)
+                equipo_id: equipo_id ? parseInt(equipo_id) : null
             })
         })
         .then(res => res.json())
@@ -82,11 +108,8 @@ function abrirModalJugador() {
             if (data.ok) location.reload();
             else alert(data.error || "Error al registrar el jugador");
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error de conexión");
-        });
-    }
+        .catch(err => alert("Error de conexión"));
+    };
 }
 </script>
 {% endblock %}

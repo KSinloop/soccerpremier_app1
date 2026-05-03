@@ -55,9 +55,26 @@
 {% block scripts %}
 <script>
 function abrirModalCancha() {
-    const nombre = prompt("Nombre de la cancha:");
-    if (nombre) {
-        const ubicacion = prompt("Ubicación:");
+    document.getElementById('modalTitle').innerText = 'Nueva Cancha';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre de la Cancha</label>
+            <input type="text" id="canchaNombre" placeholder="Ej. Cancha Central">
+        </div>
+        <div class="modal-form-group">
+            <label>Ubicación</label>
+            <input type="text" id="canchaUbicacion" placeholder="Ej. Sector Norte">
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const nombre = document.getElementById('canchaNombre').value;
+        const ubicacion = document.getElementById('canchaUbicacion').value;
+        
+        if (!nombre) return alert("El nombre es obligatorio");
+        
         fetch("/admin/api/canchas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -68,11 +85,8 @@ function abrirModalCancha() {
             if (data.ok) location.reload();
             else alert(data.error || "Error al registrar la cancha");
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error de conexión");
-        });
-    }
+        .catch(err => alert("Error de conexión"));
+    };
 }
 </script>
 {% endblock %}

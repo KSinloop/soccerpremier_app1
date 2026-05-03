@@ -72,9 +72,24 @@ function abrirModalPartido() {
 }
 
 function registrarResultado(id) {
-    const gl = prompt("Goles Local:");
-    const gv = prompt("Goles Visitante:");
-    if (gl !== null && gv !== null) {
+    document.getElementById('modalTitle').innerText = 'Registrar Resultado';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Goles Local</label>
+            <input type="number" id="gl" value="0">
+        </div>
+        <div class="modal-form-group">
+            <label>Goles Visitante</label>
+            <input type="number" id="gv" value="0">
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const gl = document.getElementById('gl').value;
+        const gv = document.getElementById('gv').value;
+        
         fetch(`/admin/api/partidos/${id}/resultado`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -85,11 +100,8 @@ function registrarResultado(id) {
             if (data.ok) location.reload();
             else alert(data.error || "Error al registrar resultado");
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error de conexión");
-        });
-    }
+        .catch(err => alert("Error de conexión"));
+    };
 }
 </script>
 {% endblock %}

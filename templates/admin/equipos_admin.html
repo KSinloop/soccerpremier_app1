@@ -66,9 +66,26 @@
 {% block scripts %}
 <script>
 function abrirModalEquipo() {
-    const nombre = prompt("Nombre del nuevo equipo:");
-    if (nombre) {
-        const representante = prompt("Nombre del representante:");
+    document.getElementById('modalTitle').innerText = 'Nuevo Equipo';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre del Equipo</label>
+            <input type="text" id="equipoNombre" placeholder="Ej. Real Madrid">
+        </div>
+        <div class="modal-form-group">
+            <label>Representante</label>
+            <input type="text" id="equipoRep" placeholder="Nombre del encargado">
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const nombre = document.getElementById('equipoNombre').value;
+        const representante = document.getElementById('equipoRep').value;
+        
+        if (!nombre) return alert("El nombre es obligatorio");
+        
         fetch("/admin/api/equipos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -79,11 +96,8 @@ function abrirModalEquipo() {
             if (data.ok) location.reload();
             else alert(data.error || "Error al crear el equipo");
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error de conexión");
-        });
-    }
+        .catch(err => alert("Error de conexión"));
+    };
 }
 </script>
 {% endblock %}

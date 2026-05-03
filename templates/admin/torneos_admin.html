@@ -96,23 +96,38 @@
 {% block scripts %}
 <script>
 function abrirModalTorneo() {
-    const nombre = prompt("Nombre del nuevo torneo:");
-    if (nombre) {
+    document.getElementById('modalTitle').innerText = 'Nuevo Torneo';
+    document.getElementById('modalBody').innerHTML = `
+        <div class="modal-form-group">
+            <label>Nombre del Torneo</label>
+            <input type="text" id="torneoNombre" placeholder="Ej. Clausura 2026">
+        </div>
+        <div class="modal-form-group">
+            <label>Categoría</label>
+            <input type="text" id="torneoCat" placeholder="Ej. Libre">
+        </div>
+    `;
+    
+    document.getElementById('adminModal').style.display = 'flex';
+    
+    document.getElementById('modalConfirmBtn').onclick = function() {
+        const nombre = document.getElementById('torneoNombre').value;
+        const categoria = document.getElementById('torneoCat').value;
+        
+        if (!nombre) return alert("El nombre es obligatorio");
+        
         fetch("/admin/api/torneos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombre })
+            body: JSON.stringify({ nombre: nombre, categoria: categoria })
         })
         .then(res => res.json())
         .then(data => {
             if (data.ok) location.reload();
             else alert(data.error || "Error al crear el torneo");
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error de conexión al servidor");
-        });
-    }
+        .catch(err => alert("Error de conexión"));
+    };
 }
 </script>
 {% endblock %}
