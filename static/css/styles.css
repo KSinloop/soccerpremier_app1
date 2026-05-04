@@ -548,7 +548,7 @@ a {
     color: #53627e;
 }
 
-.status_scheduled{
+.status-scheduled{
     background: var(--line);
     color: #185fa5;
     border-radius: 12px;
