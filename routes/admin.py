@@ -45,7 +45,8 @@ def vista_dashboard():
                            tot_torneos=torneos_activos, 
                            tot_equipos=equipos_registrados, 
                            tot_partidos=partidos_programados, 
-                           tot_anuncios=anuncios_activos)
+                           tot_anuncios=anuncios_activos,
+                           movimientos_recientes=movimientos_recientes)
 
 @admin_bp.get("/login")
 def login_admin():
@@ -220,8 +221,9 @@ def crear_partido():
 
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
+    inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
 
-    return render_template("admin/form_partido.html", torneos=torneos, equipos=equipos, canchas=canchas)
+    return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones)
 
 
 
@@ -342,8 +344,9 @@ def editar_partido(id):
 
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
+    inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
 
-    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, equipos=equipos, canchas=canchas)
+    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, canchas=canchas, inscripciones=inscripciones)
 
 @admin_bp.route("/partidos/eliminar/<int:id>")
 def eliminar_partido(id):
