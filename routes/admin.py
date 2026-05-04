@@ -45,8 +45,7 @@ def vista_dashboard():
                            tot_torneos=torneos_activos, 
                            tot_equipos=equipos_registrados, 
                            tot_partidos=partidos_programados, 
-                           tot_anuncios=anuncios_activos,
-                           movimientos_recientes=movimientos_recientes)
+                           tot_anuncios=anuncios_activos)
 
 @admin_bp.get("/login")
 def login_admin():
@@ -194,12 +193,21 @@ def crear_equipo():
 @admin_bp.route("/partidos/nuevo", methods=["GET", "POST"])
 def crear_partido():
     if request.method == "POST":
-        fecha_hora_obj = datetime.strptime(request.form.get("fecha_hora"), "%Y-%m-%dT%H:%M")
+        torneo_id = request.form.get("torneo_id")
+        local_id = request.form.get("local_id")
+        visitante_id = request.form.get("visitante_id")
+        cancha_id = request.form.get("cancha_id")
+        fecha_hora_str = request.form.get("fecha_hora")
+        jornada = request.form.get("jornada")
+        
+        # Convertimos el texto del formulario a un objeto de Fecha y Hora de Python
+        fecha_hora_obj = datetime.strptime(fecha_hora_str, "%Y-%m-%dT%H:%M")
+
         nuevo_partido = Partido( 
-            torneo_id=request.form.get("torneo_id"),
-            inscripcion_1_id=request.form.get("inscripcion_1_id"),
-            inscripcion_2_id=request.form.get("inscripcion_2_id"),
-            cancha_id=request.form.get("cancha_id"),
+            torneo_id=torneo_id,
+            local_id=local_id,
+            visitante_id=visitante_id,
+            cancha_id=cancha_id,
             fecha_hora=fecha_hora_obj,
             jornada=request.form.get("jornada"),
             estado="Programado",
@@ -212,10 +220,14 @@ def crear_partido():
 
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
-    inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
-    arbitros = db.session.execute(db.select(Arbitro).where(Arbitro.estado=="Activo")).scalars().all()
-    return render_template("admin/form_partido.html", torneos=torneos, inscripciones=inscripciones, canchas=canchas, arbitros=arbitros)
 
+    return render_template("admin/form_partido.html", torneos=torneos, equipos=equipos, canchas=canchas)
+
+
+
+# ==========================================
+# editar eliminar canchas
+# ==========================================
 @admin_bp.route("/canchas/editar/<int:id>", methods=["GET", "POST"])
 def editar_cancha(id):
     cancha = db.session.get(Cancha, id)
@@ -315,6 +327,9 @@ def editar_partido(id):
     partido = db.session.get(Partido, id)
     if request.method == "POST":
         partido.torneo_id = request.form.get("torneo_id")
+        partido.local_id = request.form.get("local_id")
+        partido.visitante_id = request.form.get("visitante_id")
+        # Si no seleccionan cancha, guardamos None
         cancha_sel = request.form.get("cancha_id")
         partido.cancha_id = cancha_sel if cancha_sel else None
         partido.jornada = request.form.get("jornada")
@@ -327,7 +342,8 @@ def editar_partido(id):
 
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
-    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, canchas=canchas)
+
+    return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, equipos=equipos, canchas=canchas)
 
 @admin_bp.route("/partidos/eliminar/<int:id>")
 def eliminar_partido(id):
