@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, render_template
 from db import db
-from models import Torneo, Equipo, Cancha, Partido, Anuncio, Jugador, Inscripcion, RegistroJugador, ContactoEmergencia, Arbitro, Gol, Incidencia, LogMovimiento
+from models import Torneo, Equipo, Cancha, Partido, Anuncio, Jugador, Inscripcion, RegistroJugador, Gol, Incidencia
 from sqlalchemy import func
 
 public_bp = Blueprint("public", __name__)
@@ -97,7 +97,74 @@ def pagina_resultados():
 
 @public_bp.get("/posiciones")
 def pagina_posiciones():
-    return render_template("public/posiciones.html")
+    torneos = db.session.execute(db.select(Torneo).order_by(Torneo.id.desc())).scalars().all()
+    torneo_id = request.args.get("torneo_id", type=int)
+
+    # Si no mandan torneo_id, usamos el primero disponible
+    if not torneo_id and torneos:
+        torneo_id = torneos[0].id
+
+    tabla = []
+
+    if torneo_id:
+        partidos = db.session.execute(
+            db.select(Partido)
+            .where(Partido.torneo_id == torneo_id)
+            .where(Partido.estado == "Finalizado")
+        ).scalars().all()
+
+        # Inicializamos stats por inscripcion
+        stats = {}
+        for partido in partidos:
+            for insc in [partido.inscripcion_1, partido.inscripcion_2]:
+                if insc.id not in stats:
+                    stats[insc.id] = {
+                        "nombre": insc.equipo.nombre,
+                        "PJ": 0, "G": 0, "E": 0, "P": 0,
+                        "GF": 0, "GC": 0
+                    }
+
+        # Procesamos cada partido
+        for partido in partidos:
+            g1, g2 = calcular_marcador(partido)
+            id1 = partido.inscripcion_1_id
+            id2 = partido.inscripcion_2_id
+
+            # Goles
+            stats[id1]["GF"] += g1
+            stats[id1]["GC"] += g2
+            stats[id2]["GF"] += g2
+            stats[id2]["GC"] += g1
+
+            # Partidos jugados
+            stats[id1]["PJ"] += 1
+            stats[id2]["PJ"] += 1
+
+            # Resultado
+            if g1 > g2:
+                stats[id1]["G"] += 1
+                stats[id2]["P"] += 1
+            elif g1 == g2:
+                stats[id1]["E"] += 1
+                stats[id2]["E"] += 1
+            else:
+                stats[id2]["G"] += 1
+                stats[id1]["P"] += 1
+
+        # Calculamos DG y PTS, convertimos a lista
+        for s in stats.values():
+            s["DG"] = s["GF"] - s["GC"]
+            s["PTS"] = s["G"] * 3 + s["E"]
+
+        # Ordenamos: primero por puntos, luego por DG como desempate
+        tabla = sorted(stats.values(), key=lambda x: (x["PTS"], x["DG"]), reverse=True)
+
+    return render_template(
+        "public/posiciones.html",
+        tabla=tabla,
+        torneos=torneos,
+        torneo_id=torneo_id
+    )
 
 @public_bp.get("/estadisticas")
 def pagina_estadisticas():
