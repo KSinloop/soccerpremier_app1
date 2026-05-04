@@ -308,7 +308,7 @@ a {
     border-radius: 26px;
     padding: 30px;
     box-shadow: var(--shadow);
-    min-height: 240px;
+    min-height: 150px;
     transition: 0.2s ease;
 }
 
@@ -607,7 +607,7 @@ a {
 }
 
 .equipo-card {
-    min-height: 300px;
+    min-height: 250px;
 }
 
 .equipo-head {
@@ -941,7 +941,7 @@ a {
 
 
 .cancha-card {
-    min-height: 290px;
+    min-height: 100px;
 }
 
 .cancha-top {
@@ -1796,4 +1796,138 @@ a {
         grid-template-columns: 1fr;
         padding: 28px 0;
     }
+}
+
+/* ================================
+    MODAL
+   ================================ */
+/* === ESTILOS DEL MODAL (POPOVER) === */
+
+.modal-overlay {
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-xl, 16px);
+    width: min(520px, calc(100% - 40px));
+    background: var(--white);
+    box-shadow: 0 24px 48px rgba(16, 34, 73, 0.2);
+}
+
+.modal-overlay::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+}
+
+.modal-header {
+    background: var(--navy, #0f172a);
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-header .section-kicker {
+    color: #facc15; /* Amarillo de la imagen */
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.modal-header button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+}
+
+.modal-header button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    padding: 24px 28px;
+}
+
+.modal-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.modal-info-item {
+    background: #f8fafd; /* Gris muy clarito de la imagen */
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.modal-info-item label {
+    display: block;
+    color: var(--muted, #64748b);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.modal-info-item span {
+    color: var(--navy, #0f172a);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.modal-divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 16px 0;
+}
+
+.modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    margin-bottom: 22px;
+}
+
+.modal-meta p {
+    width: 100%;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.modal-meta span {
+    display: inline-block;
+    background: #f4f7fb;
+    color: var(--navy);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-right: 8px;
+    margin-bottom: 8px;
 }

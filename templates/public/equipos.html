@@ -48,8 +48,55 @@
                 <span>{{ e.categoria }}</span>
             </div>
 
-            <a href="#" class="card-link">Ver equipo</a>
+            <button type="button" class="card-link" popovertarget="equipo_{{ e.id }}">Ver equipo</button>
         </article>
+
+        <dialog class="modal-overlay" id="equipo_{{ e.id }}" popover>
+            <section class="modal-header">
+                <div>
+                    <span class="section-kicker">Equipo</span>
+                    <h3>{{ e.nombre }}</h3>
+                </div>
+                <button popovertarget="equipo_{{ e.id }}" popovertargetaction="hide">✕</button>
+            </section>
+
+            <section class="modal-body">
+                <div class="equipo-head">
+                    <div class="equipo-avatar">{{ e.nombre[:2].upper() }}</div>
+                    <div>
+                        <h3>{{ e.nombre }}</h3>
+                        <p class="equipo-sub">{{ e.representante }}</p>
+                    </div>
+                </div>
+                <div class="modal-info-grid">
+                    <div class="modal-info-item">
+                        <label>REPRESENTANTE</label>
+                        <span>{{ e.representante }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>TELÉFONO</label>
+                        <span>{{ e.telefono }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>CATEGORÍA</label>
+                        <span>{{ e.categoria }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>ESTADO</label>
+                        {% if e.activo %}
+                        <span class="status-badge status-active">Activo</span>
+                        {% else %}
+                        <span class="status-badge status-end">Inactivo</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr class="modal-divider">
+                <div class="modal-meta">
+                    <p>TORNEOS PARTICIPANDO</p>
+                    <span>TORNEO</span>
+                </div>
+            </section>
+        </dialog>
         {% endfor %}
         
     </section>
