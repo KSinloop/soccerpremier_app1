@@ -19,6 +19,10 @@ Si no especificas que se guarde en el escritorio o donde sea que te sea fácil e
 ### 2. Activar el Entorno Virtual (.venv)
 
 El entorno virtual es una "burbuja" donde instalamos las librerías del proyecto para que no choquen con otras cosas en tu compu.
+Primero lo de python
+```bash
+python -m venv .venv
+```
 
 **En Windows:**
 
