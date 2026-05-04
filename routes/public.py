@@ -38,10 +38,19 @@ def index():
 
 @public_bp.get("/torneos")
 def pagina_torneos():
-    torneos_db = db.session.execute(
-        db.select(Torneo).order_by(Torneo.id.desc())
-    ).scalars().all()
-    return render_template("public/torneos.html", torneos = torneos_db)
+    filtro_actual = request.args.get("filtro", "Todos")
+    
+    if filtro_actual == "Activos":
+        active = 1
+    else:
+        active = 0
+
+    if filtro_actual == "Todos":
+        torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.activo)).scalars().all()
+    else:
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.activo == active)).scalars().all()
+
+    return render_template("public/torneos.html", torneos = torneos_db, filtro_actual = filtro_actual)
 
 @public_bp.get("/equipos")
 def pagina_equipos():
@@ -227,10 +236,14 @@ def pagina_estadisticas():
 
 @public_bp.get("/canchas")
 def pagina_canchas():
-    canchas_db = db.session.execute(
-        db.select(Cancha).order_by(Cancha.id.desc())
-    ).scalars().all()
-    return render_template("public/canchas.html", canchas = canchas_db)
+    filtro_actual = request.args.get("filtro", "Todas")
+
+    if filtro_actual == "Todas":
+        canchas_db = db.session.execute(db.select(Cancha).order_by(Cancha.id.desc())).scalars().all()
+    else:
+        canchas_db = db.session.execute(db.select(Cancha).where(Cancha.disponibilidad == filtro_actual)).scalars().all()
+
+    return render_template("public/canchas.html", canchas = canchas_db, filtro_actual = filtro_actual)
 
 @public_bp.get("/anuncios")
 def pagina_anuncios():

@@ -1,5 +1,7 @@
 {% extends "public/base_public.html" %}
 
+{% set meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"] %}
+
 {% block content %}
 <section class="page-hero page-hero-light">
     <div class="container page-hero-inner">
@@ -31,8 +33,8 @@
         {% for a in anuncios %}
         <article class="anuncio-item">
             <div class="anuncio-date">
-                <span>{{ a.fecha_publicacion.split('-')[2] }}</span>
-                <small>{{ a.fecha_publicacion.split('-')[1] }}</small>
+                <span>{{ a.fecha_publicacion.day }}</span>
+                <small>{{ meses[a.fecha_publicacion.month] }}</small>
             </div>
             <div class="anuncio-content">
                 <span class="section-kicker">Importante</span>

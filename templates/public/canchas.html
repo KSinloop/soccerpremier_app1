@@ -21,10 +21,11 @@
 
 <section class="container page-body">
     <section class="toolbar-simple">
-        <a href="#" class="toolbar-pill active">Todas</a>
-        <a href="#" class="toolbar-pill">Disponibles</a>
-        <a href="#" class="toolbar-pill">En uso</a>
-        <a href="#" class="toolbar-pill">Mantenimiento</a>
+        <a href="{{url_for('public.pagina_canchas', filtro='Todas')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Todas' else '' }}">Todas</a>
+        <a href="{{url_for('public.pagina_canchas', filtro='Disponible')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Disponible' else '' }}">Disponible</a>
+        <a href="{{url_for('public.pagina_canchas', filtro='Clausurada')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Clausurada' else '' }}">Clausurada</a>
+        <a href="{{url_for('public.pagina_canchas', filtro='En mantenimiento')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'En mantenimiento' else '' }}">En mantenimiento</a>
+
     </section>
     
     <section class="cards-grid">

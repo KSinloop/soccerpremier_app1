@@ -20,9 +20,9 @@
 
 <section class="container page-body">
     <section class="toolbar-simple"> 
-        <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Activos</a>
-        <a href="#" class="toolbar-pill">Finalizado</a>
+        <a href="{{url_for('public.pagina_torneos', filtro='Todos')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Todos' else '' }}">Todos</a>
+        <a href="{{url_for('public.pagina_torneos', filtro='Activos')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Activos' else '' }}">Activos</a>
+        <a href="{{url_for('public.pagina_torneos', filtro='Finalizado')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Finalizado' else '' }}">Finalizado</a>
     </section>
 
     <section class="cards-grid">

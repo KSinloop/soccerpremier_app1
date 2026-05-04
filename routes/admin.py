@@ -146,7 +146,7 @@ def crear_anuncio():
         nuevo_anuncio = Anuncio(
             titulo=request.form.get("titulo"), 
             contenido=request.form.get("contenido"), 
-            fecha_publicacion=request.form.get("fecha_publicacion"),
+            fecha_publicacion=datetime.strptime(request.form['fecha_publicacion'], '%Y-%m-%d').date(),  
             estado="Visible"
         )
         db.session.add(nuevo_anuncio)
@@ -308,7 +308,7 @@ def editar_anuncio(id):
     if request.method == "POST":
         anuncio.titulo = request.form.get("titulo")
         anuncio.contenido = request.form.get("contenido")
-        anuncio.fecha_publicacion = request.form.get("fecha_publicacion")
+        anuncio.fecha_publicacion=datetime.strptime(request.form['fecha_publicacion'], '%Y-%m-%d').date()
         db.session.commit()
         registrar_movimiento('Anuncios', f'Se editó el anuncio: {anuncio.titulo}')
         return redirect(url_for('admin.vista_anuncios_admin'))
