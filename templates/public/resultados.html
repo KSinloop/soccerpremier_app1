@@ -28,30 +28,39 @@
 
     <section class="results-grid">
 
-        <article class="result-card">
-            <div class="result-top">
-                <span class="result-meta">{{ r.fecha }} · {{ r.jornada }}</span>
-            </div>
+        {% if resultados %}
 
-            <div class="result-match">
-                <div class="team-score">
-                    <h3>{{ r.inscripcion_1.equipo.nombre }}</h3>
-                    <strong>{{ r.inscripcion_1.equipo.goles }}</strong>
+            {% for r in resultados %}
+            <article class="result-card">
+                <div class="result-top">
+                    <span class="result-meta">{{ r.partido.fecha_hora.strftime('%d/%m/%Y %H:%M') }} · {{ r.partido.jornada }}</span>
                 </div>
 
-                <div>
-                    <span class="vs-sep">vs</span>
+                <div class="result-match">
+                    <div class="team-score">
+                        <h3>{{ r.partido.inscripcion_1.equipo.nombre }}</h3>
+                        <strong>{{ r.goles_1 }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="vs-sep">vs</span>
+                    </div>
+
+                    <div class="team-score">
+                        <h3>{{ r.partido.inscripcion_2.equipo.nombre }}</h3>
+                        <strong>{{ r.goles_2 }}</strong>
+                    </div>
                 </div>
 
-                <div class="team-score">
-                    <h3>{{ r.inscripcion_2.equipo.nombre }}</h3>
-                    <strong>{{ r.inscripcion_2.equipo.goles }}</strong>
-                </div>
-            </div>
+                <p>{{ r.partido.torneo.nombre }}{% if r.partido.cancha %} · {{ r.partido.cancha.nombre }}{% endif %}</p>
+            </article>
+        {% endfor %}
 
-            <p>{{ r.torneo.nombre }} · {{ r.cancha.nombre }}</p>
-        </article>
-
+        {% else %} 
+            <article class="result-card">
+                <span class="result-meta">Aún no hay resultados registrados.</span>
+            </article>
+        {% endif %}
     </section>
 </section>
 

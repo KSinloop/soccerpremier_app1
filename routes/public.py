@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template
 from db import db
-from models import Torneo, Equipo, Partido, Anuncio, Cancha
+from models import Torneo, Equipo, Cancha, Partido, Anuncio, Jugador, Inscripcion, RegistroJugador, ContactoEmergencia, Arbitro, Gol, Incidencia, LogMovimiento
+from sqlalchemy import func
 
 public_bp = Blueprint("public", __name__)
 
@@ -60,11 +61,38 @@ def pagina_partidos():
     partidos_db = db.session.execute(stmt).scalars().all()
     return render_template("public/partidos.html", partidos = partidos_db)
 
+def calcular_marcador(partido):
+    insc1_id = partido.inscripcion_1_id
+    insc2_id = partido.inscripcion_2_id
+
+    goles_1 = 0
+    goles_2 = 0
+    for gol in partido.goles:
+        # El gol tiene registro_jugador_id → ese RegistroJugador tiene inscripcion_id
+        if gol.registro_jugador_id:
+            reg = db.session.get(RegistroJugador, gol.registro_jugador_id)
+            if reg:
+                if reg.inscripcion_id == insc1_id:
+                    goles_1 += 1
+                elif reg.inscripcion_id == insc2_id:
+                    goles_2 += 1
+    return goles_1, goles_2
+
 @public_bp.get("/resultados")
 def pagina_resultados():
-    resultados_db = db.session.execute(
+    partidos = db.session.execute(
         db.select(Partido).where(Partido.estado == "Finalizado")
     ).scalars().all()
+
+    resultados_db = []
+    for p in partidos:
+        g1, g2 = calcular_marcador(p)
+        resultados_db.append({
+            "partido": p,
+            "goles_1": g1,
+            "goles_2": g2
+        })
+
     return render_template("public/resultados.html", resultados = resultados_db)
 
 @public_bp.get("/posiciones")
@@ -73,7 +101,62 @@ def pagina_posiciones():
 
 @public_bp.get("/estadisticas")
 def pagina_estadisticas():
-    return render_template("public/estadisticas.html")
+    total_goles = db.session.scalar(db.select(func.count(Gol.id))) or 0
+    total_amarillas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Amarilla")) or 0
+    total_rojas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Roja")) or 0
+
+    top_goleadores_query = (
+        db.select(
+            Jugador.nombre,
+            Jugador.apellido_paterno,
+            Equipo.nombre.label('equipo_nombre'),
+            func.count(Gol.id).label('total_goles')
+        )
+        .select_from(Gol)
+        .join(RegistroJugador, Gol.registro_jugador_id == RegistroJugador.id)
+        .join(Jugador, RegistroJugador.jugador_id == Jugador.id)
+        .join(Inscripcion, RegistroJugador.inscripcion_id == Inscripcion.id)
+        .join(Equipo, Inscripcion.equipo_id == Equipo.id)
+        .group_by(Jugador.id, Equipo.id)
+        .order_by(func.count(Gol.id).desc())
+        .limit(10)
+    )
+
+    top_amonestados_query = (
+        db.select(
+            Jugador.nombre,
+            Jugador.apellido_paterno,
+            Equipo.nombre.label('equipo_nombre'),
+            func.sum(
+                db.case((Incidencia.tipo == "Tarjeta Amarilla", 1), else_=0)
+            ).label('amarillas'),
+            func.sum(
+                db.case((Incidencia.tipo == "Tarjeta Roja", 1), else_=0)
+            ).label('rojas'),
+            func.count(Incidencia.id).label('total_tarjetas')
+        )
+        .select_from(Incidencia)
+        .join(RegistroJugador, Incidencia.registro_jugador_id == RegistroJugador.id)
+        .join(Jugador, RegistroJugador.jugador_id == Jugador.id)
+        .join(Inscripcion, RegistroJugador.inscripcion_id == Inscripcion.id)
+        .join(Equipo, Inscripcion.equipo_id == Equipo.id)
+        .where(Incidencia.tipo.in_(["Tarjeta Amarilla", "Tarjeta Roja"]))
+        .group_by(Jugador.id, Equipo.id)
+        .order_by(func.count(Incidencia.id).desc())
+        .limit(10)
+    )
+
+    top_amonestados = db.session.execute(top_amonestados_query).all()
+    top_goleadores = db.session.execute(top_goleadores_query).all()
+
+    return render_template(
+        "public/estadisticas.html", 
+        total_goles=total_goles,
+        total_amarillas=total_amarillas,
+        total_rojas=total_rojas,
+        top_goleadores=top_goleadores,
+        top_amonestados=top_amonestados
+    )
 
 @public_bp.get("/canchas")
 def pagina_canchas():
