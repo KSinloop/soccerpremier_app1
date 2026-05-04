@@ -1,0 +1,91 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Control de Partido{% endblock %}
+{% block content %}
+<section class="admin-panel-card" style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 class="admin-panel-title">{{ partido.inscripcion_1.equipo.nombre }} vs {{ partido.inscripcion_2.equipo.nombre }}</h3>
+        <span class="status-badge" style="font-size: 1.2em;">{{ partido.estado }}</span>
+    </div>
+    <p>Torneo: {{ partido.torneo.nombre }} | Jornada: {{ partido.jornada }} | Árbitro: {{ partido.arbitro.nombre if partido.arbitro else 'Por definir' }}</p>
+    <hr>
+
+    <!-- CONTROL DE ESTADO -->
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="margin-bottom: 30px; display: flex; gap: 10px;">
+        <select name="estado" style="padding: 10px; border-radius: 5px; flex: 1;">
+            <option value="Programado" {% if partido.estado == 'Programado' %}selected{% endif %}>Programado</option>
+            <option value="En directo" {% if partido.estado == 'En directo' %}selected{% endif %}>En directo </option>
+            <option value="Finalizado" {% if partido.estado == 'Finalizado' %}selected{% endif %}>Finalizado </option>
+        </select>
+        <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+    </form>
+
+    <!-- REGISTRO DE GOLES -->
+    <h4>Registrar Gol </h4>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="display: flex; gap: 10px;">
+        <select name="registro_jugador_id" required style="padding: 10px; border-radius: 5px; flex: 1;">
+            <option value="">Selecciona quién anotó...</option>
+            
+            <!-- JUGADORES DEL EQUIPO LOCAL -->
+            <optgroup label="{{ partido.inscripcion_1.equipo.nombre }}">
+                {% for registro in partido.inscripcion_1.roster_jugadores %}
+                    <option value="{{ registro.id }}">{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
+                {% else %}
+                    <option disabled>No hay jugadores registrados en el roster</option>
+                {% endfor %}
+            </optgroup>
+
+            <!-- JUGADORES DEL EQUIPO VISITANTE -->
+            <optgroup label="{{ partido.inscripcion_2.equipo.nombre }}">
+                {% for registro in partido.inscripcion_2.roster_jugadores %}
+                    <option value="{{ registro.id }}">{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
+                {% else %}
+                    <option disabled>No hay jugadores registrados en el roster</option>
+                {% endfor %}
+            </optgroup>
+        </select>
+        <button type="submit" class="btn btn-primary" style="background-color: #28a745;">Cantar Gol</button>
+    </form>
+
+    <!-- REGISTRO DE INCIDENCIAS (Tarjetas / Lesiones) -->
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px;">
+        <h4 style="margin-top: 0;">Registrar Incidencia </h4>
+        
+        <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+            
+            <div style="display: flex; gap: 10px;">
+                <!-- 1. Quién fue -->
+                <select name="jugador_incidencia_id" required style="padding: 10px; border-radius: 5px; flex: 2; border: 1px solid #ccc;">
+                    <option value="">Selecciona al jugador implicado...</option>
+                    <optgroup label="Local: {{ partido.inscripcion_1.equipo.nombre }}">
+                        {% for registro in partido.inscripcion_1.roster_jugadores %}
+                            <option value="{{ registro.id }}">#{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
+                        {% endfor %}
+                    </optgroup>
+                    <optgroup label="Visitante: {{ partido.inscripcion_2.equipo.nombre }}">
+                        {% for registro in partido.inscripcion_2.roster_jugadores %}
+                            <option value="{{ registro.id }}">#{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+
+                <!-- 2. Qué pasó -->
+                <select name="tipo_incidencia" required style="padding: 10px; border-radius: 5px; flex: 1; border: 1px solid #ccc;">
+                    <option value="">Tipo...</option>
+                    <option value="Tarjeta Amarilla"> Tarjeta Amarilla</option>
+                    <option value="Tarjeta Roja"> Tarjeta Roja</option>
+                    <option value="Lesión"> Lesión</option>
+                    <option value="Otro"> Otro</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <!-- 3. Detalles -->
+                <input type="text" name="descripcion" placeholder="Detalles (Ej. Falta fuerte por detrás, reclamo al árbitro...)" required style="padding: 10px; border-radius: 5px; flex: 3; border: 1px solid #ccc;">
+                
+                <button type="submit" class="btn btn-warning" style="flex: 1; font-weight: bold;">Registrar</button>
+            </div>
+        </form>
+    </div>
+
+</section>
+{% endblock %}

@@ -18,18 +18,20 @@
 
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
             <div style="flex: 1;">
-                <label for="local_id">Equipo Local:</label>
-                <select id="local_id" name="local_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for e in equipos %}
-                        <option value="{{ e.id }}">{{ e.nombre }}</option>
+                <label for="inscripcion_1_id">Equipo Local:</label>
+                <select id="inscripcion_1_id" name="inscripcion_1_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    
+                    {% for i in inscripciones %}
+                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div style="flex: 1;">
-                <label for="visitante_id">Equipo Visitante:</label>
-                <select id="visitante_id" name="visitante_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for e in equipos %}
-                        <option value="{{ e.id }}">{{ e.nombre }}</option>
+                <label for="inscripcion_2_id">Equipo Visitante:</label>
+                <select id="inscripcion_2_id" name="inscripcion_2_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    
+                    {% for i in inscripciones %}
+                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -41,6 +43,17 @@
                 <option value="{{ c.id }}">{{ c.nombre }}</option>
             {% endfor %}
         </select>
+        
+
+        <label for="arbitro_id">Árbitro Central:</label>
+        <!-- Fíjate que NO tiene el 'required' para que te deje avanzar sin elegir -->
+        <select id="arbitro_id" name="arbitro_id" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="">Por definir</option>
+            {% for a in arbitros %}
+                <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
+            {% endfor %}
+        </select>
+
 
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
             <div style="flex: 1;">

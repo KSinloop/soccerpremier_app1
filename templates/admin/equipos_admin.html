@@ -14,10 +14,10 @@
         </div>
 
         <div class="admin-toolbar">
-            <a href="#" class="toolbar-pill active">Todos</a>
-            <a href="#" class="toolbar-pill">Juvenil</a>
-            <a href="#" class="toolbar-pill">Libre</a>
-            <a href="#" class="toolbar-pill">Femenil</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Todos') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Todos' else '' }}">Todos</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Juvenil') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Juvenil' else '' }}">Juvenil</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Libre') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Libre' else '' }}">Libre</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Femenil') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Femenil' else '' }}">Femenil</a>
         </div>
 
         <div class="admin-cards-list">
@@ -61,7 +61,7 @@
             <div class="admin-mini-grid single-col">
                 <div class="admin-mini-card">
                     <h4>Equipos activos</h4>
-                    <p>48 registros visibles en sistema.</p>
+                    <p>{{ total_activos }} registros visibles en sistema.</p>
                 </div>
                 <div class="admin-mini-card">
                     <h4>Categorías</h4>

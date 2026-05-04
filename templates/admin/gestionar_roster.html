@@ -1,0 +1,77 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Armar Plantilla{% endblock %}
+{% block content %}
+<section class="admin-panel-card" style="max-width: 800px; margin: 0 auto;">
+    <span class="section-kicker">ROSTER OFICIAL</span>
+    <h3 class="admin-panel-title">Plantilla: {{ inscripcion.equipo.nombre }}</h3>
+    <p>Torneo: {{ inscripcion.torneo.nombre }}</p>
+    <hr style="margin: 20px 0; border: 1px solid #eee;">
+
+    <!-- FORMULARIO PARA AGREGAR JUGADOR -->
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h4 style="margin-top: 0;">Agregar Jugador al Equipo</h4>
+        <form action="{{ url_for('admin.gestionar_roster', id=inscripcion.id) }}" method="POST" style="display: flex; gap: 15px; align-items: end;">
+            
+            <div style="flex: 2;">
+                <label>Jugador (Del Padrón Global):</label>
+                <select name="jugador_id" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                    <option value="">Selecciona al jugador...</option>
+                    {% for j in jugadores %}
+                        <option value="{{ j.id }}">{{ j.nombre }} {{ j.apellido_paterno }} {{ j.apellido_materno }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="flex: 1;">
+                <label>Dorsal (Número):</label>
+                <input type="number" name="dorsal" placeholder="Ej. 10" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+
+            <div style="flex: 1; text-align: center;">
+                <label style="display: block; font-size: 0.9em; margin-bottom: 5px;">¿Capitán?</label>
+                <input type="checkbox" name="es_capitan" value="1" style="transform: scale(1.5);">
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 9px 15px;">Registrar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABLA DE JUGADORES REGISTRADOS -->
+    <h4>Jugadores Inscritos ({{ inscripcion.roster_jugadores|length }})</h4>
+    <table class="admin-table" style="width: 100%; margin-top: 10px;">
+        <thead>
+            <tr>
+                <th>Dorsal</th>
+                <th>Nombre Compledo</th>
+                <th>Rol</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in inscripcion.roster_jugadores %}
+            <tr>
+                <td style="font-weight: bold; font-size: 1.2em;">#{{ registro.dorsal }}</td>
+                <td>{{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }} {{ registro.jugador.apellido_materno }}</td>
+                <td>
+                    {% if registro.es_capitan %}
+                        <span class="status-badge" style="background-color: #ffc107; color: #000;">Capitán ©</span>
+                    {% else %}
+                        Jugador
+                    {% endif %}
+                </td>
+                <td>
+                    
+                    <a href="#" style="color: red; text-decoration: none;">Dar de baja</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #666; padding: 20px;">No hay jugadores registrados en esta plantilla todavía.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

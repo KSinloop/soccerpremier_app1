@@ -31,7 +31,7 @@
                 <tr>
                     <td>{{ '%03d' % partido.id }}</td>
                     <td>{{ partido.torneo.nombre }} - {{ partido.jornada }}</td>
-                    <td><strong>{{ partido.local.nombre }}</strong> vs <strong>{{ partido.visitante.nombre }}</strong></td>
+                    <td><strong>{{ partido.inscripcion_1.equipo.nombre }}</strong> vs <strong>{{ partido.inscripcion_2.equipo.nombre }}</strong></td>
                     <td>{{ partido.fecha_hora.strftime('%d/%m/%Y - %H:%M') }}</td>
                     <td>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</td>
                     <td>
@@ -46,8 +46,7 @@
                     <td>
                         <a href="{{ url_for('admin.editar_partido', id=partido.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
                         
-                        <!-- cambiar el # cuando se cree la página de resultados -->
-                        <a href="#" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;">Resultado</a>
+                        <a href="{{ url_for('admin.resultados_partido', id=partido.id) }}" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;">Resultado</a>
 
                         <a href="{{ url_for('admin.eliminar_partido', id=partido.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este partido?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                     </td>

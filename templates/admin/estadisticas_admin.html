@@ -6,19 +6,19 @@
 <section class="admin-stats-grid">
     <article class="admin-stat-card">
         <p class="admin-stat-label">Goles capturados</p>
-        <strong class="admin-stat-number">96</strong>
+        <h2 style="font-size: 2.5em; margin: 0; color: #002244;">{{ '%02d' % total_goles }}</h2>
         <span class="admin-stat-note">Temporada actual</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Tarjetas amarillas</p>
-        <strong class="admin-stat-number">41</strong>
+        <h2 style="font-size: 2.5em; margin: 0; color: #002244;">{{ '%02d' % total_amarillas }}</h2>
         <span class="admin-stat-note">Disciplina registrada</span>
     </article>
 
     <article class="admin-stat-card">
         <p class="admin-stat-label">Tarjetas rojas</p>
-        <strong class="admin-stat-number">07</strong>
+        <h2 style="font-size: 2.5em; margin: 0; color: #002244;">{{ '%02d' % total_rojas }}</h2>
         <span class="admin-stat-note">Incidencias críticas</span>
     </article>
 </section>
@@ -30,63 +30,64 @@
                 <span class="section-kicker">RENDIMIENTO</span>
                 <h3 class="admin-panel-title">Líderes del torneo</h3>
             </div>
-            <a href="#" class="admin-chip">Actualizar datos</a>
+            <!-- <a href="#" class="admin-chip">Actualizar datos</a> -->
         </div>
 
-        <div class="ranking-list">
-            <div class="ranking-item">
-                <div class="ranking-left">
-                    <span class="ranking-position">1</span>
-                    <div>
-                        <h4>Javier Martínez</h4>
-                        <p>Tigres Juárez</p>
-                    </div>
-                </div>
-                <strong>12 goles</strong>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+    {% for goleador in top_goleadores %}
+    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 15px; border-radius: 10px;">
+        
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <!-- El número de ranking automático -->
+            <div style="background-color: #e9ecef; color: #002244; font-weight: bold; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 5px;">
+                {{ loop.index }}
             </div>
-
-            <div class="ranking-item">
-                <div class="ranking-left">
-                    <span class="ranking-position">2</span>
-                    <div>
-                        <h4>Luis Herrera</h4>
-                        <p>Rayados Premier</p>
-                    </div>
-                </div>
-                <strong>10 goles</strong>
-            </div>
-
-            <div class="ranking-item">
-                <div class="ranking-left">
-                    <span class="ranking-position">3</span>
-                    <div>
-                        <h4>Fernanda Ruiz</h4>
-                        <p>Panteras Femenil</p>
-                    </div>
-                </div>
-                <strong>8 goles</strong>
+            
+            <!-- Nombre y Equipo -->
+            <div>
+                <h4 style="margin: 0; color: #002244;">{{ goleador.nombre }} {{ goleador.apellido_paterno }}</h4>
+                <p style="margin: 0; color: #6c757d; font-size: 0.85em;">{{ goleador.equipo_nombre }}</p>
             </div>
         </div>
+
+        <!-- Cantidad de Goles -->
+        <div style="font-weight: bold; color: #002244;">
+            {{ goleador.total_goles }} goles
+        </div>
+
+    </div>
+    {% else %}
+    <div style="text-align: center; color: #6c757d; padding: 20px;">
+        Aún no hay goles registrados en el sistema.
+    </div>
+    {% endfor %}
+</div>
     </article>
 
-    <article class="admin-panel-card">
+<article class="admin-panel-card">
         <span class="section-kicker">CONTROL</span>
         <h3 class="admin-panel-title">Operaciones disponibles</h3>
         <div class="admin-links-list compact">
-            <a href="#" class="admin-link-row">
+            
+            <!-- Conectado a los Partidos -->
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Capturar goles</h4>
                     <p>Registrar anotaciones por partido.</p>
                 </div>
                 <span>Ir</span>
             </a>
-            <a href="#" class="admin-link-row">
+            
+            <!-- Conectado a los Partidos -->
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Capturar tarjetas</h4>
                     <p>Actualizar disciplina por jugador.</p>
                 </div>
                 <span>Ir</span>
             </a>
+            
+            <!-- Pendiente -->
             <a href="#" class="admin-link-row">
                 <div>
                     <h4>Recalcular tabla</h4>
@@ -94,6 +95,7 @@
                 </div>
                 <span>Ir</span>
             </a>
+            
         </div>
     </article>
 </section>

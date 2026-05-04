@@ -194,11 +194,13 @@ class PagoArbitraje(db.Model):
 
 
 
-class LogActividad(db.Model):
-    __tablename__ = "logs_actividad"
+class LogMovimiento(db.Model):
+    __tablename__ = 'log_movimientos'
+    
     id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
-    modulo = db.Column(db.String(50)) 
-    movimiento = db.Column(db.String(100)) 
-    responsable = db.Column(db.String(80)) 
-    estatus = db.Column(db.String(20)) 
+    fecha = db.Column(db.DateTime, default=datetime.utcnow) # Guarda la fecha y hora exacta
+    modulo = db.Column(db.String(50), nullable=False)       # Ej. "Partidos", "Inscripciones"
+    movimiento = db.Column(db.String(255), nullable=False)  # Ej. "Se eliminó el equipo EnanosFC"
+    responsable = db.Column(db.String(100), nullable=False) # Ej. "pepe"
+    estatus = db.Column(db.String(20), default="Completado")
+    

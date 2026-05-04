@@ -17,7 +17,7 @@
     </article>
 
     <article class="admin-stat-card">
-        <p class="admin-stat-label">Partidos programados</p>
+        <p class="admin-stat-label">Partidos próximos</p>
         <strong class="admin-stat-number">{{ '%02d' % tot_partidos }}</strong>
         <span class="admin-stat-note">Agenda vigente</span>
     </article>
@@ -147,7 +147,7 @@
             <span class="section-kicker">ACTIVIDAD</span>
             <h3 class="admin-panel-title">Movimientos recientes</h3>
         </div>
-        <a href="#" class="admin-chip">Ver historial</a>
+        <!-- <a href="#" class="admin-chip">Ver historial</a> -->
     </div>
 
     <div class="admin-table-wrap">
@@ -162,33 +162,29 @@
                 </tr>
             </thead>
             <tbody>
-                {% for mov in movimientos %}
-                <tr>
-                    <td>{{ mov.fecha.strftime('%d/%m/%Y') }}</td>
-                    <td>{{ mov.modulo }}</td>
-                    <td>{{ mov.movimiento }}</td>
-                    <td>{{ mov.responsable }}</td>
-                    <td>
-                        {# Mantenemos tus clases originales de badges según el estatus #}
-                        {% if mov.estatus == 'Aplicado' or mov.estatus == 'Visible' %}
-                            <span class="status-badge status-active">{{ mov.estatus }}</span>
-                        {% elif mov.estatus == 'Pendiente' %}
-                            <span class="status-badge status-soon">{{ mov.estatus }}</span>
-                        {% elif mov.estatus == 'Cerrado' or mov.estatus == 'Eliminado' %}
-                            <span class="status-badge status-end">{{ mov.estatus }}</span>
-                        {% else %}
-                            <span class="status-badge">{{ mov.estatus }}</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
-                        No se han registrado movimientos el día de hoy.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+    {% for mov in movimientos_recientes %}
+    <tr style="border-bottom: 1px solid #eee;">
+        <!-- Le damos formato bonito a la fecha -->
+        <td style="padding: 12px 10px;">{{ mov.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+        
+        <td style="padding: 12px 10px; font-weight: bold; color: #002244;">{{ mov.modulo }}</td>
+        
+        <td style="padding: 12px 10px; color: #555;">{{ mov.movimiento }}</td>
+        
+        <td style="padding: 12px 10px;">{{ mov.responsable }}</td>
+        
+        <td style="padding: 12px 10px;">
+            <span class="status-badge" style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 15px; font-size: 0.85em;">
+                {{ mov.estatus }}
+            </span>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5" style="text-align: center; padding: 20px; color: #6c757d;">No se han registrado movimientos el día de hoy.</td>
+    </tr>
+    {% endfor %}
+</tbody>
         </table>
     </div>
 </section>
