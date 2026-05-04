@@ -13,7 +13,7 @@
 
         <div class="page-hero-badge">
             <span>Partidos prog.</span>
-            <strong>08</strong>
+            <strong>{{ partidos|length }}</strong>
         </div>
     </div>
 </section>
@@ -27,53 +27,25 @@
     </section>
 
     <section class="matches-list">
-        <article class="match-card">
-            <div class="match-date-box">
-                <span>14</span>
-                <small>MAY</small>
-                <p>19:00 hrs</p>
-            </div>
-            <div class="match-content">
-                <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Clausura Premier · J8</span>
-                </div>
-                <h3>Tigres Juárez vs Rayados Premier</h3>
-                <p>Cancha Principal Norte · Fútbol 7</p>
-            </div>
-        </article>
 
+        {% for p in partidos %}
         <article class="match-card">
             <div class="match-date-box">
-                <span>15</span>
-                <small>MAY</small>
-                <p>17:30 hrs</p>
+                <span>{{ p.fecha_hora.day }}</span>
+                <small>{{ p.fecha_hora.month }}</small>
+                <p>{{ p.fecha_hora.strftime('%H:%M') }}</p>
             </div>
             <div class="match-content">
                 <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Copa Femenil · J4</span>
+                    <span class="status-badge status-scheduled">{{ p.estado }}</span>
+                    <span class="match-tag">{{ p.torneo.nombre }}</span>
                 </div>
-                <h3>Panteras Femenil vs Cantera Real</h3>
-                <p>Cancha Juvenil Sur · Fútbol 7</p>
+                <h3>{{ p.inscripcion_1.equipo.nombre }} vs {{ p.inscripcion_2.equipo.nombre }}</h3>
+                <p>{{ p.cancha.nombre if p.cancha else 'Por definir' }}</p>
             </div>
         </article>
+        {% endfor %}
 
-        <article class="match-card">
-            <div class="match-date-box">
-                <span>17</span>
-                <small>MAY</small>
-                <p>20:00 hrs</p>
-            </div>
-            <div class="match-content">
-                <div class="match-top">
-                    <span class="status_scheduled">Programado</span>
-                    <span class="match-tag">Clausura Premier · J8</span>
-                </div>
-                <h3>Lobos FC vs Guerreros Liga</h3>
-                <p>Cancha Oriente · Fútbol 7</p>
-            </div>
-        </article>
     </section>
 </section>
 

@@ -47,8 +47,51 @@
                 <span>{{ t.tipo}}</span>
             </div>
 
-            <a href="#" class="card-link">Ver torneo</a>
+            <button type="button" class="card-link" popovertarget="torneo_{{ t.id }}">Ver torneo</button>
         </article>
+
+        <dialog class="modal-overlay" id="torneo_{{ t.id }}" popover>
+            <section class="modal-header">
+                <div>
+                    <span class="section-kicker">Torneo</span>
+                    <h3>{{ t.nombre }}</h3>
+                </div>
+                <button popovertarget="torneo_{{ t.id }}" popovertargetaction="hide">✕</button>
+            </section>
+            <section class="modal-body">
+                <div class="torneo-top">
+                    {% if t.activo %}
+                    <span class="status-badge status-active">Activo</span>
+                    {% else %}
+                    <span class="status-badge status-end">Finalizado</span>
+                    {% endif %}
+                    <span class="torneo-season">{{ t.fecha_inicio.year if t.fecha_inicio else '' }}</span>
+                </div>
+                <div class="modal-info-grid">
+                    <div class="modal-info-item">
+                        <label>Categoria</label>
+                        <span>{{ t.categoria }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>Tipo</label>
+                        <span>{{ t.tipo }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>Inicio</label>
+                        <span>{{ t.fecha_inicio }}</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <label>Fin</label>
+                        <span>{{ t.fecha_fin }}</span>
+                    </div>
+                </div>
+                <hr class="modal-divider">
+                <div class="modal-meta">
+                    <p>Equipos Inscritos</p>
+                    <span>EQUIPO</span>
+                </div>
+            </section>
+        </dialog>
         {% endfor %}
 
     </section>

@@ -10,7 +10,30 @@ public_bp = Blueprint("public", __name__)
 # -----------------------------
 @public_bp.get("/")
 def index():
-    return render_template("public/index.html")
+    torneos_db = db.session.execute(
+        db.select(Torneo).order_by(Torneo.id.desc())
+    ).scalars().all()
+
+    equipos_db = db.session.execute(
+        db.select(Equipo).order_by(Equipo.nombre.asc())
+    ).scalars().all()
+
+    torneo_id = request.args.get("torneo_id", type=int)
+
+    stmt = db.select(Partido).order_by(Partido.fecha_hora.asc())
+    if torneo_id:
+        stmt = stmt.filter_by(torneo_id=torneo_id)
+
+    partidos_db = db.session.execute(stmt).scalars().all()
+
+    canchas_db = db.session.execute(
+        db.select(Cancha).order_by(Cancha.id.desc())
+    ).scalars().all()
+
+    anuncios_db = db.session.execute(
+        db.select(Anuncio).where(Anuncio.estado == "Visible")
+    ).scalars().all()
+    return render_template("public/index.html", torneos = torneos_db, equipos = equipos_db, partidos = partidos_db, canchas = canchas_db, anuncios = anuncios_db)
 
 @public_bp.get("/torneos")
 def pagina_torneos():

@@ -38,22 +38,22 @@
     <section class="stats-grid">
         <article class="stat-card">
             <p class="stat-label">Torneos activos</p>
-            <strong class="stat-number">04</strong>
+            <strong class="stat-number">{{ torneos|length }}</strong>
         </article>
 
         <article class="stat-card">
             <p class="stat-label">Equipos registrados</p>
-            <strong class="stat-number">48</strong>
+            <strong class="stat-number">{{ equipos|length }}</strong>
         </article>
 
         <article class="stat-card">
             <p class="stat-label">Partidos programados</p>
-            <strong class="stat-number">17</strong>
+            <strong class="stat-number">{{ partidos|length }}</strong>
         </article>
 
         <article class="stat-card">
             <p class="stat-label">Canchas activas</p>
-            <strong class="stat-number">05</strong>
+            <strong class="stat-number">{{ canchas|length }}</strong>
         </article>
     </section>
 
