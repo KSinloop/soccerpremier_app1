@@ -330,7 +330,7 @@ def editar_partido(id):
     if request.method == "POST":
         partido.torneo_id = request.form.get("torneo_id")
         partido.inscripcion_1_id = request.form.get("inscripcion_1_id")
-        partido.vinscripcion_2_id = request.form.get("inscripcion_2_id")
+        partido.inscripcion_2_id = request.form.get("inscripcion_2_id")
         # Si no seleccionan cancha, guardamos None
         cancha_sel = request.form.get("cancha_id")
         partido.cancha_id = cancha_sel if cancha_sel else None
