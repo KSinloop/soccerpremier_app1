@@ -19,11 +19,12 @@
 </section>
 
 <section class="container page-body">
-    <section class="toolbar-simple"> 
-        <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Relámpago</a>
-        <a href="#" class="toolbar-pill">Clausura Premier</a>
-        <a href="#" class="toolbar-pill">Copa Femenil</a>
+    <section class="toolbar-simple">
+        <a href="{{ url_for('public.pagina_resultados') }}" class="toolbar-pill {% if not request.args.get('torneo_id') %}active{% endif %}">Todos</a>
+        {% for t in torneos %}
+        <a href="{{ url_for('public.pagina_resultados', torneo_id=t.id) }}" class="toolbar-pill {% if request.args.get('torneo_id', type=int) == t.id %}active{% endif %}">{{ t.nombre }}
+        </a>
+        {% endfor %}
     </section>
 
     {% if resultados %}
