@@ -32,7 +32,7 @@ def index():
     ).scalars().all()
 
     anuncios_db = db.session.execute(
-        db.select(Anuncio).where(Anuncio.estado == "Visible")
+        db.select(Anuncio)
     ).scalars().all()
     return render_template("public/index.html", torneos = torneos_db, equipos = equipos_db, partidos = partidos_db, canchas = canchas_db, anuncios = anuncios_db)
 
