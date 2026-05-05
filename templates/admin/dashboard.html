@@ -30,113 +30,96 @@
 </section>
 
 <section class="admin-content-grid">
-    <article class="admin-panel-card">
-        <span class="section-kicker">RESUMEN</span>
-        <h3 class="admin-panel-title">Estado general del sistema</h3>
-        <p class="admin-panel-text">
-            Desde este panel podrás centralizar la operación general de Soccer Premier Juárez:
-            control de torneos, administración de equipos, programación de partidos, gestión
-            de canchas, anuncios y seguimiento operativo.
-        </p>
 
-        <div class="admin-mini-grid">
-            <div class="admin-mini-card">
-                <h4>Operación</h4>
-                <p>Control general de ligas, jornadas y partidos.</p>
-            </div>
-            <div class="admin-mini-card">
-                <h4>Difusión</h4>
-                <p>Publicación de avisos y anuncios oficiales.</p>
-            </div>
-            <div class="admin-mini-card">
-                <h4>Control interno</h4>
-                <p>Seguimiento administrativo de módulos y registros.</p>
-            </div>
-            <div class="admin-mini-card">
-                <h4>Escalabilidad</h4>
-                <p>Base preparada para estadísticas y reportes.</p>
-            </div>
-        </div>
-    </article>
-
-    <article class="admin-panel-card">
+    <article class="admin-panel-card" style="grid-column: 1 / -1">
         <span class="section-kicker">ACCESOS RÁPIDOS</span>
         <h3 class="admin-panel-title">Módulos principales</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="admin-links-list" >
+                <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Torneos</h4>
+                        <p>Alta, edición y control general de torneos.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
 
-        <div class="admin-links-list">
-            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Torneos</h4>
-                    <p>Alta, edición y control general de torneos.</p>
-                </div>
-                <span>Ir</span>
-            </a>
-
-            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Equipos</h4>
-                    <p>Consulta y administración de participantes.</p>
-                </div>
-                <span>Ir</span>
-            </a>
-
-
-            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-link-row">
-                <div>
-                 <h4>Inscripciones</h4>
-                <p>Control de equipos registrados en cada torneo.</p>
-                 </div>
-                <span>Ir</span>
-            </a>
+                <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Equipos</h4>
+                        <p>Consulta y administración de participantes.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
 
 
-            <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-link-row">
-                 <div>
-                     <h4>Jugadores</h4>
-                     <p>Gestiona todos los registros individuales del padrón.</p>
-                </div>
-                <span>Ir</span>
-            </a>
+                <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Inscripciones</h4>
+                    <p>Control de equipos registrados en cada torneo.</p>
+                        </div>
+                    <span>Ir</span>
+                </a>
 
-            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Partidos</h4>
-                    <p>Programación, reprogramación y resultados.</p>
-                </div>
-                <span>Ir</span>
-            </a>
 
-            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Canchas</h4>
-                    <p>Disponibilidad, ocupación y control de espacios.</p>
-                </div>
-                <span>Ir</span>
-            </a>
+                <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-link-row">
+                        <div>
+                            <h4>Jugadores</h4>
+                            <p>Gestiona todos los registros individuales del padrón.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
 
-            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Árbitros</h4>
-                    <p>Administración y seguimiento de árbitros.</p>
-                </div>
-                <span>Ir</span>
-            </a>
+                <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Partidos</h4>
+                        <p>Programación, reprogramación y resultados.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+            </div>
 
-            <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Estadísticas</h4>
-                    <p>Seguimiento de goles, tarjetas y rendimiento.</p>
-                </div>
-                <span>Ir</span>
-            </a>
+            <div class="admin-links-list" >
+                <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Canchas</h4>
+                        <p>Disponibilidad, ocupación y control de espacios.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
 
-            <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-link-row">
-                <div>
-                    <h4>Anuncios</h4>
-                    <p>Gestión de avisos y difusión pública.</p>
-                </div>
-                <span>Ir</span>
-            </a>
+                <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Árbitros</h4>
+                        <p>Administración y seguimiento de árbitros.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Estadísticas</h4>
+                        <p>Seguimiento de goles, tarjetas y rendimiento.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Anuncios</h4>
+                        <p>Gestión de avisos y difusión pública.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Adeudos</h4>
+                        <p>Administración Pagos de arbitraje e inscripciones</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+            </div>
         </div>
     </article>
 </section>
