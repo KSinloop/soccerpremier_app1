@@ -49,15 +49,15 @@
             </div>
 
             <div style="display: grid; gap: 6px;">
-                <label style="color: var(--navy); font-weight: 800;">CURP (opcional)</label>
-                <input type="text" name="curp" maxlength="18" placeholder="Ej. GOMD900101HCHMLG09"
+                <label style="color: var(--navy); font-weight: 800;">CURP</label>
+                <input type="text" name="curp" maxlength="18" required placeholder="Ej. GOMD900101HCHMLG09"
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; text-transform: uppercase;">
             </div>
 
            
             <div style="display: grid; gap: 6px;">
-                <label style="color: var(--navy); font-weight: 800;">Foto del jugador (opcional)</label>
-                <input type="file" name="foto_archivo" accept="image/png, image/jpeg, image/jpg"
+                <label style="color: var(--navy); font-weight: 800;">Foto del jugador</label>
+                <input type="file" name="foto_archivo" accept="image/png, image/jpeg, image/jpg required"
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 12px 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
             </div>
 
@@ -73,7 +73,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                         <div style="display: grid; gap: 6px;">
                             <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Teléfono</label>
-                            <input type="text" name="telefono_contacto" required
+                            <input type="tel" name="telefono_contacto" pattern="[0-9]{10}" required
                                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
                         </div>
                         <div style="display: grid; gap: 6px;">
