@@ -30,6 +30,7 @@ class Torneo(db.Model):
     dia_torneo = db.Column(db.String(20), nullable=True)
     categoria = db.Column(db.String(80))
     tipo = db.Column(db.String(50))
+    estado = db.Column(db.String(30), default="Próximo") # Puede ser: Próximo, Activo, Finalizado
     fecha_inicio = db.Column(db.Date)
     fecha_fin = db.Column(db.Date)
     activo = db.Column(db.Boolean, default=True, nullable=False)
@@ -41,7 +42,8 @@ class Equipo(db.Model):
     __tablename__ = "equipos"
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), unique=True, nullable=False)
-    representante = db.Column(db.String(120))
+    representante_nombre = db.Column(db.String(60))
+    representante_apellido = db.Column(db.String(60))
     telefono = db.Column(db.String(30))
     logo_url = db.Column(db.String(255))
     categoria = db.Column(db.String(50))
@@ -115,7 +117,7 @@ class RegistroJugador(db.Model):
     )
 
     inscripcion = db.relationship("Inscripcion", back_populates="roster_jugadores")
-    jugador = db.relationship("Jugador", backref="mis_registros")
+    jugador = db.relationship("Jugador", backref=db.backref("mis_registros", cascade="all, delete-orphan"))
 
 class Partido(db.Model):
     __tablename__ = "partidos"
@@ -175,8 +177,7 @@ class ContactoEmergencia(db.Model):
     telefono = db.Column(db.String(20), nullable=False)
     parentesco = db.Column(db.String(40), nullable=False)
 
-    # uselist=False significa que es una relación 1 a 1 (un jugador = un contacto)
-    jugador = db.relationship("Jugador", backref=db.backref("contacto_emergencia", uselist=False))
+    jugador = db.relationship("Jugador", backref=db.backref("contacto_emergencia", uselist=False, cascade="all, delete-orphan"))
 
 # =========================================================
 # PAGOS (Inscripción y Arbitraje)

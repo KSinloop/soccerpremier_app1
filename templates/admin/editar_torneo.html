@@ -37,14 +37,26 @@
                 </select>
             </div>
 
-            <div style="display: grid; gap: 6px;">
-                <label style="color: var(--navy); font-weight: 800;">Modalidad (tipo)</label>
-                <select name="tipo" required
-                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
-                    <option value="Fútbol 11" {% if torneo.tipo == 'Fútbol 11' %}selected{% endif %}>Fútbol 11</option>
-                    <option value="Fútbol 7" {% if torneo.tipo == 'Fútbol 7' %}selected{% endif %}>Fútbol 7</option>
-                    <option value="Fútbol Rápido" {% if torneo.tipo == 'Fútbol Rápido' %}selected{% endif %}>Fútbol Rápido</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Modalidad (tipo)</label>
+                    <select name="tipo" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="Fútbol 11" {% if torneo.tipo == 'Fútbol 11' %}selected{% endif %}>Fútbol 11</option>
+                        <option value="Fútbol 7" {% if torneo.tipo == 'Fútbol 7' %}selected{% endif %}>Fútbol 7</option>
+                        <option value="Fútbol Rápido" {% if torneo.tipo == 'Fútbol Rápido' %}selected{% endif %}>Fútbol Rápido</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Estatus del torneo</label>
+                    <select name="estado" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="Próximo" {% if torneo.estado == 'Próximo' %}selected{% endif %}>Próximo</option>
+                        <option value="Activo" {% if torneo.estado == 'Activo' %}selected{% endif %}>Activo</option>
+                        <option value="Finalizado" {% if torneo.estado == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                    </select>
+                </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">

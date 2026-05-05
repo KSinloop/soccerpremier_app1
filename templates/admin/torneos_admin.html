@@ -14,10 +14,10 @@
         </div>
 
         <div class="admin-toolbar">
-            <a href="#" class="toolbar-pill active">Todos</a>
-            <a href="#" class="toolbar-pill">Activos</a>
-            <a href="#" class="toolbar-pill">Próximos</a>
-            <a href="#" class="toolbar-pill">Finalizados</a>
+            <a href="{{ url_for('admin.vista_torneos_admin', filtro='Todos') }}" class="toolbar-pill {% if filtro_actual == 'Todos' or not filtro_actual %}active{% endif %}">Todos</a>
+            <a href="{{ url_for('admin.vista_torneos_admin', filtro='Activos') }}" class="toolbar-pill {% if filtro_actual == 'Activos' %}active{% endif %}">Activos</a>
+            <a href="{{ url_for('admin.vista_torneos_admin', filtro='Próximos') }}" class="toolbar-pill {% if filtro_actual == 'Próximos' %}active{% endif %}">Próximos</a>
+            <a href="{{ url_for('admin.vista_torneos_admin', filtro='Finalizados') }}" class="toolbar-pill {% if filtro_actual == 'Finalizados' %}active{% endif %}">Finalizados</a>
         </div>
 
         <div class="admin-table-wrap">
@@ -39,10 +39,15 @@
                         <td><strong>{{ torneo.nombre }}</strong></td>
                         <td>{{ torneo.categoria or 'N/A' }} - {{ torneo.tipo or 'N/A' }}</td>
                         <td>
-                            {% if torneo.activo %}
+                            <!-- ETIQUETAS DE ESTATUS -->
+                            {% if torneo.estado == 'Activo' %}
                                 <span class="status-badge status-active">Activo</span>
-                            {% else %}
+                            {% elif torneo.estado == 'Próximo' %}
+                                <span class="status-badge status-soon">Próximo</span>
+                            {% elif torneo.estado == 'Finalizado' %}
                                 <span class="status-badge status-end">Finalizado</span>
+                            {% else %}
+                                <span class="status-badge">{{ torneo.estado }}</span>
                             {% endif %}
                         </td>
                         <td>{{ torneo.equipos|length }}</td> 
@@ -55,56 +60,12 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">No hay torneos registrados.</td>
+                        <td colspan="6" style="text-align: center; padding: 20px;">No hay torneos registrados con este filtro.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </article>
-<!--
-    <aside class="admin-side-stack">
-        <article class="admin-panel-card">
-            <span class="section-kicker">RESUMEN</span>
-            <h3 class="admin-panel-title">Indicadores rápidos</h3>
-
-            <div class="admin-mini-grid single-col">
-                <div class="admin-mini-card">
-                    <h4>Torneos activos</h4>
-                    <p>4 competencias visibles actualmente.</p>
-                </div>
-                <div class="admin-mini-card">
-                    <h4>Próximos torneos</h4>
-                    <p>2 registros pendientes de inicio.</p>
-                </div>
-                <div class="admin-mini-card">
-                    <h4>Histórico</h4>
-                    <p>1 torneo finalizado disponible para consulta.</p>
-                </div>
-            </div>
-        </article>
-
-        <article class="admin-panel-card">
-            <span class="section-kicker">ACCIONES</span>
-            <h3 class="admin-panel-title">Operaciones disponibles</h3>
-            <div class="admin-links-list compact">
-                <a href="#" class="admin-link-row">
-                    <div>
-                        <h4>Crear torneo</h4>
-                        <p>Registrar una nueva competencia.</p>
-                    </div>
-                    <span>Ir</span>
-                </a>
-                <a href="#" class="admin-link-row">
-                    <div>
-                        <h4>Editar temporadas</h4>
-                        <p>Actualizar datos y configuración.</p>
-                    </div>
-                    <span>Ir</span>
-                </a>
-            </div>
-        </article>
-    </aside>
--->
 </section>
 {% endblock %}
