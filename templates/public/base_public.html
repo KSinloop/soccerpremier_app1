@@ -27,7 +27,13 @@
                 <a href="{{ url_for('public.pagina_anuncios') }}">Anuncios</a>
                 <a href="{{ url_for('public.pagina_partidos') }}">Partidos</a>
                 <a href="{{ url_for('public.pagina_resultados') }}">Resultados</a>
-                <a href="{{ url_for('admin.login_admin') }}" class="nav-admin">Admin</a>
+                
+                
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('admin.vista_dashboard') }}" class="nav-admin">Admin</a>
+                {% else %}
+                    <a href="{{ url_for('admin.login_admin') }}" class="nav-admin">Admin</a>
+                {% endif %}
             </nav>
         </div>
     </header>
