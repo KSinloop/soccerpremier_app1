@@ -164,24 +164,23 @@
             <tbody>
     {% for mov in movimientos_recientes %}
     <tr style="border-bottom: 1px solid #eee;">
-        <!-- Le damos formato bonito a la fecha -->
         <td style="padding: 12px 10px;">{{ mov.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
-        
-        <td style="padding: 12px 10px; font-weight: bold; color: #002244;">{{ mov.modulo }}</td>
-        
-        <td style="padding: 12px 10px; color: #555;">{{ mov.movimiento }}</td>
-        
+        <td style="padding: 12px 10px; font-weight: bold; color: var(--navy);">{{ mov.modulo }}</td>
+        <td style="padding: 12px 10px; color: var(--muted);">{{ mov.movimiento }}</td>
         <td style="padding: 12px 10px;">{{ mov.responsable }}</td>
-        
         <td style="padding: 12px 10px;">
-            <span class="status-badge" style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 15px; font-size: 0.85em;">
-                {{ mov.estatus }}
-            </span>
+            {% if mov.estatus == 'Completado' %}
+                <span class="status-badge status-active">{{ mov.estatus }}</span>
+            {% elif mov.estatus == 'Pendiente' %}
+                <span class="status-badge status-soon">{{ mov.estatus }}</span>
+            {% else %}
+                <span class="status-badge status-end">{{ mov.estatus }}</span>
+            {% endif %}
         </td>
     </tr>
     {% else %}
     <tr>
-        <td colspan="5" style="text-align: center; padding: 20px; color: #6c757d;">No se han registrado movimientos el día de hoy.</td>
+        <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">No se han registrado movimientos el día de hoy.</td>
     </tr>
     {% endfor %}
 </tbody>

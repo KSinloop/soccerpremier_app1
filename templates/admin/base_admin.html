@@ -22,49 +22,56 @@
             <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-nav-link">Torneos</a>
             <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-nav-link">Equipos</a>
             <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-nav-link">Jugadores</a>
-            <a href =" {{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">Inscripciones</a>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">Inscripciones</a>
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-nav-link">Partidos</a>
             <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">Canchas</a>
             <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">Arbitros</a>
             <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-nav-link">Estadísticas</a>
             <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-nav-link">Anuncios</a>
+            <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-nav-link">Adeudos</a>
         </nav>
 
         <div class="admin-sidebar-footer">
-            <a href="{{ url_for('public.index') }}" class="admin-logout">Volver al portal</a>
+            <!-- Se actualizó a un formulario POST para que de verdad cierre la sesión -->
+            <form action="{{ url_for('auth.logout') }}" method="POST" style="margin: 0; padding: 0;">
+                <button type="submit" class="admin-logout" style="width: 100%; border: none; cursor: pointer; text-align: left; background: none; font-family: inherit;" onclick="return confirm('¿Estás seguro de que deseas salir? Se cerrará tu sesión y volverás al portal principal.');">
+                    Volver al portal
+                </button>
+            </form>
         </div>
 
     </aside>
 
     <div class="admin-shell">
-<header class="admin-topbar">
-    <div>
-        <span class="section-kicker">GESTIÓN INTERNA</span>
-        <h2 class="admin-page-title">{% block admin_title %}Panel administrativo{% endblock %}</h2>
-    </div>
+        <header class="admin-topbar">
+            <div>
+                <span class="section-kicker">GESTIÓN INTERNA</span>
+                <h2 class="admin-page-title">{% block admin_title %}Panel administrativo{% endblock %}</h2>
+            </div>
 
-    <div class="admin-topbar-actions">
-        {% if current_user.is_authenticated %}
-            <!-- Mensaje que saluda al usuario y botón de logout -->
-            <span class="admin-chip" style="background-color: transparent; border: 1px solid #ccc;">
-                 ¡Hola, {{ current_user.username }} !
-            </span>
-            
-            <form action="{{ url_for('auth.logout') }}" method="POST" style="display:inline;">
-                <button type="submit" class="admin-chip admin-chip-gold" style="cursor: pointer;">
-                    Cerrar Sesión
-                </button>
-            </form>
-        {% endif %}
+            <div class="admin-topbar-actions">
+                {% if current_user.is_authenticated %}
+                <span class="admin-chip" style="background-color: transparent; border: 1px solid #ccc;">
+                    ¡Hola, {{ current_user.username }}!
+                </span>
         
-        <a href="{{ url_for('public.index') }}" class="admin-chip">Vista pública</a>
-    </div>
-</header>
+                 <!-- Botón 1: SÍ cierra sesión y pide confirmación -->
+                <form action="{{ url_for('auth.logout') }}" method="POST" style="display:inline;">
+                    <button type="submit" class="admin-chip admin-chip-gold" style="cursor: pointer;" onclick="return confirm('¿Seguro que quieres cerrar sesión? Tendrás que volver a ingresar tus datos para entrar al panel.');">
+                         Cerrar Sesión
+                    </button>
+                </form>
+                {% endif %}
+    
+                        <!-- Botón 2: NO cierra sesión, solo te lleva a dar la vuelta -->
+                 <a href="{{ url_for('public.index') }}" class="admin-chip">Vista pública</a>
+                  </div>
+                    </header>
 
-        <main class="admin-main">
-            {% block content %}{% endblock %}
-        </main>
-    </div>
+                <main class="admin-main">
+                {% block content %}{% endblock %}
+                 </main>
+        </div>
 
-</body>
+    </body>
 </html>

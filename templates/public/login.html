@@ -1,0 +1,7 @@
+{% extends "public/base_public.html" %}
+{% block content %}
+<script>window.location.href = "{{ url_for('admin.login_admin') }}";</script>
+<noscript>
+    <p>Redirigiendo... <a href="{{ url_for('admin.login_admin') }}">Haz clic aquí si no te redirige automáticamente.</a></p>
+</noscript>
+{% endblock %}

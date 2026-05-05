@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, date as date_type
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from db import db
-from models import Torneo, Equipo, Cancha, Partido, Anuncio, Jugador, Inscripcion, RegistroJugador, ContactoEmergencia, Arbitro, Gol, Incidencia, LogMovimiento
+from models import Torneo, Equipo, Cancha, Partido, Anuncio, Jugador, Inscripcion, RegistroJugador, ContactoEmergencia, Arbitro, Gol, Incidencia, LogMovimiento, PagoArbitraje, BloqueHorario
 from sqlalchemy import func
+
+COSTO_ARBITRAJE = 150.00
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -164,6 +166,7 @@ def crear_torneo():
 
         nuevo_torneo = Torneo(
             nombre=request.form.get("nombre"),
+            dia_torneo=request.form.get("dia_torneo"),
             categoria=request.form.get("categoria"),
             tipo=request.form.get("tipo"),
             fecha_inicio=f_ini,
@@ -179,18 +182,22 @@ def crear_torneo():
 @admin_bp.route("/equipos/nuevo", methods=["GET", "POST"])
 def crear_equipo():
     if request.method == "POST":
+        capitan_id_raw = request.form.get("capitan_id")
         nuevo_equipo = Equipo(
             nombre=request.form.get("nombre"),
             representante=request.form.get("representante"),
             telefono=request.form.get("telefono"),
             categoria=request.form.get("categoria"),
+            color_uniforme=request.form.get("color_uniforme"),
+            capitan_id=int(capitan_id_raw) if capitan_id_raw else None,
             activo=True
         )
         db.session.add(nuevo_equipo)
         db.session.commit()
         registrar_movimiento('Equipos', f'Alta de equipo: {nuevo_equipo.nombre}')
         return redirect(url_for('admin.vista_equipos_admin'))
-    return render_template("admin/form_equipo.html")
+    jugadores = db.session.execute(db.select(Jugador)).scalars().all()
+    return render_template("admin/form_equipo.html", jugadores=jugadores)
 
 @admin_bp.route("/partidos/nuevo", methods=["GET", "POST"])
 def crear_partido():
@@ -223,8 +230,9 @@ def crear_partido():
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
     inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
+    arbitros = db.session.execute(db.select(Arbitro).where(Arbitro.estado == "Activo")).scalars().all()
 
-    return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones)
+    return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones, arbitros=arbitros)
 
 
 
@@ -259,6 +267,7 @@ def editar_torneo(id):
     torneo = db.session.get(Torneo, id)
     if request.method == "POST":
         torneo.nombre = request.form.get("nombre")
+        torneo.dia_torneo = request.form.get("dia_torneo")
         torneo.categoria = request.form.get("categoria")
         torneo.tipo = request.form.get("tipo")
         f_ini = request.form.get("fecha_inicio")
@@ -288,10 +297,14 @@ def editar_equipo(id):
         equipo.representante = request.form.get("representante")
         equipo.telefono = request.form.get("telefono")
         equipo.categoria = request.form.get("categoria")
+        equipo.color_uniforme = request.form.get("color_uniforme")
+        capitan_id_raw = request.form.get("capitan_id")
+        equipo.capitan_id = int(capitan_id_raw) if capitan_id_raw else None
         db.session.commit()
         registrar_movimiento('Equipos', f'Se editó el equipo: {equipo.nombre}')
         return redirect(url_for('admin.vista_equipos_admin'))
-    return render_template("admin/editar_equipo.html", equipo=equipo)
+    jugadores = db.session.execute(db.select(Jugador)).scalars().all()
+    return render_template("admin/editar_equipo.html", equipo=equipo, jugadores=jugadores)
 
 @admin_bp.route("/equipos/eliminar/<int:id>")
 def eliminar_equipo(id):
@@ -379,7 +392,9 @@ def crear_jugador():
             apellido_paterno=request.form.get("apellido_paterno"),
             apellido_materno=request.form.get("apellido_materno"),
             fecha_nacimiento=f_nac_obj,
-            sexo=request.form.get("sexo")
+            sexo=request.form.get("sexo"),
+            curp=request.form.get("curp") or None,
+            foto_url=request.form.get("foto_url") or None
         )
         
         nombre_c = request.form.get("nombre_contacto")
@@ -404,6 +419,8 @@ def editar_jugador(id):
         f_nac_str = request.form.get("fecha_nacimiento")
         jugador.fecha_nacimiento = datetime.strptime(f_nac_str, "%Y-%m-%d").date() if f_nac_str else None
         jugador.sexo = request.form.get("sexo")
+        jugador.curp = request.form.get("curp") or None
+        jugador.foto_url = request.form.get("foto_url") or None
         
         nombre_c = request.form.get("nombre_contacto")
         if jugador.contacto_emergencia:
@@ -475,9 +492,21 @@ def eliminar_inscripcion(id):
 def gestionar_roster(id):
     inscripcion = db.session.get(Inscripcion, id)
     if request.method == "POST":
+        jugador_id = request.form.get("jugador_id")
+        # Validar que el jugador no pertenezca ya a otro equipo en el mismo torneo
+        conflicto = db.session.execute(
+            db.select(RegistroJugador)
+            .join(Inscripcion)
+            .where(Inscripcion.torneo_id == inscripcion.torneo_id)
+            .where(RegistroJugador.jugador_id == int(jugador_id))
+        ).scalar_one_or_none()
+        if conflicto:
+            flash("Error: ese jugador ya pertenece a otro equipo en este torneo.")
+            return redirect(url_for('admin.gestionar_roster', id=inscripcion.id))
+
         nuevo_registro = RegistroJugador(
             inscripcion_id=inscripcion.id,
-            jugador_id=request.form.get("jugador_id"),
+            jugador_id=jugador_id,
             dorsal=request.form.get("dorsal"),
             es_capitan=True if request.form.get("es_capitan") else False
         )
@@ -563,10 +592,40 @@ def resultados_partido(id):
     partido = db.session.get(Partido, id)
     if request.method == "POST":
         nuevo_estado = request.form.get("estado")
+        no_presento_1 = True if request.form.get("no_presento_1") else False
+        no_presento_2 = True if request.form.get("no_presento_2") else False
+        motivo_cancelacion = request.form.get("motivo_cancelacion")
+
         if nuevo_estado:
             partido.estado = nuevo_estado
+            partido.motivo_cancelacion = motivo_cancelacion or partido.motivo_cancelacion
+
+            # Auto-generar pagos de arbitraje si se cancela o reprograma
+            if nuevo_estado in ("Cancelado", "Reprogramado"):
+                from datetime import date as _date
+                for insc_id in [partido.inscripcion_1_id, partido.inscripcion_2_id]:
+                    pago_arb = PagoArbitraje(
+                        partido_id=partido.id,
+                        inscripcion_id=insc_id,
+                        fecha_pago=_date.today(),
+                        monto=COSTO_ARBITRAJE,
+                        metodo_pago="Pendiente"
+                    )
+                    db.session.add(pago_arb)
+                db.session.commit()
+                registrar_movimiento('Partidos', f'Partido ID {partido.id} {nuevo_estado} — arbitraje generado automáticamente')
+            else:
+                db.session.commit()
+                registrar_movimiento('Partidos', f'Estado del partido ID {partido.id} cambiado a {nuevo_estado}')
+
+        # Manejar no presentaciones
+        if no_presento_1 or no_presento_2:
+            partido.no_presento_1 = no_presento_1
+            partido.no_presento_2 = no_presento_2
+            partido.estado = "Finalizado"
             db.session.commit()
-            registrar_movimiento('Partidos', f'Estado del partido ID {partido.id} cambiado a {nuevo_estado}')
+            registrar_movimiento('Partidos', f'No presentación registrada en partido ID {partido.id}')
+            return redirect(url_for('admin.resultados_partido', id=partido.id))
             
         registro_jugador_id = request.form.get("registro_jugador_id")
         if registro_jugador_id:
@@ -589,3 +648,65 @@ def resultados_partido(id):
 
         return redirect(url_for('admin.resultados_partido', id=partido.id))
     return render_template("admin/resultados_partido.html", partido=partido)
+
+
+@admin_bp.route("/partidos/<int:partido_id>/eliminar_gol/<int:gol_id>", methods=["POST"])
+@login_required
+def eliminar_gol(partido_id, gol_id):
+    
+    gol = db.session.get(Gol, gol_id) 
+    if gol:
+        db.session.delete(gol)
+        db.session.commit()
+        registrar_movimiento('Partidos', f'Se eliminó un gol del partido {partido_id}')
+    
+    
+    return redirect(url_for('admin.resultados_partido', id=partido_id))
+
+@admin_bp.route("/partidos/<int:partido_id>/eliminar_incidencia/<int:incidencia_id>", methods=["POST"])
+@login_required
+def eliminar_incidencia(partido_id, incidencia_id):
+    
+    incidencia = db.session.get(Incidencia, incidencia_id)
+    if incidencia:
+        db.session.delete(incidencia)
+        db.session.commit()
+        registrar_movimiento('Partidos', f'Se eliminó una incidencia del partido {partido_id}')
+
+    
+    return redirect(url_for('admin.resultados_partido', id=partido_id))
+
+# -----------------------------
+# ADEUDOS
+# -----------------------------
+
+@admin_bp.get("/adeudos")
+def vista_adeudos_admin():
+    from models import PagoInscripcion
+    inscripciones_sin_pago = db.session.execute(
+        db.select(Inscripcion)
+        .outerjoin(PagoInscripcion, PagoInscripcion.inscripcion_id == Inscripcion.id)
+        .where(PagoInscripcion.id == None)
+    ).scalars().all()
+
+    arbitrajes_pendientes = db.session.execute(
+        db.select(PagoArbitraje)
+        .where(PagoArbitraje.metodo_pago == "Pendiente")
+    ).scalars().all()
+
+    return render_template(
+        "admin/adeudos_admin.html",
+        inscripciones_sin_pago=inscripciones_sin_pago,
+        arbitrajes_pendientes=arbitrajes_pendientes
+    )
+
+@admin_bp.route("/adeudos/arbitraje/pagar/<int:id>", methods=["POST"])
+def pagar_arbitraje(id):
+    from datetime import date as _date
+    pago = db.session.get(PagoArbitraje, id)
+    if pago:
+        pago.metodo_pago = request.form.get("metodo_pago", "Efectivo")
+        pago.fecha_pago = _date.today()
+        db.session.commit()
+        registrar_movimiento('Adeudos', f'Arbitraje ID {pago.id} marcado como pagado')
+    return redirect(url_for('admin.vista_adeudos_admin'))

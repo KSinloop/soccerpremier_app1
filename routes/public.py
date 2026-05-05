@@ -54,10 +54,14 @@ def pagina_torneos():
 
 @public_bp.get("/equipos")
 def pagina_equipos():
-    equipos_db = db.session.execute(
-        db.select(Equipo).order_by(Equipo.nombre.asc())
-    ).scalars().all()
-    return render_template("public/equipos.html", equipos = equipos_db)
+    filtro_actual = request.args.get("filtro", "Todos")
+
+    if filtro_actual == "Todos":
+        equipos_db = db.session.execute(db.select(Equipo).order_by(Equipo.nombre.asc())).scalars().all()
+    else:
+        equipos_db = db.session.execute(db.select(Equipo).order_by(Equipo.nombre.asc()).where(Equipo.categoria == filtro_actual)).scalars().all()
+
+    return render_template("public/equipos.html", equipos = equipos_db, filtro_actual = filtro_actual)
 
 @public_bp.get("/partidos")
 def pagina_partidos():
@@ -68,7 +72,9 @@ def pagina_partidos():
         stmt = stmt.filter_by(torneo_id=torneo_id)
 
     partidos_db = db.session.execute(stmt).scalars().all()
-    return render_template("public/partidos.html", partidos = partidos_db)
+    torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.nombre.asc())).scalars().all()
+
+    return render_template("public/partidos.html", partidos=partidos_db, torneos=torneos_db, torneo_seleccionado=torneo_id)
 
 def calcular_marcador(partido):
     insc1_id = partido.inscripcion_1_id
@@ -89,9 +95,13 @@ def calcular_marcador(partido):
 
 @public_bp.get("/resultados")
 def pagina_resultados():
-    partidos = db.session.execute(
-        db.select(Partido).where(Partido.estado == "Finalizado")
-    ).scalars().all()
+    torneo_id = request.args.get("torneo_id", type=int)
+
+    stmt = db.select(Partido).where(Partido.estado == "Finalizado").order_by(Partido.fecha_hora.asc())
+    if torneo_id:
+        stmt = stmt.filter_by(torneo_id=torneo_id)
+
+    partidos = db.session.execute(stmt).scalars().all()
 
     resultados_db = []
     for p in partidos:
@@ -102,7 +112,9 @@ def pagina_resultados():
             "goles_2": g2
         })
 
-    return render_template("public/resultados.html", resultados = resultados_db)
+    torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.nombre.asc())).scalars().all()
+
+    return render_template("public/resultados.html", resultados = resultados_db, torneos=torneos_db, torneo_seleccionado=torneo_id)
 
 @public_bp.get("/posiciones")
 def pagina_posiciones():

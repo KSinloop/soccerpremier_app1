@@ -19,17 +19,17 @@
 </section>
 
 <section class="container page-body">
-    <section class="toolbar-simple"> 
-        <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Relámpago</a>
-        <a href="#" class="toolbar-pill">Clausura Premier</a>
-        <a href="#" class="toolbar-pill">Copa Femenil</a>
+    <section class="toolbar-simple">
+        <a href="{{ url_for('public.pagina_resultados') }}" class="toolbar-pill {% if not torneo_seleccionado %}active{% endif %}">Todos</a>
+        {% for t in torneos %}
+        <a href="{{ url_for('public.pagina_resultados', torneo_id=t.id) }}" class="toolbar-pill {% if torneo_seleccionado == t.id %}active{% endif %}">{{ t.nombre }}
+        </a>
+        {% endfor %}
+
     </section>
 
+    {% if resultados %}
     <section class="results-grid">
-
-        {% if resultados %}
-
             {% for r in resultados %}
             <article class="result-card">
                 <div class="result-top">
@@ -55,13 +55,11 @@
                 <p>{{ r.partido.torneo.nombre }}{% if r.partido.cancha %} · {{ r.partido.cancha.nombre }}{% endif %}</p>
             </article>
         {% endfor %}
-
-        {% else %} 
-            <article class="result-card">
-                <span class="result-meta">Aún no hay resultados registrados.</span>
-            </article>
-        {% endif %}
     </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay partidos registrados aún.</p>
+    {% endif %}
 </section>
 
 {% endblock %}

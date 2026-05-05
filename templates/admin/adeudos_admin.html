@@ -1,0 +1,104 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Panel de Adeudos{% endblock %}
+{% block content %}
+
+<!-- ADEUDOS DE INSCRIPCIÓN -->
+<div class="admin-table-card" style="margin-bottom: 28px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Adeudos de inscripción</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Equipo</th>
+                    <th>Torneo</th>
+                    <th>Fecha inscripción</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for insc in inscripciones_sin_pago %}
+                <tr>
+                    <td>{{ insc.equipo.nombre }}</td>
+                    <td>{{ insc.torneo.nombre }}</td>
+                    <td>{{ insc.fecha_inscripcion }}</td>
+                    <td><span class="status-badge status-soon">Sin pago</span></td>
+                    <td>
+                        <div class="admin-actions">
+                            <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" class="admin-action-link">
+                                Registrar pago
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color: #000000; padding: 32px; font-weight: 700;">
+                         No hay inscripciones con adeudos pendientes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ADEUDOS DE ARBITRAJE -->
+<div class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Adeudos de arbitraje</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Partido</th>
+                    <th>Equipo</th>
+                    <th>Monto</th>
+                    <th>Fecha registro</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in arbitrajes_pendientes %}
+                <tr>
+                    <td>#{{ pago.partido_id }}</td>
+                    <td>{{ pago.inscripcion.equipo.nombre }}</td>
+                    <td><strong>${{ "%.2f"|format(pago.monto) }}</strong></td>
+                    <td>{{ pago.fecha_pago }}</td>
+                    <td>
+                        <form action="{{ url_for('admin.pagar_arbitraje', id=pago.id) }}" method="POST"
+                              style="display: flex; gap: 8px; align-items: center;">
+                            <select name="metodo_pago"
+                                    style="min-height: 40px; border-radius: 12px; border: 1px solid #d9e1ee; padding: 0 12px; font-size: 0.9rem; color: var(--text); outline: none;">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                            <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 40px; font-size: 0.9rem;">
+                                Marcar pagado
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color: #000000; padding: 32px; font-weight: 700;">
+                         No hay adeudos de arbitraje pendientes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

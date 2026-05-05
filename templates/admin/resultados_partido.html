@@ -1,91 +1,347 @@
 {% extends "admin/base_admin.html" %}
 {% block admin_title %}Control de Partido{% endblock %}
 {% block content %}
-<section class="admin-panel-card" style="max-width: 800px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 class="admin-panel-title">{{ partido.inscripcion_1.equipo.nombre }} vs {{ partido.inscripcion_2.equipo.nombre }}</h3>
-        <span class="status-badge" style="font-size: 1.2em;">{{ partido.estado }}</span>
-    </div>
-    <p>Torneo: {{ partido.torneo.nombre }} | Jornada: {{ partido.jornada }} | Árbitro: {{ partido.arbitro.nombre if partido.arbitro else 'Por definir' }}</p>
-    <hr>
 
-    <!-- CONTROL DE ESTADO -->
-    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="margin-bottom: 30px; display: flex; gap: 10px;">
-        <select name="estado" style="padding: 10px; border-radius: 5px; flex: 1;">
-            <option value="Programado" {% if partido.estado == 'Programado' %}selected{% endif %}>Programado</option>
-            <option value="En directo" {% if partido.estado == 'En directo' %}selected{% endif %}>En directo </option>
-            <option value="Finalizado" {% if partido.estado == 'Finalizado' %}selected{% endif %}>Finalizado </option>
-        </select>
-        <button type="submit" class="btn btn-primary">Actualizar Estado</button>
-    </form>
-
-    <!-- REGISTRO DE GOLES -->
-    <h4>Registrar Gol </h4>
-    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="display: flex; gap: 10px;">
-        <select name="registro_jugador_id" required style="padding: 10px; border-radius: 5px; flex: 1;">
-            <option value="">Selecciona quién anotó...</option>
-            
-            <!-- JUGADORES DEL EQUIPO LOCAL -->
-            <optgroup label="{{ partido.inscripcion_1.equipo.nombre }}">
-                {% for registro in partido.inscripcion_1.roster_jugadores %}
-                    <option value="{{ registro.id }}">{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
-                {% else %}
-                    <option disabled>No hay jugadores registrados en el roster</option>
-                {% endfor %}
-            </optgroup>
-
-            <!-- JUGADORES DEL EQUIPO VISITANTE -->
-            <optgroup label="{{ partido.inscripcion_2.equipo.nombre }}">
-                {% for registro in partido.inscripcion_2.roster_jugadores %}
-                    <option value="{{ registro.id }}">{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
-                {% else %}
-                    <option disabled>No hay jugadores registrados en el roster</option>
-                {% endfor %}
-            </optgroup>
-        </select>
-        <button type="submit" class="btn btn-primary" style="background-color: #28a745;">Cantar Gol</button>
-    </form>
-
-    <!-- REGISTRO DE INCIDENCIAS (Tarjetas / Lesiones) -->
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px;">
-        <h4 style="margin-top: 0;">Registrar Incidencia </h4>
-        
-        <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
-            
-            <div style="display: flex; gap: 10px;">
-                <!-- 1. Quién fue -->
-                <select name="jugador_incidencia_id" required style="padding: 10px; border-radius: 5px; flex: 2; border: 1px solid #ccc;">
-                    <option value="">Selecciona al jugador implicado...</option>
-                    <optgroup label="Local: {{ partido.inscripcion_1.equipo.nombre }}">
-                        {% for registro in partido.inscripcion_1.roster_jugadores %}
-                            <option value="{{ registro.id }}">#{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
-                        {% endfor %}
-                    </optgroup>
-                    <optgroup label="Visitante: {{ partido.inscripcion_2.equipo.nombre }}">
-                        {% for registro in partido.inscripcion_2.roster_jugadores %}
-                            <option value="{{ registro.id }}">#{{ registro.dorsal }} - {{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }}</option>
-                        {% endfor %}
-                    </optgroup>
-                </select>
-
-                <!-- 2. Qué pasó -->
-                <select name="tipo_incidencia" required style="padding: 10px; border-radius: 5px; flex: 1; border: 1px solid #ccc;">
-                    <option value="">Tipo...</option>
-                    <option value="Tarjeta Amarilla"> Tarjeta Amarilla</option>
-                    <option value="Tarjeta Roja"> Tarjeta Roja</option>
-                    <option value="Lesión"> Lesión</option>
-                    <option value="Otro"> Otro</option>
-                </select>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <!-- 3. Detalles -->
-                <input type="text" name="descripcion" placeholder="Detalles (Ej. Falta fuerte por detrás, reclamo al árbitro...)" required style="padding: 10px; border-radius: 5px; flex: 3; border: 1px solid #ccc;">
-                
-                <button type="submit" class="btn btn-warning" style="flex: 1; font-weight: bold;">Registrar</button>
-            </div>
-        </form>
+<!-- INFO DEL PARTIDO -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">PARTIDO #{{ partido.id }}</span>
+            <h3 class="admin-panel-title">
+                {{ partido.inscripcion_1.equipo.nombre }} vs {{ partido.inscripcion_2.equipo.nombre }}
+            </h3>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            {% if partido.estado == 'Programado' %}
+                <span class="status-badge status-scheduled">Programado</span>
+            {% elif partido.estado == 'En directo' %}
+                <span class="status-badge status-soon">En directo</span>
+            {% elif partido.estado == 'Finalizado' %}
+                <span class="status-badge status-end">Finalizado</span>
+            {% elif partido.estado == 'Cancelado' %}
+                <span class="status-badge status-end">Cancelado</span>
+            {% else %}
+                <span class="status-badge status-scheduled">{{ partido.estado }}</span>
+            {% endif %}
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
+        </div>
     </div>
 
-</section>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 24px 28px;">
+        <div class="admin-mini-card">
+            <h4>Torneo</h4>
+            <p>{{ partido.torneo.nombre }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Cancha</h4>
+            <p>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Árbitro</h4>
+            <p>{{ (partido.arbitro.nombre + ' ' + partido.arbitro.apellido_paterno) if partido.arbitro else 'Por definir' }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Jornada</h4>
+            <p>{{ partido.jornada }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Fecha y hora</h4>
+            <p>{{ partido.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>No presentaciones</h4>
+            <p>
+                {% if partido.no_presento_1 %}{{ partido.inscripcion_1.equipo.nombre }}{% endif %}
+                {% if partido.no_presento_2 %}{{ partido.inscripcion_2.equipo.nombre }}{% endif %}
+                {% if not partido.no_presento_1 and not partido.no_presento_2 %}Ninguna{% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- MARCADOR ACTUAL -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">MARCADOR ACTUAL</span>
+            <h3 class="admin-panel-title">Resultado</h3>
+        </div>
+    </div>
+    <div style="padding: 24px 28px;">
+        {% set roster_ids_1 = partido.inscripcion_1.roster_jugadores | map(attribute='id') | list %}
+        {% set roster_ids_2 = partido.inscripcion_2.roster_jugadores | map(attribute='id') | list %}
+        {% set g1 = namespace(count=0) %}
+        {% set g2 = namespace(count=0) %}
+        {% for gol in partido.goles %}
+            {% if gol.registro_jugador_id in roster_ids_1 %}
+                {% set g1.count = g1.count + 1 %}
+            {% elif gol.registro_jugador_id in roster_ids_2 %}
+                {% set g2.count = g2.count + 1 %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="result-match" style="max-width: 600px; margin: 0 auto;">
+            <div class="team-score">
+                <h3>{{ partido.inscripcion_1.equipo.nombre }}</h3>
+                <strong>{{ g1.count }}</strong>
+            </div>
+            <span class="vs-sep">VS</span>
+            <div class="team-score">
+                <h3>{{ partido.inscripcion_2.equipo.nombre }}</h3>
+                <strong>{{ g2.count }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REGISTRAR GOL -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ESTADÍSTICAS</span>
+            <h3 class="admin-panel-title">Registrar gol</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; gap: 14px;">
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Jugador que anotó</label>
+            <select name="registro_jugador_id" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Selecciona quién anotó...</option>
+                <optgroup label="{{ partido.inscripcion_1.equipo.nombre }}">
+                    {% for r in partido.inscripcion_1.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% else %}
+                        <option disabled>Sin jugadores en el roster</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="{{ partido.inscripcion_2.equipo.nombre }}">
+                    {% for r in partido.inscripcion_2.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% else %}
+                        <option disabled>Sin jugadores en el roster</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="admin-chip admin-chip-gold">Cantar gol</button>
+        </div>
+    </form>
+</div>
+
+<!-- REGISTRAR INCIDENCIA -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">DISCIPLINA</span>
+            <h3 class="admin-panel-title">Registrar incidencia</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Tipo de incidencia</label>
+            <select name="tipo_incidencia" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Tipo...</option>
+                <option value="Tarjeta Amarilla">Tarjeta Amarilla</option>
+                <option value="Tarjeta Roja">Tarjeta Roja</option>
+                <option value="Falta">Falta</option>
+            </select>
+        </div>
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Jugador implicado</label>
+            <select name="jugador_incidencia_id" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Selecciona al jugador...</option>
+                <optgroup label="Local: {{ partido.inscripcion_1.equipo.nombre }}">
+                    {% for r in partido.inscripcion_1.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Visitante: {{ partido.inscripcion_2.equipo.nombre }}">
+                    {% for r in partido.inscripcion_2.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div style="grid-column: 1 / -1; display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Descripción</label>
+            <input type="text" name="descripcion" placeholder="Ej. Falta fuerte por detrás, reclamo al árbitro..." required
+                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+        </div>
+        <div style="grid-column: 1 / -1;">
+            <button type="submit" class="admin-chip admin-chip-gold">Registrar incidencia</button>
+        </div>
+    </form>
+</div>
+
+<!-- INASISTENCIAS Y ESTADO -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">CONTROL</span>
+            <h3 class="admin-panel-title">Inasistencias y estado</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; gap: 18px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div style="background: #fff6d9; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="no_presento_1" name="no_presento_1" value="1"
+                       {% if partido.no_presento_1 %}checked{% endif %}
+                       style="width: 20px; height: 20px; flex-shrink: 0;">
+                <label for="no_presento_1" style="color: var(--navy); font-weight: 800; cursor: pointer;">
+                    No se presentó: {{ partido.inscripcion_1.equipo.nombre }}
+                </label>
+            </div>
+            <div style="background: #fff6d9; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="no_presento_2" name="no_presento_2" value="1"
+                       {% if partido.no_presento_2 %}checked{% endif %}
+                       style="width: 20px; height: 20px; flex-shrink: 0;">
+                <label for="no_presento_2" style="color: var(--navy); font-weight: 800; cursor: pointer;">
+                    No se presentó: {{ partido.inscripcion_2.equipo.nombre }}
+                </label>
+            </div>
+        </div>
+
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Estado del partido</label>
+            <select name="estado" id="estado_select" onchange="toggleMotivo(this)"
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="Programado"   {% if partido.estado == 'Programado'   %}selected{% endif %}>Programado</option>
+                <option value="En directo"   {% if partido.estado == 'En directo'   %}selected{% endif %}>En directo</option>
+                <option value="Finalizado"   {% if partido.estado == 'Finalizado'   %}selected{% endif %}>Finalizado</option>
+                <option value="Cancelado"    {% if partido.estado == 'Cancelado'    %}selected{% endif %}>Cancelado</option>
+                <option value="Reprogramado" {% if partido.estado == 'Reprogramado' %}selected{% endif %}>Reprogramado</option>
+            </select>
+        </div>
+
+        <div id="motivo_box" style="display: none; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Motivo de cancelación / observaciones</label>
+            <input type="text" name="motivo_cancelacion" value="{{ partido.motivo_cancelacion or '' }}"
+                   placeholder="Ej. Lluvia, conflicto de horario..."
+                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+        </div>
+
+        <div>
+            <button type="submit" class="admin-chip admin-chip-gold">Guardar estado</button>
+        </div>
+    </form>
+</div>
+
+<!-- GOLES REGISTRADOS -->
+<div class="admin-table-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ESTADÍSTICAS</span>
+            <h3 class="admin-panel-title">Goles registrados ({{ partido.goles|length }})</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Jugador</th>
+                    <th>Equipo</th>
+                    <th>Acciones</th> <!-- Nueva columna -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for gol in partido.goles %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        {% if gol.registro_jugador %}
+                            #{{ gol.registro_jugador.dorsal }} {{ gol.registro_jugador.jugador.nombre }} {{ gol.registro_jugador.jugador.apellido_paterno }}
+                        {% else %}
+                            Gol sin jugador registrado
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if gol.registro_jugador %}
+                            {{ gol.registro_jugador.inscripcion.equipo.nombre }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Botón de eliminar con confirmación -->
+                        <form action="{{ url_for('admin.eliminar_gol', gol_id=gol.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar este gol? Se restará del marcador.');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center; color: var(--muted); padding: 32px;">Sin goles registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- INCIDENCIAS REGISTRADAS -->
+<div class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">DISCIPLINA</span>
+            <h3 class="admin-panel-title">Incidencias registradas ({{ partido.incidencias|length }})</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tipo</th>
+                    <th>Jugador</th>
+                    <th>Equipo</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for inc in partido.incidencias %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ inc.tipo }}</td>
+                    <td>#{{ inc.registro_jugador.dorsal }} {{ inc.registro_jugador.jugador.nombre }} {{ inc.registro_jugador.jugador.apellido_paterno }}</td>
+                    <td>{{ inc.registro_jugador.inscripcion.equipo.nombre }}</td>
+                    <td>{{ inc.descripcion }}</td>
+                    <td>
+                        <!-- Botón de eliminar con confirmación -->
+                        <form action="{{ url_for('admin.eliminar_incidencia', incidencia_id=inc.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar esta incidencia?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color: var(--muted); padding: 32px;">Sin incidencias registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function toggleMotivo(sel) {
+    var box = document.getElementById('motivo_box');
+    if (sel.value === 'Cancelado' || sel.value === 'Reprogramado') {
+        box.style.display = 'grid';
+    } else {
+        box.style.display = 'none';
+    }
+}
+toggleMotivo(document.getElementById('estado_select'));
+</script>
 {% endblock %}

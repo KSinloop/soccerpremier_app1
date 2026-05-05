@@ -1,38 +1,99 @@
 {% extends "admin/base_admin.html" %}
-
 {% block admin_title %}Editar Torneo{% endblock %}
-
 {% block content %}
-<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
-    <span class="section-kicker">COMPETENCIA</span>
-    <h3 class="admin-panel-title">Modificar datos del torneo</h3>
-    
-    
-    <form action="{{ url_for('admin.editar_torneo', id=torneo.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
-        
-        <label for="nombre">Nombre del torneo:</label>
-        <input type="text" id="nombre" name="nombre" value="{{ torneo.nombre }}" placeholder="Ej. Clausura Premier 2026" required>
-
-        <label for="categoria">Categoría:</label>
-        <input type="text" id="categoria" name="categoria" value="{{ torneo.categoria }}" placeholder="Ej. Libre, Juvenil, Veteranos..." required>
-
-        <label for="tipo">Modalidad (Tipo):</label>
-        <select id="tipo" name="tipo" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="Fútbol 11">Fútbol 11</option>
-            <option value="Fútbol 7">Fútbol 7</option>
-            <option value="Fútbol Rápido">Fútbol Rápido</option>
-        </select>
-
-        <label for="fecha_inicio">Fecha de inicio:</label>
-        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ torneo.fecha_inicio }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-
-        <label for="fecha_fin">Fecha de fin (Aproximada):</label>
-        <input type="date" id="fecha_fin" name="fecha_fin" value="{{ torneo.fecha_fin }}" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar Torneo</button>
-            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">COMPETENCIA</span>
+                <h3 class="admin-panel-title">Modificar datos del torneo</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-chip">← Volver</a>
         </div>
-    </form>
-</section>
+        <form action="{{ url_for('admin.editar_torneo', id=torneo.id) }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Nombre del torneo</label>
+                <input type="text" name="nombre" value="{{ torneo.nombre }}" placeholder="Ej. Clausura Premier 2026" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Día(s) del torneo</label>
+                <select id="dia_torneo" name="dia_torneo" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">-- Selecciona el día --</option>
+                    <option value="Lunes-Viernes" {% if torneo.dia_torneo == 'Lunes-Viernes' %}selected{% endif %}>Lunes-Viernes</option>
+                    <option value="Sabatino" {% if torneo.dia_torneo == 'Sabatino' %}selected{% endif %}>Sabatino</option>
+                    <option value="Domingo" {% if torneo.dia_torneo == 'Domingo' %}selected{% endif %}>Domingo</option>
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Categoría</label>
+                <select id="categoria" name="categoria" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">-- Selecciona el día primero --</option>
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Modalidad (tipo)</label>
+                <select name="tipo" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="Fútbol 11" {% if torneo.tipo == 'Fútbol 11' %}selected{% endif %}>Fútbol 11</option>
+                    <option value="Fútbol 7" {% if torneo.tipo == 'Fútbol 7' %}selected{% endif %}>Fútbol 7</option>
+                    <option value="Fútbol Rápido" {% if torneo.tipo == 'Fútbol Rápido' %}selected{% endif %}>Fútbol Rápido</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Fecha de inicio</label>
+                    <input type="date" name="fecha_inicio" value="{{ torneo.fecha_inicio }}" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Fecha de fin (aprox.)</label>
+                    <input type="date" name="fecha_fin" value="{{ torneo.fecha_fin }}" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Actualizar torneo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const categoriasPorDia = {
+    "Lunes-Viernes": ["Mamás", "Papás", "Mixto", "Golden", "Champions", "Liga MX"],
+    "Sabatino": ["Años 18-19", "Años 16-17", "Años 14-15", "Años 12-13", "Años 10-11", "Mixtos"],
+    "Domingo": ["Libre Varonil", "Libre Femenil"]
+};
+const currentCategoria = "{{ torneo.categoria or '' }}";
+const currentDia = "{{ torneo.dia_torneo or '' }}";
+
+function poblarCategorias(dia, seleccionada) {
+    const catSelect = document.getElementById('categoria');
+    catSelect.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
+    const opciones = categoriasPorDia[dia] || [];
+    opciones.forEach(function(cat) {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === seleccionada) opt.selected = true;
+        catSelect.appendChild(opt);
+    });
+}
+if (currentDia) { poblarCategorias(currentDia, currentCategoria); }
+document.getElementById('dia_torneo').addEventListener('change', function() {
+    poblarCategorias(this.value, '');
+});
+</script>
 {% endblock %}

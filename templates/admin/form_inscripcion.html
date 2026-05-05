@@ -1,39 +1,56 @@
 {% extends "admin/base_admin.html" %}
 {% block admin_title %}Nueva Inscripción{% endblock %}
 {% block content %}
-<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
-    <span class="section-kicker">OPERATIVO</span>
-    <h3 class="admin-panel-title">Inscribir equipo a torneo</h3>
-    
-    <form action="{{ url_for('admin.crear_inscripcion') }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
-        
-        <label for="torneo_id">Seleccionar Torneo:</label>
-        <select id="torneo_id" name="torneo_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="">-- Elige un torneo --</option>
-            {% for t in torneos %}
-                <option value="{{ t.id }}">{{ t.nombre }} ({{ t.categoria }})</option>
-            {% endfor %}
-        </select>
-
-        <label for="equipo_id">Seleccionar Equipo:</label>
-        <select id="equipo_id" name="equipo_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="">-- Elige un equipo --</option>
-            {% for e in equipos %}
-                <option value="{{ e.id }}">{{ e.nombre }} ({{ e.categoria }})</option>
-            {% endfor %}
-        </select>
-
-        <label for="estado_inscripcion">Estado del pago / inscripción:</label>
-        <select id="estado_inscripcion" name="estado_inscripcion" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="Pendiente">Pendiente de Pago</option>
-            <option value="Pagada">Pagada</option>
-            <option value="Baja">Baja / Retirado</option>
-        </select>
-
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Registrar Inscripción</button>
-            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">OPERATIVO</span>
+                <h3 class="admin-panel-title">Inscribir equipo a torneo</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-chip">← Volver</a>
         </div>
-    </form>
-</section>
+        <form action="{{ url_for('admin.crear_inscripcion') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Torneo</label>
+                <select name="torneo_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">— Elige un torneo —</option>
+                    {% for t in torneos %}
+                        <option value="{{ t.id }}">{{ t.nombre }} ({{ t.categoria }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Equipo</label>
+                <select name="equipo_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">— Elige un equipo —</option>
+                    {% for e in equipos %}
+                        <option value="{{ e.id }}">{{ e.nombre }} ({{ e.categoria }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Estado del pago / inscripción</label>
+                <select name="estado_inscripcion" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="Pendiente">Pendiente de Pago</option>
+                    <option value="Pagada">Pagada</option>
+                    <option value="Baja">Baja / Retirado</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Registrar inscripción
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
