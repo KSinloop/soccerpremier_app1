@@ -87,8 +87,11 @@
                 </div>
                 <hr class="modal-divider">
                 <div class="modal-meta">
-                    <p>Equipos Inscritos</p>
-                    <span>EQUIPO</span>
+                {% for inscripcion in t.equipos_inscritos %}
+                    <span>{{ inscripcion.equipo.nombre }}</span>
+                {% else %}
+                    <span>Sin equipos inscritos</span>
+                {% endfor %}
                 </div>
             </section>
         </dialog>
