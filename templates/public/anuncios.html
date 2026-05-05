@@ -30,8 +30,8 @@
         <a href="{{url_for('public.pagina_anuncios', filtro='General')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'General' else '' }}">General</a>
     </section>
 
+    {% if anuncios %}
     <section class="anuncios-list">
-
         {% for a in anuncios %}
         <article class="anuncio-item">
             <div class="anuncio-date">
@@ -45,8 +45,11 @@
             </div>
         </article>
         {% endfor %}
-
     </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay anuncios aún.</p>
+    {% endif %}
 </section>
 
 {% endblock %}

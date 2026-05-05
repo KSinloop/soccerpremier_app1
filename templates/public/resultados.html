@@ -26,10 +26,8 @@
         <a href="#" class="toolbar-pill">Copa Femenil</a>
     </section>
 
+    {% if resultados %}
     <section class="results-grid">
-
-        {% if resultados %}
-
             {% for r in resultados %}
             <article class="result-card">
                 <div class="result-top">
@@ -55,13 +53,11 @@
                 <p>{{ r.partido.torneo.nombre }}{% if r.partido.cancha %} · {{ r.partido.cancha.nombre }}{% endif %}</p>
             </article>
         {% endfor %}
-
-        {% else %} 
-            <article class="result-card">
-                <span class="result-meta">Aún no hay resultados registrados.</span>
-            </article>
-        {% endif %}
     </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay partidos registrados aún.</p>
+    {% endif %}
 </section>
 
 {% endblock %}

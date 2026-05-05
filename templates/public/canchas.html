@@ -28,8 +28,8 @@
 
     </section>
     
+    {% if canchas %}
     <section class="cards-grid">
-
         {% for c in canchas %}
         <article class="menu-card cancha-card">
             <div class="cancha-top">
@@ -49,7 +49,10 @@
             </div>
         </article>
         {% endfor %}
-
     </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay canchas registradas aún.</p>
+    {% endif %}
 </section>
 {% endblock %}

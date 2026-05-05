@@ -97,6 +97,16 @@
                     <strong>{{ amonestado.amarillas }}A / {{ amonestado.rojas }}R</strong>
                 </div>
             </div>
+            {% else %}
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <div>
+                            <h4>Aún no hay tarjetas registradas.</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
 
         </article>

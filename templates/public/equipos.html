@@ -27,8 +27,8 @@
         <a href="#" class="toolbar-pill">Femenil</a>
     </section>
 
+    {% if equipos %}
     <section class="cards-grid">
-
         {% for e in equipos %}
         <article class="menu-card equipo-card">
             <div class="equipo-head">
@@ -98,7 +98,10 @@
             </section>
         </dialog>
         {% endfor %}
-        
     </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay equipos registrados aún.</p>
+    {% endif %}
 </section>
 {% endblock %}
