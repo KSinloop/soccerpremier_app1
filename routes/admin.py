@@ -649,6 +649,33 @@ def resultados_partido(id):
         return redirect(url_for('admin.resultados_partido', id=partido.id))
     return render_template("admin/resultados_partido.html", partido=partido)
 
+
+@admin_bp.route("/partidos/<int:partido_id>/eliminar_gol/<int:gol_id>", methods=["POST"])
+@login_required
+def eliminar_gol(partido_id, gol_id):
+    
+    gol = db.session.get(Gol, gol_id) 
+    if gol:
+        db.session.delete(gol)
+        db.session.commit()
+        registrar_movimiento('Partidos', f'Se eliminó un gol del partido {partido_id}')
+    
+    
+    return redirect(url_for('admin.resultados_partido', id=partido_id))
+
+@admin_bp.route("/partidos/<int:partido_id>/eliminar_incidencia/<int:incidencia_id>", methods=["POST"])
+@login_required
+def eliminar_incidencia(partido_id, incidencia_id):
+    
+    incidencia = db.session.get(Incidencia, incidencia_id)
+    if incidencia:
+        db.session.delete(incidencia)
+        db.session.commit()
+        registrar_movimiento('Partidos', f'Se eliminó una incidencia del partido {partido_id}')
+
+    
+    return redirect(url_for('admin.resultados_partido', id=partido_id))
+
 # -----------------------------
 # ADEUDOS
 # -----------------------------

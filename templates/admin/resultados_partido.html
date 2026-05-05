@@ -248,6 +248,7 @@
                     <th>#</th>
                     <th>Jugador</th>
                     <th>Equipo</th>
+                    <th>Acciones</th> <!-- Nueva columna -->
                 </tr>
             </thead>
             <tbody>
@@ -266,10 +267,18 @@
                             {{ gol.registro_jugador.inscripcion.equipo.nombre }}
                         {% endif %}
                     </td>
+                    <td>
+                        <!-- Botón de eliminar con confirmación -->
+                        <form action="{{ url_for('admin.eliminar_gol', gol_id=gol.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar este gol? Se restará del marcador.');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3" style="text-align:center; color: var(--muted); padding: 32px;">Sin goles registrados.</td>
+                    <td colspan="4" style="text-align:center; color: var(--muted); padding: 32px;">Sin goles registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -294,6 +303,7 @@
                     <th>Jugador</th>
                     <th>Equipo</th>
                     <th>Descripción</th>
+                    <th>Acciones</th> 
                 </tr>
             </thead>
             <tbody>
@@ -304,10 +314,18 @@
                     <td>#{{ inc.registro_jugador.dorsal }} {{ inc.registro_jugador.jugador.nombre }} {{ inc.registro_jugador.jugador.apellido_paterno }}</td>
                     <td>{{ inc.registro_jugador.inscripcion.equipo.nombre }}</td>
                     <td>{{ inc.descripcion }}</td>
+                    <td>
+                        <!-- Botón de eliminar con confirmación -->
+                        <form action="{{ url_for('admin.eliminar_incidencia', incidencia_id=inc.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar esta incidencia?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" style="text-align:center; color: var(--muted); padding: 32px;">Sin incidencias registradas.</td>
+                    <td colspan="6" style="text-align:center; color: var(--muted); padding: 32px;">Sin incidencias registradas.</td>
                 </tr>
                 {% endfor %}
             </tbody>
