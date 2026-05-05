@@ -230,8 +230,9 @@ def crear_partido():
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
     canchas = db.session.execute(db.select(Cancha)).scalars().all()
     inscripciones = db.session.execute(db.select(Inscripcion)).scalars().all()
+    arbitros = db.session.execute(db.select(Arbitro).where(Arbitro.estado == "Activo")).scalars().all()
 
-    return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones)
+    return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones, arbitros=arbitros)
 
 
 

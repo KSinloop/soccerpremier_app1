@@ -147,6 +147,7 @@ class Gol(db.Model):
     registro_jugador_id = db.Column(db.Integer, db.ForeignKey("registro_jugador.id"), nullable=True)
     
     partido = db.relationship("Partido", backref=db.backref("goles", lazy=True))
+    registro_jugador = db.relationship("RegistroJugador", backref="goles")
 
 class Incidencia(db.Model):
     __tablename__ = "incidencias"
@@ -155,6 +156,9 @@ class Incidencia(db.Model):
     registro_jugador_id = db.Column(db.Integer, db.ForeignKey("registro_jugador.id"), nullable=False)
     tipo = db.Column(db.String(40), nullable=False) 
     descripcion = db.Column(db.String(255), nullable=False)
+
+    partido = db.relationship("Partido", backref=db.backref("incidencias", lazy=True))
+    registro_jugador = db.relationship("RegistroJugador", backref="incidencias")
 
 
     # =========================================================

@@ -12,41 +12,58 @@
         </div>
 
         <div class="page-hero-badge">
-            <span>Partidos prog.</span>
+            <span>Partidos</span>
             <strong>{{ partidos|length }}</strong>
         </div>
     </div>
 </section>
 
 <section class="container page-body">
-    <section class="toolbar-simple"> 
-        <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Esta semana</a>
-        <a href="#" class="toolbar-pill">Clausura Premier</a>
-        <a href="#" class="toolbar-pill">Copa Femenil</a>
+    <section class="toolbar-simple">
+        <a href="{{ url_for('public.pagina_partidos') }}"
+           class="toolbar-pill {% if not request.args.get('torneo_id') %}active{% endif %}">
+            Todos
+        </a>
+        {% for t in torneos %}
+        <a href="{{ url_for('public.pagina_partidos', torneo_id=t.id) }}"
+           class="toolbar-pill {% if request.args.get('torneo_id', type=int) == t.id %}active{% endif %}">
+            {{ t.nombre }}
+        </a>
+        {% endfor %}
     </section>
 
     <section class="matches-list">
-
         {% for p in partidos %}
         <article class="match-card">
             <div class="match-date-box">
-                <span>{{ p.fecha_hora.day }}</span>
-                <small>{{ p.fecha_hora.month }}</small>
+                <span>{{ p.fecha_hora.strftime('%d') }}</span>
+                <small>{{ p.fecha_hora.strftime('%b').upper() }}</small>
                 <p>{{ p.fecha_hora.strftime('%H:%M') }}</p>
             </div>
             <div class="match-content">
                 <div class="match-top">
-                    <span class="status-badge status-scheduled">{{ p.estado }}</span>
-                    <span class="match-tag">{{ p.torneo.nombre }}</span>
+                    <span class="match-tag">J{{ p.jornada }}</span>
+                    {% if p.estado == 'Programado' %}
+                        <span class="status-badge status-scheduled">Programado</span>
+                    {% elif p.estado == 'En directo' %}
+                        <span class="status-badge status-soon">En directo</span>
+                    {% elif p.estado == 'Finalizado' %}
+                        <span class="status-badge status-end">Finalizado</span>
+                    {% elif p.estado == 'Cancelado' %}
+                        <span class="status-badge status-end">Cancelado</span>
+                    {% else %}
+                        <span class="status-badge status-scheduled">{{ p.estado }}</span>
+                    {% endif %}
                 </div>
                 <h3>{{ p.inscripcion_1.equipo.nombre }} vs {{ p.inscripcion_2.equipo.nombre }}</h3>
-                <p>{{ p.cancha.nombre if p.cancha else 'Por definir' }}</p>
+                <p>{{ p.cancha.nombre if p.cancha else 'Cancha por definir' }} · {{ p.torneo.nombre }}</p>
             </div>
         </article>
+        {% else %}
+        <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+            <p style="font-size: 1.1rem; font-weight: 700;">No hay partidos registrados aún.</p>
+        </div>
         {% endfor %}
-
     </section>
 </section>
-
 {% endblock %}

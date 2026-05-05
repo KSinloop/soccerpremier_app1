@@ -1,73 +1,89 @@
 {% extends "admin/base_admin.html" %}
-
 {% block admin_title %}Programar Partido{% endblock %}
-
 {% block content %}
-<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
-    <span class="section-kicker">CALENDARIO</span>
-    <h3 class="admin-panel-title">Programar nuevo encuentro</h3>
-    
-    <form action="{{ url_for('admin.crear_partido') }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
-        
-        <label for="torneo_id">Torneo:</label>
-        <select id="torneo_id" name="torneo_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            {% for t in torneos %}
-                <option value="{{ t.id }}">{{ t.nombre }}</option>
-            {% endfor %}
-        </select>
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">CALENDARIO</span>
+                <h3 class="admin-panel-title">Programar nuevo encuentro</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+        <form action="{{ url_for('admin.crear_partido') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
 
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <div style="flex: 1;">
-                <label for="inscripcion_1_id">Equipo Local:</label>
-                <select id="inscripcion_1_id" name="inscripcion_1_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for i in inscripciones %}
-                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Torneo</label>
+                <select name="torneo_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    {% for t in torneos %}
+                        <option value="{{ t.id }}">{{ t.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div style="flex: 1;">
-                <label for="inscripcion_2_id">Equipo Visitante:</label>
-                <select id="inscripcion_2_id" name="inscripcion_2_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    {% for i in inscripciones %}
-                        <option value="{{ i.id }}">{{ i.equipo.nombre }} - {{ i.torneo.nombre }}</option>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Equipo Local</label>
+                    <select name="inscripcion_1_id" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        {% for i in inscripciones %}
+                            <option value="{{ i.id }}">{{ i.equipo.nombre }} – {{ i.torneo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Equipo Visitante</label>
+                    <select name="inscripcion_2_id" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        {% for i in inscripciones %}
+                            <option value="{{ i.id }}">{{ i.equipo.nombre }} – {{ i.torneo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Cancha</label>
+                <select name="cancha_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    {% for c in canchas %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
-        </div>
 
-        <label for="cancha_id">Cancha:</label>
-        <select id="cancha_id" name="cancha_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
-            {% for c in canchas %}
-                <option value="{{ c.id }}">{{ c.nombre }}</option>
-            {% endfor %}
-        </select>
-        
-
-        <label for="arbitro_id">Árbitro Central:</label>
-        <!-- Fíjate que NO tiene el 'required' para que te deje avanzar sin elegir -->
-        <select id="arbitro_id" name="arbitro_id" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
-            <option value="">Por definir</option>
-            {% for a in arbitros %}
-                <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
-            {% endfor %}
-        </select>
-
-
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <div style="flex: 1;">
-                <label for="fecha_hora">Fecha y Hora:</label>
-                <input type="datetime-local" id="fecha_hora" name="fecha_hora" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Árbitro Central (opcional)</label>
+                <select name="arbitro_id"
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">Por definir</option>
+                    {% for a in arbitros %}
+                        <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div style="flex: 1;">
-                <label for="jornada">Jornada:</label>
-                <input type="text" id="jornada" name="jornada" placeholder="Ej. J1, Final..." required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-            </div>
-        </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Agendar Partido</button>
-            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
-        </div>
-    </form>
-</section>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Fecha y hora</label>
+                    <input type="datetime-local" name="fecha_hora" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Jornada</label>
+                    <input type="text" name="jornada" placeholder="Ej. J1, Final..." required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Agendar partido
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

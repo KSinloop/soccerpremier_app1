@@ -1,51 +1,69 @@
 {% extends "admin/base_admin.html" %}
-
 {% block admin_title %}Editar Equipo{% endblock %}
-
 {% block content %}
-<section class="admin-panel-card" style="max-width: 600px; margin: 0 auto;">
-    <span class="section-kicker">PARTICIPANTES</span>
-    <h3 class="admin-panel-title">Modificar datos del equipo</h3>
-    
-    <form action="{{ url_for('admin.editar_equipo', id=equipo.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
-        
-        <label for="nombre">Nombre del equipo:</label>
-      
-        <input type="text" id="nombre" name="nombre" value="{{ equipo.nombre }}" required>
-
-        <label for="categoria">Categoría del equipo:</label>
-        <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="Juvenil" {% if equipo.categoria == 'Juvenil' %}selected{% endif %}>Juvenil</option>
-            <option value="Libre" {% if equipo.categoria == 'Libre' %}selected{% endif %}>Libre</option>
-            <option value="Femenil" {% if equipo.categoria == 'Femenil' %}selected{% endif %}>Femenil</option>
-        </select>
-
-        <label for="representante">Nombre del DT o Representante:</label>
-       
-        <input type="text" id="representante" name="representante" value="{{ equipo.representante }}" required>
-
-        <label for="telefono">Teléfono de contacto:</label>
-       
-        <input type="tel" id="telefono" name="telefono" value="{{ equipo.telefono }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-
-        <label for="color_uniforme">Color de uniforme:</label>
-        <input type="text" id="color_uniforme" name="color_uniforme" value="{{ equipo.color_uniforme or '' }}" placeholder="Ej. Rojo y blanco" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
-
-        <label for="capitan_id">Capitán del equipo (opcional):</label>
-        <select id="capitan_id" name="capitan_id" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="">— Sin capitán asignado —</option>
-            {% for j in jugadores %}
-            <option value="{{ j.id }}" {% if equipo.capitan_id == j.id %}selected{% endif %}>{{ j.nombre }} {{ j.apellido_paterno }}</option>
-            {% endfor %}
-        </select>
-
-
-        
-
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Actualizar Equipo</button>
-            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="btn" style="flex: 1; background-color: #e0e0e0; color: #333; text-align: center; text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;">Cancelar</a>
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">PARTICIPANTES</span>
+                <h3 class="admin-panel-title">Modificar datos del equipo</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-chip">← Volver</a>
         </div>
-    </form>
-</section>
+        <form action="{{ url_for('admin.editar_equipo', id=equipo.id) }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Nombre del equipo</label>
+                <input type="text" name="nombre" value="{{ equipo.nombre }}" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Categoría</label>
+                <select name="categoria" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="Juvenil" {% if equipo.categoria == 'Juvenil' %}selected{% endif %}>Juvenil</option>
+                    <option value="Libre" {% if equipo.categoria == 'Libre' %}selected{% endif %}>Libre</option>
+                    <option value="Femenil" {% if equipo.categoria == 'Femenil' %}selected{% endif %}>Femenil</option>
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">DT o Representante</label>
+                <input type="text" name="representante" value="{{ equipo.representante or '' }}" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Teléfono de contacto</label>
+                <input type="tel" name="telefono" value="{{ equipo.telefono or '' }}" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Color de uniforme (opcional)</label>
+                <input type="text" name="color_uniforme" value="{{ equipo.color_uniforme or '' }}" placeholder="Ej. Rojo y blanco"
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Capitán del equipo (opcional)</label>
+                <select name="capitan_id"
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">— Sin capitán asignado —</option>
+                    {% for j in jugadores %}
+                    <option value="{{ j.id }}" {% if equipo.capitan_id == j.id %}selected{% endif %}>{{ j.nombre }} {{ j.apellido_paterno }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Actualizar equipo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
