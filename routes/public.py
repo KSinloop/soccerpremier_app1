@@ -114,7 +114,7 @@ def pagina_resultados():
 
     torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.nombre.asc())).scalars().all()
 
-    return render_template("public/resultados.html", resultados = resultados_db, torneos=torneos_db, torneo_id=torneo_id)
+    return render_template("public/resultados.html", resultados = resultados_db, torneos=torneos_db, torneo_seleccionado=torneo_id)
 
 @public_bp.get("/posiciones")
 def pagina_posiciones():
