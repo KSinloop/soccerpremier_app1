@@ -10,6 +10,19 @@
             </div>
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
         </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="padding: 20px 28px 0 28px;">
+                    {% for category, message in messages %}
+                        <div style="padding: 16px; border-radius: 12px; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; font-weight: 600;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <form action="{{ url_for('admin.editar_partido', id=partido.id) }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
 
             <div style="display: grid; gap: 6px;">

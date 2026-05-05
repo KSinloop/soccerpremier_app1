@@ -218,6 +218,11 @@ def crear_partido():
         torneo_id = request.form.get("torneo_id")
         inscripcion_1_id = request.form.get("inscripcion_1_id")
         inscripcion_2_id = request.form.get("inscripcion_2_id")
+
+        if inscripcion_1_id == inscripcion_2_id:
+            flash("Error: Un equipo no puede jugar contra sí mismo. Selecciona equipos diferentes.", "error")
+            return redirect(url_for('admin.crear_partido'))
+        
         cancha_id = request.form.get("cancha_id")
         fecha_hora_str = request.form.get("fecha_hora")
         jornada = request.form.get("jornada")
@@ -361,6 +366,11 @@ def editar_partido(id):
         partido.torneo_id = request.form.get("torneo_id")
         partido.inscripcion_1_id = request.form.get("inscripcion_1_id")
         partido.inscripcion_2_id = request.form.get("inscripcion_2_id")
+
+        if partido.inscripcion_1_id == partido.inscripcion_2_id:
+            flash("Error: Un equipo no puede jugar contra sí mismo.", "error")
+            return redirect(url_for('admin.editar_partido', id=id))
+        
         # Si no seleccionan cancha, guardamos None
         cancha_sel = request.form.get("cancha_id")
         partido.cancha_id = cancha_sel if cancha_sel else None

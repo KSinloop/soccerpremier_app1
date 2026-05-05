@@ -10,6 +10,7 @@
             </div>
             <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-chip">← Volver</a>
         </div>
+
         <form action="{{ url_for('admin.crear_equipo') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
 
             <div style="display: grid; gap: 6px;">
@@ -37,7 +38,7 @@
                 </div>
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Apellidos del DT</label>
-                    <input type="text" name="representante_apellido" value="{{ equipo.representante_apellido or '' }}"
+                    <input type="text" name="representante_apellido" value=""
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
             </div>
