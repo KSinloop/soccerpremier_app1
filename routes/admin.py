@@ -734,11 +734,9 @@ def eliminar_incidencia(partido_id, incidencia_id):
 
 @admin_bp.get("/adeudos")
 def vista_adeudos_admin():
-    from models import PagoInscripcion
     inscripciones_sin_pago = db.session.execute(
         db.select(Inscripcion)
-        .outerjoin(PagoInscripcion, PagoInscripcion.inscripcion_id == Inscripcion.id)
-        .where(PagoInscripcion.id == None)
+        .where(Inscripcion.estado_inscripcion != "Pagada")
     ).scalars().all()
 
     arbitrajes_pendientes = db.session.execute(
@@ -752,7 +750,18 @@ def vista_adeudos_admin():
         arbitrajes_pendientes=arbitrajes_pendientes
     )
 
+@admin_bp.route("/adeudos/inscripcion/pagar/<int:id>", methods=["POST"])
+@login_required
+def pagar_inscripcion_rapido(id):
+    inscripcion = db.session.get(Inscripcion, id)
+    if inscripcion:
+        inscripcion.estado_inscripcion = "Pagada"
+        db.session.commit()
+        registrar_movimiento('Adeudos', f'Inscripción ID {inscripcion.id} marcada como pagada')
+    return redirect(url_for('admin.vista_adeudos_admin'))
+
 @admin_bp.route("/adeudos/arbitraje/pagar/<int:id>", methods=["POST"])
+@login_required
 def pagar_arbitraje(id):
     from datetime import date as _date
     pago = db.session.get(PagoArbitraje, id)

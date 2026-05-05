@@ -27,13 +27,14 @@
                     <td>{{ insc.equipo.nombre }}</td>
                     <td>{{ insc.torneo.nombre }}</td>
                     <td>{{ insc.fecha_inscripcion }}</td>
-                    <td><span class="status-badge status-soon">Sin pago</span></td>
+                    <td><span class="status-badge status-soon">{{ insc.estado_inscripcion }}</span></td>
                     <td>
-                        <div class="admin-actions">
-                            <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" class="admin-action-link">
-                                Registrar pago
-                            </a>
-                        </div>
+                        
+                        <form action="{{ url_for('admin.pagar_inscripcion_rapido', id=insc.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" class="admin-chip admin-chip-gold" style="border: none; cursor: pointer;">
+                                Marcar pagada
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% else %}
@@ -46,7 +47,7 @@
             </tbody>
         </table>
     </div>
-</div>
+</div> 
 
 <!-- ADEUDOS DE ARBITRAJE -->
 <div class="admin-table-card">

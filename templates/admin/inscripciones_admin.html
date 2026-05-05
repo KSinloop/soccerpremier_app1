@@ -40,7 +40,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ url_for('admin.gestionar_roster', id=insc.id) }}" style="color: #17a2b8; font-weight: bold; margin-right: 15px; text-decoration: none;"> Roster / Plantilla</a>
+                            <a href="{{ url_for('admin.gestionar_roster', id=insc.id) }}" style="color: #17a2b8; font-weight: bold; margin-right: 15px; text-decoration: none;">Plantilla</a>
                             <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Cambiar Estado</a>
                             <a href="{{ url_for('admin.eliminar_inscripcion', id=insc.id) }}" onclick="return confirm('¿Seguro que deseas eliminar esta inscripción?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                         </td>
