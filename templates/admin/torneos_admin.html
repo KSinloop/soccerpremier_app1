@@ -18,6 +18,7 @@
             <a href="{{ url_for('admin.vista_torneos_admin', filtro='Activos') }}" class="toolbar-pill {% if filtro_actual == 'Activos' %}active{% endif %}">Activos</a>
             <a href="{{ url_for('admin.vista_torneos_admin', filtro='Próximos') }}" class="toolbar-pill {% if filtro_actual == 'Próximos' %}active{% endif %}">Próximos</a>
             <a href="{{ url_for('admin.vista_torneos_admin', filtro='Finalizados') }}" class="toolbar-pill {% if filtro_actual == 'Finalizados' %}active{% endif %}">Finalizados</a>
+            <a href="{{ url_for('admin.vista_torneos_admin', filtro='Cancelados') }}" class="toolbar-pill {% if filtro_actual == 'Cancelados' %}active{% endif %}">Cancelados</a>
         </div>
 
         <div class="admin-table-wrap">
@@ -46,6 +47,8 @@
                                 <span class="status-badge status-soon">Próximo</span>
                             {% elif torneo.estado == 'Finalizado' %}
                                 <span class="status-badge status-end">Finalizado</span>
+                            {% elif torneo.estado == 'Cancelado' %}
+                                <span class="status-badge" style="background: #ffe5e5; color: #cc0000;">Cancelado</span>
                             {% else %}
                                 <span class="status-badge">{{ torneo.estado }}</span>
                             {% endif %}

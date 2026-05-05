@@ -94,6 +94,66 @@
     </div>
 </div>
 
+<!-- PAGO DE ARBITRAJE -->
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Pago de Arbitraje</h3>
+        </div>
+    </div>
+    <div style="padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        
+        <!-- Filtros rápidos para saber si ya pagaron -->
+        {% set pago_1_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | list %}
+        {% set pago_1 = pago_1_list[0] if pago_1_list else none %}
+        {% set pagado_1 = pago_1 and pago_1.metodo_pago != 'Pendiente' %}
+
+        {% set pago_2_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | list %}
+        {% set pago_2 = pago_2_list[0] if pago_2_list else none %}
+        {% set pagado_2 = pago_2 and pago_2.metodo_pago != 'Pendiente' %}
+
+        <!-- Equipo Local -->
+        <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">L: {{ partido.inscripcion_1.equipo.nombre }}</h4>
+            {% if pagado_1 %}
+                <span class="status-badge status-active" style="margin-bottom: 10px; display: inline-block;">Pagado ({{ pago_1.metodo_pago }})</span>
+                <p style="margin: 0; font-size: 0.95rem; color: #555;">Fecha: {{ pago_1.fecha_pago.strftime('%d/%m/%Y') }} <br> Monto: <strong>${{ "%.2f"|format(pago_1.monto) }}</strong></p>
+            {% else %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Adeudo pendiente</span>
+                <form action="{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_1_id) }}" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select name="metodo_pago" required style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                    <input type="number" step="0.5" name="monto" value="150" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Pago</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Equipo Visitante -->
+        <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">V: {{ partido.inscripcion_2.equipo.nombre }}</h4>
+            {% if pagado_2 %}
+                <span class="status-badge status-active" style="margin-bottom: 10px; display: inline-block;">Pagado ({{ pago_2.metodo_pago }})</span>
+                <p style="margin: 0; font-size: 0.95rem; color: #555;">Fecha: {{ pago_2.fecha_pago.strftime('%d/%m/%Y') }} <br> Monto: <strong>${{ "%.2f"|format(pago_2.monto) }}</strong></p>
+            {% else %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Adeudo pendiente</span>
+                <form action="{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_2_id) }}" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select name="metodo_pago" required style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                    <input type="number" step="0.5" name="monto" value="150" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Pago</button>
+                </form>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
 <!-- REGISTRAR GOL -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">

@@ -23,10 +23,11 @@
                     <th>Fecha y Hora</th>
                     <th>Cancha</th>
                     <th>Estado</th>
+                    <th style="text-align: center;">Arbitraje (L - V)</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-                <tbody>
+            <tbody>
                 {% for partido in partidos %}
                 <tr>
                     <td>{{ '%03d' % partido.id }}</td>
@@ -43,6 +44,31 @@
                             <span class="status-badge">{{ partido.estado }}</span>
                         {% endif %}
                     </td>
+                    
+                    <td style="text-align: center; font-weight: 900; font-size: 1.1rem;">
+                        {% set p1_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | list %}
+                        {% set p1_pagado = p1_list and p1_list[0].metodo_pago != 'Pendiente' %}
+                        
+                        {% set p2_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | list %}
+                        {% set p2_pagado = p2_list and p2_list[0].metodo_pago != 'Pendiente' %}
+                        
+                        <!-- Lógica Local -->
+                        {% if p1_pagado %}
+                            <span style="color: #28a745;" title="Local">✓</span>
+                        {% else %}
+                            <span style="color: #cc0000;" title="Local">✗</span>
+                        {% endif %}
+                        
+                        <span style="color: #ccc; margin: 0 4px;">|</span>
+                        
+                        <!-- Lógica Visitante -->
+                        {% if p2_pagado %}
+                            <span style="color: #28a745;" title="Visitante">✓</span>
+                        {% else %}
+                            <span style="color: #cc0000;" title="Visitante">✗</span>
+                        {% endif %}
+                    </td>
+
                     <td>
                         <a href="{{ url_for('admin.editar_partido', id=partido.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
                         
@@ -53,18 +79,11 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px;">No hay partidos programados aún.</td>
+                    <td colspan="8" style="text-align: center; padding: 20px;">No hay partidos programados aún.</td>
                 </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
     </div>
 </section>
 {% endblock %}
-<!--    Se necesita conectar:
-    Botones de crear partidos donde deje enfrentar a los equipos registrados, elegir fecha, hora y cancha.
-    Botones de editar para modificar detalles del partido. 
-    Que las canchas sean las que se tienen registradas en el sistema.
-    Tambien que los equipos, torneos y jornadas coincidan con las que se tienen registradas.
--->

@@ -41,14 +41,15 @@ def pagina_torneos():
     filtro_actual = request.args.get("filtro", "Todos")
     
     if filtro_actual == "Activos":
-        active = 1
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Activo")).scalars().all()
+    elif filtro_actual == "Próximos":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Próximo")).scalars().all()
+    elif filtro_actual == "Finalizados":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Finalizado")).scalars().all()
+    elif filtro_actual == "Cancelados":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Cancelado")).scalars().all()
     else:
-        active = 0
-
-    if filtro_actual == "Todos":
-        torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.activo)).scalars().all()
-    else:
-        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.activo == active)).scalars().all()
+        torneos_db = db.session.execute(db.select(Torneo)).scalars().all()
 
     return render_template("public/torneos.html", torneos = torneos_db, filtro_actual = filtro_actual)
 

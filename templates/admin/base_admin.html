@@ -9,11 +9,19 @@
 <body class="admin-body">
 
     <aside class="admin-sidebar">
-        <div class="admin-brand">
-            <div class="admin-brand-mark">SPJ</div>
-            <div>
-                <span class="admin-brand-kicker">Panel administrativo</span>
-                <h1>Soccer Premier Juárez</h1>
+        
+        <div class="admin-brand" style="display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;">
+            
+            
+            <div class="admin-brand-mark" style="width: 55px; height: 55px; padding: 0; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-shrink: 0;">
+                
+                <img src="{{ url_for('static', filename='img/SPJ.jpeg') }}" alt="Logo SPJ" style="width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal;">
+            </div>
+            
+           
+            <div style="flex-shrink: 1; min-width: 0;">
+                <span class="admin-brand-kicker" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Panel administrativo</span>
+                <h1 style="margin: 0; line-height: 1.1;">Soccer Premier Juárez</h1>
             </div>
         </div>
 
