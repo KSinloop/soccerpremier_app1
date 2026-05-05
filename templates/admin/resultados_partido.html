@@ -10,13 +10,30 @@
     <hr>
 
     <!-- CONTROL DE ESTADO -->
-    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="margin-bottom: 30px; display: flex; gap: 10px;">
-        <select name="estado" style="padding: 10px; border-radius: 5px; flex: 1;">
-            <option value="Programado" {% if partido.estado == 'Programado' %}selected{% endif %}>Programado</option>
-            <option value="En directo" {% if partido.estado == 'En directo' %}selected{% endif %}>En directo </option>
-            <option value="Finalizado" {% if partido.estado == 'Finalizado' %}selected{% endif %}>Finalizado </option>
-        </select>
-        <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select name="estado" style="padding: 10px; border-radius: 5px; flex: 1;">
+                <option value="Programado" {% if partido.estado == 'Programado' %}selected{% endif %}>Programado</option>
+                <option value="En directo" {% if partido.estado == 'En directo' %}selected{% endif %}>En directo</option>
+                <option value="Finalizado" {% if partido.estado == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                <option value="Cancelado" {% if partido.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                <option value="Reprogramado" {% if partido.estado == 'Reprogramado' %}selected{% endif %}>Reprogramado</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+        </div>
+        <label for="motivo_cancelacion" style="font-size: 0.92em; color: #555;">Motivo de cancelación / observaciones (opcional):</label>
+        <textarea id="motivo_cancelacion" name="motivo_cancelacion" rows="2" placeholder="Ej. Lluvia, conflicto de horario..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px; font-family: inherit;">{{ partido.motivo_cancelacion or '' }}</textarea>
+        <div style="display: flex; gap: 20px; align-items: center; background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; border-radius: 5px;">
+            <strong style="color: #856404; font-size: 0.92em;">No presentación:</strong>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92em;">
+                <input type="checkbox" id="no_presento_1" name="no_presento_1" value="1" {% if partido.no_presento_1 %}checked{% endif %}>
+                {{ partido.inscripcion_1.equipo.nombre }}
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92em;">
+                <input type="checkbox" id="no_presento_2" name="no_presento_2" value="1" {% if partido.no_presento_2 %}checked{% endif %}>
+                {{ partido.inscripcion_2.equipo.nombre }}
+            </label>
+        </div>
     </form>
 
     <!-- REGISTRO DE GOLES -->

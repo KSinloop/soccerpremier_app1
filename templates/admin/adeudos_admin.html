@@ -1,0 +1,86 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Panel de Adeudos{% endblock %}
+{% block content %}
+
+<section class="admin-panel-card" style="margin-bottom: 30px;">
+    <span class="section-kicker">FINANZAS</span>
+    <h3 class="admin-panel-title">Adeudos de Inscripción</h3>
+    <p style="color: var(--muted); margin-bottom: 16px;">Inscripciones que aún no tienen pago registrado.</p>
+
+    {% if inscripciones_sin_pago %}
+    <div class="tabla-wrap">
+        <table class="tabla-posiciones">
+            <thead>
+                <tr>
+                    <th>Equipo</th>
+                    <th>Torneo</th>
+                    <th>Fecha de inscripción</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for insc in inscripciones_sin_pago %}
+                <tr>
+                    <td>{{ insc.equipo.nombre }}</td>
+                    <td>{{ insc.torneo.nombre }}</td>
+                    <td>{{ insc.fecha_inscripcion }}</td>
+                    <td><span class="status-badge status-soon">Sin pago</span></td>
+                    <td>
+                        <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" class="card-link" style="font-size: 0.85em; padding: 8px 12px;">Registrar pago</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: #1d7a45; font-weight: 700;">✅ No hay inscripciones con adeudos pendientes.</p>
+    {% endif %}
+</section>
+
+<section class="admin-panel-card">
+    <span class="section-kicker">FINANZAS</span>
+    <h3 class="admin-panel-title">Adeudos de Arbitraje</h3>
+    <p style="color: var(--muted); margin-bottom: 16px;">Pagos de arbitraje generados por cancelaciones o no presentaciones.</p>
+
+    {% if arbitrajes_pendientes %}
+    <div class="tabla-wrap">
+        <table class="tabla-posiciones">
+            <thead>
+                <tr>
+                    <th>Partido ID</th>
+                    <th>Equipo</th>
+                    <th>Monto</th>
+                    <th>Fecha de registro</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in arbitrajes_pendientes %}
+                <tr>
+                    <td>#{{ pago.partido_id }}</td>
+                    <td>{{ pago.inscripcion.equipo.nombre }}</td>
+                    <td>${{ "%.2f"|format(pago.monto) }}</td>
+                    <td>{{ pago.fecha_pago }}</td>
+                    <td>
+                        <form action="{{ url_for('admin.pagar_arbitraje', id=pago.id) }}" method="POST" style="display: flex; gap: 6px; align-items: center;">
+                            <select name="metodo_pago" style="padding: 6px 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.85em;">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85em; min-width: unset;">Marcar pagado</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: #1d7a45; font-weight: 700;">✅ No hay adeudos de arbitraje pendientes.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

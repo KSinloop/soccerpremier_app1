@@ -26,7 +26,19 @@
 
         <label for="telefono">Teléfono de contacto:</label>
        
-        <input type="tel" id="telefono" name="telefono" value="{{ equipo.telefono }}" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+        <input type="tel" id="telefono" name="telefono" value="{{ equipo.telefono }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+
+        <label for="color_uniforme">Color de uniforme:</label>
+        <input type="text" id="color_uniforme" name="color_uniforme" value="{{ equipo.color_uniforme or '' }}" placeholder="Ej. Rojo y blanco" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
+
+        <label for="capitan_id">Capitán del equipo (opcional):</label>
+        <select id="capitan_id" name="capitan_id" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="">— Sin capitán asignado —</option>
+            {% for j in jugadores %}
+            <option value="{{ j.id }}" {% if equipo.capitan_id == j.id %}selected{% endif %}>{{ j.nombre }} {{ j.apellido_paterno }}</option>
+            {% endfor %}
+        </select>
+
 
         
 

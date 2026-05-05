@@ -7,20 +7,30 @@
     <span class="section-kicker">COMPETENCIA</span>
     <h3 class="admin-panel-title">Modificar datos del torneo</h3>
     
-    
+
     <form action="{{ url_for('admin.editar_torneo', id=torneo.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
         
         <label for="nombre">Nombre del torneo:</label>
         <input type="text" id="nombre" name="nombre" value="{{ torneo.nombre }}" placeholder="Ej. Clausura Premier 2026" required>
 
+        <label for="dia_torneo">Día(s) del torneo:</label>
+        <select id="dia_torneo" name="dia_torneo" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="">-- Selecciona el día --</option>
+            <option value="Lunes-Viernes" {% if torneo.dia_torneo == 'Lunes-Viernes' %}selected{% endif %}>Lunes-Viernes</option>
+            <option value="Sabatino" {% if torneo.dia_torneo == 'Sabatino' %}selected{% endif %}>Sabatino</option>
+            <option value="Domingo" {% if torneo.dia_torneo == 'Domingo' %}selected{% endif %}>Domingo</option>
+        </select>
+
         <label for="categoria">Categoría:</label>
-        <input type="text" id="categoria" name="categoria" value="{{ torneo.categoria }}" placeholder="Ej. Libre, Juvenil, Veteranos..." required>
+        <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="">-- Selecciona el día primero --</option>
+        </select>
 
         <label for="tipo">Modalidad (Tipo):</label>
         <select id="tipo" name="tipo" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-            <option value="Fútbol 11">Fútbol 11</option>
-            <option value="Fútbol 7">Fútbol 7</option>
-            <option value="Fútbol Rápido">Fútbol Rápido</option>
+            <option value="Fútbol 11" {% if torneo.tipo == 'Fútbol 11' %}selected{% endif %}>Fútbol 11</option>
+            <option value="Fútbol 7" {% if torneo.tipo == 'Fútbol 7' %}selected{% endif %}>Fútbol 7</option>
+            <option value="Fútbol Rápido" {% if torneo.tipo == 'Fútbol Rápido' %}selected{% endif %}>Fútbol Rápido</option>
         </select>
 
         <label for="fecha_inicio">Fecha de inicio:</label>
@@ -35,4 +45,37 @@
         </div>
     </form>
 </section>
+
+<script>
+const categoriasPorDia = {
+    "Lunes-Viernes": ["Mamás", "Papás", "Mixto", "Golden", "Champions", "Liga MX"],
+    "Sabatino": ["Años 18-19", "Años 16-17", "Años 14-15", "Años 12-13", "Años 10-11", "Mixtos"],
+    "Domingo": ["Libre Varonil", "Libre Femenil"]
+};
+
+const currentCategoria = "{{ torneo.categoria or '' }}";
+const currentDia = "{{ torneo.dia_torneo or '' }}";
+
+function poblarCategorias(dia, seleccionada) {
+    const catSelect = document.getElementById('categoria');
+    catSelect.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
+    const opciones = categoriasPorDia[dia] || [];
+    opciones.forEach(function(cat) {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === seleccionada) opt.selected = true;
+        catSelect.appendChild(opt);
+    });
+}
+
+// Poblar al cargar la página si ya hay un día seleccionado
+if (currentDia) {
+    poblarCategorias(currentDia, currentCategoria);
+}
+
+document.getElementById('dia_torneo').addEventListener('change', function() {
+    poblarCategorias(this.value, '');
+});
+</script>
 {% endblock %}

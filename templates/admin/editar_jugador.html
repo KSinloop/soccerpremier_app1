@@ -24,11 +24,16 @@
         <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ jugador.fecha_nacimiento }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
 
         <label for="sexo">Sexo:</label>
-        <select id="sexo" name="sexo" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc;">
+        <select id="sexo" name="sexo" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
             <option value="Masculino" {% if jugador.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
             <option value="Femenino" {% if jugador.sexo == 'Femenino' %}selected{% endif %}>Femenino</option>
         </select>
 
+        <label for="curp">CURP:</label>
+        <input type="text" id="curp" name="curp" maxlength="18" value="{{ jugador.curp or '' }}" placeholder="Ej. GOMD900101HCHMLG09" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; text-transform: uppercase;">
+
+        <label for="foto_url">URL de foto (opcional):</label>
+        <input type="url" id="foto_url" name="foto_url" value="{{ jugador.foto_url or '' }}" placeholder="https://..." style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc;">
 
         <!-- SECCIÓN DE CONTACTO DE EMERGENCIA -->
         <div style="background-color: #ffeeba; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
