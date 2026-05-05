@@ -69,7 +69,8 @@ def pagina_partidos():
 
     partidos_db = db.session.execute(stmt).scalars().all()
     torneos_db = db.session.execute(db.select(Torneo).order_by(Torneo.nombre.asc())).scalars().all()
-    return render_template("public/partidos.html", partidos=partidos_db, torneos=torneos_db)
+
+    return render_template("public/partidos.html", partidos=partidos_db, torneos=torneos_db, torneo_seleccionado=torneo_id)
 
 def calcular_marcador(partido):
     insc1_id = partido.inscripcion_1_id

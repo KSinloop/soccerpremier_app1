@@ -5,7 +5,7 @@
     <div class="container page-hero-inner">
         <div>
             <span class="section-kicker">CALENDARIO</span>
-            <h2 class="section-title">Próximos partidos</h2>
+            <h2 class="section-title">Partidos</h2>
             <p class="page-description">
                 Consulta los encuentros programados, jornadas y canchas asignadas para la temporada actual.
             </p>
@@ -20,13 +20,15 @@
 
 <section class="container page-body">
     <section class="toolbar-simple">
+        
         <a href="{{ url_for('public.pagina_partidos') }}"
-           class="toolbar-pill {% if not request.args.get('torneo_id') %}active{% endif %}">
+           class="toolbar-pill {% if not torneo_seleccionado %}active{% endif %}">
             Todos
         </a>
+        
         {% for t in torneos %}
         <a href="{{ url_for('public.pagina_partidos', torneo_id=t.id) }}"
-           class="toolbar-pill {% if request.args.get('torneo_id', type=int) == t.id %}active{% endif %}">
+           class="toolbar-pill {% if torneo_seleccionado == t.id %}active{% endif %}">
             {{ t.nombre }}
         </a>
         {% endfor %}
