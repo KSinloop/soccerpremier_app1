@@ -162,7 +162,6 @@ def crear_anuncio():
             contenido=request.form.get("contenido"),
             categoria=request.form.get('categoria'),
             fecha_publicacion=datetime.strptime(request.form['fecha_publicacion'], '%Y-%m-%d').date(),  
-            estado="Visible"
         )
         db.session.add(nuevo_anuncio)
         db.session.commit()
