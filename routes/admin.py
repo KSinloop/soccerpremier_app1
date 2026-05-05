@@ -804,3 +804,117 @@ def pagar_arbitraje_equipo(partido_id, inscripcion_id):
     registrar_movimiento('Adeudos', f'Arbitraje pagado en partido ID {partido_id} por equipo ID {inscripcion_id}')
     flash("Pago de arbitraje registrado con éxito.")
     return redirect(url_for('admin.resultados_partido', id=partido_id))
+
+
+
+#============
+#Liguilla
+#============
+
+@admin_bp.route("/torneos/<int:torneo_id>/generar_liguilla", methods=["POST"])
+@login_required
+def generar_liguilla(torneo_id):
+    torneo = db.session.get(Torneo, torneo_id)
+    if not torneo:
+        flash("Torneo no encontrado.", "error")
+        return redirect(url_for('admin.vista_torneos_admin'))
+
+    # 1. Traer todos los partidos finalizados de este torneo
+    partidos = db.session.execute(
+        db.select(Partido)
+        .where(Partido.torneo_id == torneo_id)
+        .where(Partido.estado == "Finalizado")
+    ).scalars().all()
+
+    # 2. Replicar la lógica de cálculo de puntos
+    stats = {}
+    for p in partidos:
+        for insc in [p.inscripcion_1, p.inscripcion_2]:
+            if insc.id not in stats:
+                stats[insc.id] = {"id": insc.id, "PJ": 0, "G": 0, "E": 0, "P": 0, "GF": 0, "GC": 0}
+
+    for p in partidos:
+        g1 = sum(1 for gol in p.goles if gol.registro_jugador and gol.registro_jugador.inscripcion_id == p.inscripcion_1_id)
+        g2 = sum(1 for gol in p.goles if gol.registro_jugador and gol.registro_jugador.inscripcion_id == p.inscripcion_2_id)
+        id1, id2 = p.inscripcion_1_id, p.inscripcion_2_id
+
+        stats[id1]["GF"] += g1
+        stats[id1]["GC"] += g2
+        stats[id2]["GF"] += g2
+        stats[id2]["GC"] += g1
+        stats[id1]["PJ"] += 1
+        stats[id2]["PJ"] += 1
+
+        if g1 > g2:
+            stats[id1]["G"] += 1
+            stats[id2]["P"] += 1
+        elif g1 == g2:
+            stats[id1]["E"] += 1
+            stats[id2]["E"] += 1
+        else:
+            stats[id2]["G"] += 1
+            stats[id1]["P"] += 1
+
+    for s in stats.values():
+        s["DG"] = s["GF"] - s["GC"]
+        s["PTS"] = s["G"] * 3 + s["E"]
+
+    # 3. Ordenar: Puntos, luego Diferencia de Goles
+    tabla = sorted(stats.values(), key=lambda x: (x["PTS"], x["DG"]), reverse=True)
+
+    # 4. Cortar estrictamente a los 8 mejores
+    clasificados = tabla[:8]
+    n = len(clasificados)
+
+    # Asegurarnos de que el número de clasificados sea par
+    if n % 2 != 0:
+        n -= 1
+        clasificados = clasificados[:n]
+
+    if n < 2:
+        flash("No hay suficientes equipos con partidos jugados para armar liguilla.", "error")
+        return redirect(url_for('admin.vista_torneos_admin'))
+
+    # 5. Armar llaves y calcular fechas INTELIGENTES basadas en el tipo de torneo
+    from datetime import datetime, timedelta
+    
+    hoy = datetime.now().date()
+    # Empezamos a buscar la fecha a partir de mañana para dar tiempo a los equipos
+    dia_busqueda = hoy + timedelta(days=1)
+    
+    while True:
+        wd = dia_busqueda.weekday() # 0 = Lunes, 5 = Sábado, 6 = Domingo
+        if torneo.dia_torneo == "Domingo" and wd == 6:
+            break
+        elif torneo.dia_torneo == "Sabatino" and wd == 5:
+            break
+        elif torneo.dia_torneo == "Lunes-Viernes" and wd < 5:
+            break
+        # Si por alguna razón el torneo no tiene día registrado, lo mandamos al sábado por defecto
+        elif not torneo.dia_torneo and wd == 5:
+            break
+            
+        dia_busqueda += timedelta(days=1)
+
+    # Programamos el primer partido a las 5:00 PM (17:00 hrs)
+    fecha_base = datetime(dia_busqueda.year, dia_busqueda.month, dia_busqueda.day, 17, 0)
+
+    # Crear los partidos
+    for i in range(n // 2):
+        id_loc = clasificados[i]["id"]
+        id_vis = clasificados[n - 1 - i]["id"]
+        
+        nuevo_p = Partido(
+            torneo_id=torneo_id,
+            inscripcion_1_id=id_loc,
+            inscripcion_2_id=id_vis,
+            fecha_hora=fecha_base + timedelta(hours=i), # Partidos separados por 1 hora exacta
+            jornada="Cuartos de Final" if n >= 8 else "Liguilla",
+            estado="Programado"
+        )
+        db.session.add(nuevo_p)
+
+    db.session.commit()
+    registrar_movimiento('Torneos', f'Liguilla generada para {torneo.nombre} ({n} equipos)')
+    flash("¡Liguilla armada con éxito! Ve a la pestaña de Partidos para confirmar canchas.")
+    return redirect(url_for('admin.vista_partidos_admin'))

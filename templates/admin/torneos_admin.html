@@ -53,10 +53,21 @@
                                 <span class="status-badge">{{ torneo.estado }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ torneo.equipos|length }}</td> 
+                        
+                        <td>{{ torneo.inscripciones|length }}</td> 
                         <td>
-                            <div class="admin-actions">
+                            <div class="admin-actions" style="display: flex; gap: 12px; align-items: center;">
                                 <a href="{{ url_for('admin.editar_torneo', id=torneo.id) }}" class="admin-action-link">Editar</a>
+                                
+                                <!-- BOTÓN DE LIGUILLA -->
+                                {% if torneo.estado == 'Activo' or torneo.estado == 'Finalizado' %}
+                                <form action="{{ url_for('admin.generar_liguilla', torneo_id=torneo.id) }}" method="POST" style="margin: 0; display: inline;">
+                                    <button type="submit" class="admin-action-link" style="background: none; border: none; padding: 0; color: #d4af37; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: 800;" onclick="return confirm('¿Seguro que deseas iniciar la Liguilla? Esto clasificará a los 8 mejores automáticamente y agendará sus partidos de eliminación.');">
+                                        Generar Liguilla
+                                    </button>
+                                </form>
+                                {% endif %}
+
                                 <a href="{{ url_for('admin.eliminar_torneo', id=torneo.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este torneo?');" class="admin-action-link danger">Eliminar</a>
                             </div>
                         </td>

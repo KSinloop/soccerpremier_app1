@@ -53,7 +53,7 @@
                 </thead>
                 <tbody>
                     {% for t in tabla %}
-                    <tr {% if loop.index <= 3 %}class="top-row"{% endif %}>
+                    <tr {% if loop.index <= 8 %}class="top-row"{% endif %}>
                         <td>{{ loop.index }}</td>
                         <td>
                             <div class="equipo-tabla">
@@ -79,11 +79,11 @@
     <section class="legend-box">
         <div class="legend-item">
             <span class="legend-mark legend-top"></span>
-            <p>Zona alta de clasificación</p>
+            <p>Clasificados a liguilla</p>
         </div>
         <div class="legend-item">
             <span class="legend-mark legend-regular"></span>
-            <p>Posición regular</p>
+            <p>Eliminados</p>
         </div>
     </section>
 </section>

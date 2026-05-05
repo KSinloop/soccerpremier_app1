@@ -44,7 +44,7 @@
             </div>
             <div class="match-content">
                 <div class="match-top">
-                    <span class="match-tag">J{{ p.jornada }}</span>
+                    <span class="match-tag">{{ p.jornada }}</span>
                     {% if p.estado == 'Programado' %}
                         <span class="status-badge status-scheduled">Programado</span>
                     {% elif p.estado == 'En directo' %}
