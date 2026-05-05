@@ -21,10 +21,10 @@
 
 <section class="container page-body">
     <section class="toolbar-simple">
-        <a href="#" class="toolbar-pill active">Todos</a>
-        <a href="#" class="toolbar-pill">Juvenil</a>
-        <a href="#" class="toolbar-pill">Libre</a>
-        <a href="#" class="toolbar-pill">Femenil</a>
+        <a href="{{url_for('public.pagina_equipos', filtro='Todos')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Todos' else '' }}">Todos</a>
+        <a href="{{url_for('public.pagina_equipos', filtro='Juvenil')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Juvenil' else '' }}">Juvenil</a>
+        <a href="{{url_for('public.pagina_equipos', filtro='Libre')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Libre' else '' }}">Libre</a>
+        <a href="{{url_for('public.pagina_equipos', filtro='Femenil')}}" class="toolbar-pill {{ 'active' if filtro_actual == 'Femenil' else '' }}">Femenil</a>
     </section>
 
     {% if equipos %}
@@ -40,11 +40,6 @@
             </div>
 
             <div class="equipo-meta">
-                {% if e.activo %}
-                <span class="status-badge status-active">Activo</span>
-                {% else %}
-                <span class="status-badge status-end">Inactivo</span>
-                {% endif %}
                 <span>{{ e.categoria }}</span>
             </div>
 
