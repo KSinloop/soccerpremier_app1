@@ -18,7 +18,8 @@
         </div>
 
         <aside class="hero-panel">
-            {% set torneos_activos = torneos | selectattr('activo') | list %}
+            {% set torneos_activos = torneos | selectattr('estado', 'equalto', 'Activo') | list %}
+            
             {% if torneos_activos %}
                 {% set t = torneos_activos[0] %}
                 <span class="panel-kicker">TORNEO ACTIVO</span>
@@ -27,7 +28,7 @@
                 <div class="panel-tags">
                     <span>{{ t.dia_torneo or 'Sin día definido' }}</span>
                     <span>{{ t.categoria }}</span>
-                    {% if t.activo %}<span>Activo</span>{% endif %}
+                    <span>Activo</span>
                 </div>
             {% else %}
                 <span class="panel-kicker">PRÓXIMO TORNEO</span>
@@ -46,7 +47,7 @@
     <section class="stats-grid">
         <article class="stat-card">
             <p class="stat-label">Torneos activos</p>
-            <strong class="stat-number">{{ torneos | selectattr('activo') | list | length }}</strong>
+            <strong class="stat-number">{{ torneos | selectattr('estado', 'equalto', 'Activo') | list | length }}</strong>
         </article>
 
         <article class="stat-card">
