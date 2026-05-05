@@ -45,7 +45,7 @@
 
             <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Teléfono de contacto</label>
-                <input type="tel" name="telefono" placeholder="Ej. 656 123 4567" required
+                <input type="tel" name="telefono" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" placeholder="Ej. 8123456789" title="Debe contener exactamente 10 dígitos numéricos" required
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
             </div>
 

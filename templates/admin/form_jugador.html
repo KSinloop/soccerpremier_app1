@@ -57,7 +57,7 @@
            
             <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Foto del jugador</label>
-                <input type="file" name="foto_archivo" accept="image/png, image/jpeg, image/jpg required"
+                <input type="file" name="foto_archivo" accept="image/png, image/jpeg, image/jpg" required
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 12px 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
             </div>
 
@@ -70,12 +70,14 @@
                         <input type="text" name="nombre_contacto" required
                                style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+
                         <div style="display: grid; gap: 6px;">
                             <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Teléfono</label>
-                            <input type="tel" name="telefono_contacto" pattern="[0-9]{10}" required
+                           
+                            <input type="tel" name="telefono_contacto" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Debe contener exactamente 10 dígitos numéricos" required
                                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
                         </div>
+                        
                         <div style="display: grid; gap: 6px;">
                             <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Parentesco</label>
                             <input type="text" name="parentesco" required

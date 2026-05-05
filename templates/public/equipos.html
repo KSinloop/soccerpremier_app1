@@ -35,7 +35,14 @@
                 <div class="equipo-avatar">{{ e.nombre[:2].upper() }}</div>
                 <div>
                     <h3>{{ e.nombre }}</h3>
-                    <p class="equipo-sub">{{ e.representante }}</p>
+                    
+                    <p class="equipo-sub">
+                        {% if e.representante_nombre or e.representante_apellido %}
+                            {{ e.representante_nombre or '' }} {{ e.representante_apellido or '' }}
+                        {% else %}
+                            Sin representante
+                        {% endif %}
+                    </p>
                 </div>
             </div>
 
@@ -56,25 +63,39 @@
             </section>
 
             <section class="modal-body">
-                <div class="equipo-head">
+                <div class="equipo-head" style="margin-bottom: 20px;">
                     <div class="equipo-avatar">{{ e.nombre[:2].upper() }}</div>
                     <div>
                         <h3>{{ e.nombre }}</h3>
-                        <p class="equipo-sub">{{ e.representante }}</p>
+                       
+                        <p class="equipo-sub">
+                            {% if e.representante_nombre or e.representante_apellido %}
+                                {{ e.representante_nombre or '' }} {{ e.representante_apellido or '' }}
+                            {% else %}
+                                Sin representante
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 <div class="modal-info-grid">
                     <div class="modal-info-item">
                         <label>REPRESENTANTE</label>
-                        <span>{{ e.representante }}</span>
+                       
+                        <span>
+                            {% if e.representante_nombre or e.representante_apellido %}
+                                {{ e.representante_nombre or '' }} {{ e.representante_apellido or '' }}
+                            {% else %}
+                                Sin representante
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="modal-info-item">
                         <label>TELÉFONO</label>
-                        <span>{{ e.telefono }}</span>
+                        <span>{{ e.telefono or 'N/A' }}</span>
                     </div>
                     <div class="modal-info-item">
                         <label>CATEGORÍA</label>
-                        <span>{{ e.categoria }}</span>
+                        <span>{{ e.categoria or 'N/A' }}</span>
                     </div>
                     <div class="modal-info-item">
                         <label>ESTADO</label>
@@ -87,10 +108,14 @@
                 </div>
                 <hr class="modal-divider">
                 <div class="modal-meta">
-                    <p>TORNEOS PARTICIPANDO</p>
-                    {% for inscripcion in e.mis_torneos %}
-                        <span>{{ inscripcion.torneo.nombre }}</span>
-                    {% endfor %}
+                    <p style="font-weight: 800; font-size: 0.8rem; color: var(--navy); margin-bottom: 8px; text-transform: uppercase;">Torneos Participando</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        {% for inscripcion in e.mis_torneos %}
+                            <span class="admin-chip" style="font-size: 0.85rem; padding: 4px 10px;">{{ inscripcion.torneo.nombre }}</span>
+                        {% else %}
+                            <span style="color: #666; font-style: italic;">No está inscrito en ningún torneo</span>
+                        {% endfor %}
+                    </div>
                 </div>
             </section>
         </dialog>
@@ -98,7 +123,8 @@
     </section>
     {% else %}
     <div style="text-align: center; padding: 48px 0; color: var(--muted);">
-        <p style="font-size: 1.1rem; font-weight: 700;">No hay equipos registrados aún.</p>
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay equipos registrados con este filtro.</p>
+    </div> 
     {% endif %}
 </section>
 {% endblock %}
