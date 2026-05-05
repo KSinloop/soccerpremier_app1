@@ -15,6 +15,15 @@
         <label for="fecha_publicacion">Fecha:</label>
         <input type="date" id="fecha_publicacion" name="fecha_publicacion" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
 
+        <label for="categoria">Categoría:</label>
+        <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="Importante">Importante</option>
+            <option value="Evento">Evento</option>
+            <option value="Resultados">Resultados</option>
+            <option value="Suspensión">Suspensión</option>
+            <option value="General">General</option>
+        </select>
+
         <label for="contenido">Contenido / Detalles:</label>
         <textarea id="contenido" name="contenido" rows="4" placeholder="Escribe aquí los detalles del aviso..." required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;"></textarea>
 

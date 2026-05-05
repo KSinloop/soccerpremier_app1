@@ -10,7 +10,7 @@
             <h3 class="admin-panel-title">Anuncios publicados</h3>
         </div>
         
-       <a href="{{ url_for('admin.crear_anuncio') }}" class="admin-chip admin-chip-gold">+ Crear nuevo anuncio</a>
+        <a href="{{ url_for('admin.crear_anuncio') }}" class="admin-chip admin-chip-gold">+ Crear nuevo anuncio</a>
     </div>
 
     <div class="admin-table-wrap">
@@ -20,6 +20,7 @@
                     <th>ID</th>
                     <th>Título</th>
                     <th>Fecha de publicación</th>
+                    <th>Categoría</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -30,6 +31,7 @@
                     <td>{{ anuncio.id }}</td>
                     <td>{{ anuncio.titulo }}</td>
                     <td>{{ anuncio.fecha_publicacion }}</td>
+                    <td>{{ anuncio.categoria }}</td>
                     <td>
                         {% if anuncio.estado == "Visible" %}
                             <span class="status-badge status-active">{{ anuncio.estado }}</span>

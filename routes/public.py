@@ -247,10 +247,17 @@ def pagina_canchas():
 
 @public_bp.get("/anuncios")
 def pagina_anuncios():
-    anuncios_db = db.session.execute(
-        db.select(Anuncio).where(Anuncio.estado == "Visible")
-    ).scalars().all()
-    return render_template("public/anuncios.html", anuncios = anuncios_db)
+    filtro_actual = request.args.get("filtro", "Todos")
+
+    if filtro_actual == "Todos":
+        anuncios_db = db.session.execute(
+            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc()).where(Anuncio.estado == "Visible")
+            ).scalars().all()
+    else:
+        anuncios_db = db.session.execute(
+            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc()).where(Anuncio.categoria == filtro_actual).where(Anuncio.estado == "Visible")
+        ).scalars().all()
+    return render_template("public/anuncios.html", anuncios = anuncios_db, filtro_actual = filtro_actual)
 
 @public_bp.get("/login")
 def pagina_login():

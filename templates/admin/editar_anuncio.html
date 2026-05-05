@@ -7,7 +7,6 @@
     <span class="section-kicker">COMUNICACIÓN</span>
     <h3 class="admin-panel-title">Modificar aviso</h3>
     
-   
     <form action="{{ url_for('admin.editar_anuncio', id=anuncio.id) }}" method="POST" class="admin-login-form" style="margin-top: 20px;">
         
         <label for="titulo">Título del anuncio:</label>
@@ -15,6 +14,15 @@
 
         <label for="fecha_publicacion">Fecha:</label>
         <input type="date" id="fecha_publicacion" name="fecha_publicacion" value="{{ anuncio.fecha_publicacion }}" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
+
+        <label for="tipo">Categoría:</label>
+        <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+            <option value="Importante">Importante</option>
+            <option value="Evento">Evento</option>
+            <option value="Resultados">Resultados</option>
+            <option value="Suspensión">Suspensión</option>
+            <option value="General">General</option>
+        </select>
 
         <label for="contenido">Contenido / Detalles:</label>
         

@@ -145,7 +145,8 @@ def crear_anuncio():
     if request.method == "POST":
         nuevo_anuncio = Anuncio(
             titulo=request.form.get("titulo"), 
-            contenido=request.form.get("contenido"), 
+            contenido=request.form.get("contenido"),
+            categoria=request.form.get('categoria'),
             fecha_publicacion=datetime.strptime(request.form['fecha_publicacion'], '%Y-%m-%d').date(),  
             estado="Visible"
         )
@@ -308,6 +309,7 @@ def editar_anuncio(id):
     if request.method == "POST":
         anuncio.titulo = request.form.get("titulo")
         anuncio.contenido = request.form.get("contenido")
+        anuncio.categoria = request.form.get("categoria")
         anuncio.fecha_publicacion=datetime.strptime(request.form['fecha_publicacion'], '%Y-%m-%d').date()
         db.session.commit()
         registrar_movimiento('Anuncios', f'Se editó el anuncio: {anuncio.titulo}')
