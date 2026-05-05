@@ -34,7 +34,7 @@ def vista_dashboard():
     torneos_activos = len(db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all())
     equipos_registrados = len(db.session.execute(db.select(Equipo)).scalars().all())
     partidos_programados = len(db.session.execute(db.select(Partido).where(Partido.estado=='Programado')).scalars().all())
-    anuncios_activos = len(db.session.execute(db.select(Anuncio).where(Anuncio.estado=='Visible')).scalars().all())
+    anuncios_activos = len(db.session.execute(db.select(Anuncio)).scalars().all())
     
     # Traemos los movimientos para el dashboard
     movimientos_recientes = db.session.execute(
