@@ -28,10 +28,18 @@
                 </select>
             </div>
 
-            <div style="display: grid; gap: 6px;">
-                <label style="color: var(--navy); font-weight: 800;">DT o Representante</label>
-                <input type="text" name="representante" placeholder="Ej. Juan Pérez" required
-                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Nombre(s) del DT</label>
+
+                    <input type="text" name="representante_nombre" 
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Apellidos del DT</label>
+                    <input type="text" name="representante_apellido" value="{{ equipo.representante_apellido or '' }}"
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
             </div>
 
             <div style="display: grid; gap: 6px;">

@@ -32,6 +32,16 @@
                         <td>{{ jugador.fecha_nacimiento.strftime('%d/%m/%Y') if jugador.fecha_nacimiento else 'N/A' }}</td>
                         <td>{{ jugador.sexo }}</td>
                         <td>
+                            
+                            {% if jugador.foto_url %}
+                                <a href="{{ url_for('static', filename=jugador.foto_url) }}" 
+                                   target="_blank" 
+                                   style="color: #008080; font-weight: bold; margin-right: 15px; text-decoration: none;"
+                                   title="Ver foto actual de {{ jugador.nombre }}">
+                                   Ver foto
+                                </a>
+                            {% endif %}
+                           
                             <a href="{{ url_for('admin.editar_jugador', id=jugador.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
                             <a href="{{ url_for('admin.eliminar_jugador', id=jugador.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este jugador?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                         </td>

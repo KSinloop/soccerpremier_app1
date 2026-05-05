@@ -28,7 +28,14 @@
                     <div class="admin-record-id">{{ equipo.nombre[:2] | upper }}</div>
                     <div>
                         <h4>{{ equipo.nombre }}</h4>
-                        <p>DT/Rep: {{ equipo.representante or 'Sin representante' }}</p>
+                    
+                        <p>DT/Rep: 
+                            {% if equipo.representante_nombre or equipo.representante_apellido %}
+                                {{ equipo.representante_nombre or '' }} {{ equipo.representante_apellido or '' }}
+                            {% else %}
+                                Sin representante
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 <div class="admin-record-meta">

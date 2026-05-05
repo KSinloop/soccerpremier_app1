@@ -1,3 +1,5 @@
+import os
+from werkzeug.utils import secure_filename
 from datetime import datetime, date as date_type
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
@@ -56,8 +58,18 @@ def login_admin():
 
 @admin_bp.get("/torneos")
 def vista_torneos_admin():
-    torneos_db = db.session.execute(db.select(Torneo)).scalars().all()
-    return render_template("admin/torneos_admin.html", torneos=torneos_db)
+    filtro = request.args.get("filtro", "Todos")
+    
+    if filtro == "Activos":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Activo")).scalars().all()
+    elif filtro == "Próximos":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Próximo")).scalars().all()
+    elif filtro == "Finalizados":
+        torneos_db = db.session.execute(db.select(Torneo).where(Torneo.estado == "Finalizado")).scalars().all()
+    else:
+        torneos_db = db.session.execute(db.select(Torneo)).scalars().all()
+
+    return render_template("admin/torneos_admin.html", torneos=torneos_db, filtro_actual=filtro)
 
 @admin_bp.get("/equipos")
 def vista_equipos_admin(): 
@@ -169,6 +181,7 @@ def crear_torneo():
             dia_torneo=request.form.get("dia_torneo"),
             categoria=request.form.get("categoria"),
             tipo=request.form.get("tipo"),
+            estado=request.form.get("estado", "Próximo"),
             fecha_inicio=f_ini,
             fecha_fin=f_fin,
             activo=True
@@ -185,7 +198,8 @@ def crear_equipo():
         capitan_id_raw = request.form.get("capitan_id")
         nuevo_equipo = Equipo(
             nombre=request.form.get("nombre"),
-            representante=request.form.get("representante"),
+            representante_nombre=request.form.get("representante_nombre"),
+            representante_apellido=request.form.get("representante_apellido"),
             telefono=request.form.get("telefono"),
             categoria=request.form.get("categoria"),
             color_uniforme=request.form.get("color_uniforme"),
@@ -270,6 +284,7 @@ def editar_torneo(id):
         torneo.dia_torneo = request.form.get("dia_torneo")
         torneo.categoria = request.form.get("categoria")
         torneo.tipo = request.form.get("tipo")
+        torneo.estado = request.form.get("estado")
         f_ini = request.form.get("fecha_inicio")
         f_fin = request.form.get("fecha_fin")
         torneo.fecha_inicio = datetime.strptime(f_ini, "%Y-%m-%d").date() if f_ini else None
@@ -294,7 +309,8 @@ def editar_equipo(id):
     equipo = db.session.get(Equipo, id)
     if request.method == "POST":
         equipo.nombre = request.form.get("nombre")
-        equipo.representante = request.form.get("representante")
+        equipo.representante_nombre = request.form.get("representante_nombre")
+        equipo.representante_apellido = request.form.get("representante_apellido")
         equipo.telefono = request.form.get("telefono")
         equipo.categoria = request.form.get("categoria")
         equipo.color_uniforme = request.form.get("color_uniforme")
@@ -387,6 +403,21 @@ def crear_jugador():
     if request.method == "POST":
         f_nac_str = request.form.get("fecha_nacimiento")
         f_nac_obj = datetime.strptime(f_nac_str, "%Y-%m-%d").date() if f_nac_str else None
+        
+        foto = request.files.get('foto_archivo')
+        ruta_para_bd = None
+
+        if foto and foto.filename:
+            nombre_seguro = secure_filename(foto.filename)
+            
+            ruta_guardado = os.path.join('static', 'uploads', nombre_seguro)
+            
+            os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+            
+            foto.save(ruta_guardado)
+            
+            ruta_para_bd = f'uploads/{nombre_seguro}'
+
         nuevo_jugador = Jugador(
             nombre=request.form.get("nombre"),
             apellido_paterno=request.form.get("apellido_paterno"),
@@ -394,7 +425,7 @@ def crear_jugador():
             fecha_nacimiento=f_nac_obj,
             sexo=request.form.get("sexo"),
             curp=request.form.get("curp") or None,
-            foto_url=request.form.get("foto_url") or None
+            foto_url=ruta_para_bd 
         )
         
         nombre_c = request.form.get("nombre_contacto")
@@ -420,7 +451,17 @@ def editar_jugador(id):
         jugador.fecha_nacimiento = datetime.strptime(f_nac_str, "%Y-%m-%d").date() if f_nac_str else None
         jugador.sexo = request.form.get("sexo")
         jugador.curp = request.form.get("curp") or None
-        jugador.foto_url = request.form.get("foto_url") or None
+        
+        foto = request.files.get('foto_archivo')
+        
+        if foto and foto.filename:
+            nombre_seguro = secure_filename(foto.filename)
+            ruta_guardado = os.path.join('static', 'uploads', nombre_seguro)
+            
+            os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+            foto.save(ruta_guardado)
+            
+            jugador.foto_url = f'uploads/{nombre_seguro}'
         
         nombre_c = request.form.get("nombre_contacto")
         if jugador.contacto_emergencia:
