@@ -19,18 +19,18 @@
 
         <nav class="admin-nav">
             <a href="{{ url_for('admin.vista_dashboard') }}" class="admin-nav-link">Dashboard</a>
+            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">Canchas</a>
+            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">Árbitros</a>
             <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-nav-link">Torneos</a>
             <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-nav-link">Equipos</a>
             <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-nav-link">Jugadores</a>
             <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">Inscripciones</a>
+            <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-nav-link">Adeudos</a>
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-nav-link">Partidos</a>
-            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">Canchas</a>
-            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">Arbitros</a>
             <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-nav-link">Estadísticas</a>
             <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-nav-link">Anuncios</a>
-            <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-nav-link">Adeudos</a>
         </nav>
-
+        
         <div class="admin-sidebar-footer">
             <!-- Se actualizó a un formulario POST para que de verdad cierre la sesión -->
             <form action="{{ url_for('auth.logout') }}" method="POST" style="margin: 0; padding: 0;">
@@ -39,7 +39,6 @@
                 </button>
             </form>
         </div>
-
     </aside>
 
     <div class="admin-shell">
