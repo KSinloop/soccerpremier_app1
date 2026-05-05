@@ -21,7 +21,6 @@
                     <th>Título</th>
                     <th>Fecha de publicación</th>
                     <th>Categoría</th>
-                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -32,13 +31,6 @@
                     <td>{{ anuncio.titulo }}</td>
                     <td>{{ anuncio.fecha_publicacion }}</td>
                     <td>{{ anuncio.categoria }}</td>
-                    <td>
-                        {% if anuncio.estado == "Visible" %}
-                            <span class="status-badge status-active">{{ anuncio.estado }}</span>
-                        {% else %}
-                            <span class="status-badge status-end">{{ anuncio.estado }}</span>
-                        {% endif %}
-                    </td>
                     <td>
                         <a href="{{ url_for('admin.editar_anuncio', id=anuncio.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
                         <a href="{{ url_for('admin.eliminar_anuncio', id=anuncio.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este anuncio?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>

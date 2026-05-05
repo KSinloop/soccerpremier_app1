@@ -251,11 +251,11 @@ def pagina_anuncios():
 
     if filtro_actual == "Todos":
         anuncios_db = db.session.execute(
-            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc()).where(Anuncio.estado == "Visible")
+            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc())
             ).scalars().all()
     else:
         anuncios_db = db.session.execute(
-            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc()).where(Anuncio.categoria == filtro_actual).where(Anuncio.estado == "Visible")
+            db.select(Anuncio).order_by(Anuncio.fecha_publicacion.desc()).where(Anuncio.categoria == filtro_actual)
         ).scalars().all()
     return render_template("public/anuncios.html", anuncios = anuncios_db, filtro_actual = filtro_actual)
 

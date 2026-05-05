@@ -78,7 +78,6 @@ class Anuncio(db.Model):
     contenido = db.Column(db.Text, nullable=False)
     categoria = db.Column(db.String(50), nullable=False)
     fecha_publicacion = db.Column(db.Date, nullable=False)
-    estado = db.Column(db.String(20), default="Visible")
 
 # =========================================================
 # ENTIDADES DE RELACIÓN
