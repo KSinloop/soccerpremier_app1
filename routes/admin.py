@@ -34,6 +34,7 @@ def registrar_movimiento(modulo, movimiento, estatus="Completado"):
 # -----------------------------
 @admin_bp.get("/")
 @admin_bp.route("/dashboard") 
+@login_required
 def vista_dashboard():
     torneos_activos = len(db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all())
     equipos_registrados = len(db.session.execute(db.select(Equipo)).scalars().all())
@@ -57,6 +58,7 @@ def login_admin():
     return render_template("admin/login_admin.html")
 
 @admin_bp.get("/torneos")
+@login_required
 def vista_torneos_admin():
     filtro = request.args.get("filtro", "Todos")
     
@@ -74,6 +76,7 @@ def vista_torneos_admin():
     return render_template("admin/torneos_admin.html", torneos=torneos_db, filtro_actual=filtro)
 
 @admin_bp.get("/equipos")
+@login_required
 def vista_equipos_admin(): 
     categoria_actual = request.args.get("categoria", "Todos")
     if categoria_actual == "Todos":
@@ -90,16 +93,19 @@ def vista_equipos_admin():
                            total_activos=total_activos)
 
 @admin_bp.get("/partidos")
+@login_required
 def vista_partidos_admin():
     partidos_db = db.session.execute(db.select(Partido)).scalars().all()
     return render_template("admin/partidos_admin.html", partidos=partidos_db)
 
 @admin_bp.get("/canchas")
+@login_required
 def vista_canchas_admin():
     canchas_db = db.session.execute(db.select(Cancha)).scalars().all()
     return render_template("admin/canchas_admin.html", canchas=canchas_db)
 
 @admin_bp.get("/estadisticas")
+@login_required
 def vista_estadisticas_admin():
     total_goles = db.session.scalar(db.select(func.count(Gol.id))) or 0
     total_amarillas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Amarilla")) or 0
@@ -132,6 +138,7 @@ def vista_estadisticas_admin():
     )
 
 @admin_bp.get("/anuncios")
+@login_required
 def vista_anuncios_admin():
     anuncios_db = db.session.execute(db.select(Anuncio)).scalars().all()
     return render_template("admin/anuncios_admin.html", anuncios=anuncios_db)
@@ -141,6 +148,7 @@ def vista_anuncios_admin():
 # -----------------------------
 
 @admin_bp.route("/canchas/nueva", methods=["GET", "POST"])
+@login_required
 def crear_cancha():
     if request.method == "POST":
         nueva_cancha = Cancha(
@@ -157,6 +165,7 @@ def crear_cancha():
     return render_template("admin/form_cancha.html")
 
 @admin_bp.route("/anuncios/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_anuncio():
     if request.method == "POST":
         nuevo_anuncio = Anuncio(
@@ -172,6 +181,7 @@ def crear_anuncio():
     return render_template("admin/form_anuncio.html")
 
 @admin_bp.route("/torneos/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_torneo():
     if request.method == "POST":
         f_ini = datetime.strptime(request.form.get("fecha_inicio"), "%Y-%m-%d").date() if request.form.get("fecha_inicio") else None
@@ -194,6 +204,7 @@ def crear_torneo():
     return render_template("admin/form_torneo.html")
 
 @admin_bp.route("/equipos/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_equipo():
     if request.method == "POST":
         capitan_id_raw = request.form.get("capitan_id")
@@ -215,6 +226,7 @@ def crear_equipo():
     return render_template("admin/form_equipo.html", jugadores=jugadores)
 
 @admin_bp.route("/partidos/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_partido():
     if request.method == "POST":
         torneo_id = request.form.get("torneo_id")
@@ -225,7 +237,7 @@ def crear_partido():
             flash("Error: Un equipo no puede jugar contra sí mismo. Selecciona equipos diferentes.", "error")
             return redirect(url_for('admin.crear_partido'))
         
-        cancha_id = request.form.get("cancha_id")
+        cancha_id = request.form.get("cancha_id") or None
         fecha_hora_str = request.form.get("fecha_hora")
         jornada = request.form.get("jornada")
         
@@ -280,8 +292,12 @@ def crear_partido():
 # editar eliminar canchas
 # ==========================================
 @admin_bp.route("/canchas/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_cancha(id):
     cancha = db.session.get(Cancha, id)
+    if not cancha:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_canchas_admin'))
     if request.method == "POST":
         cancha.nombre = request.form.get("nombre")
         cancha.ubicacion = request.form.get("ubicacion")
@@ -293,8 +309,12 @@ def editar_cancha(id):
     return render_template("admin/editar_cancha.html", cancha=cancha)
 
 @admin_bp.route("/canchas/eliminar/<int:id>")
+@login_required
 def eliminar_cancha(id):
     cancha = db.session.get(Cancha, id)
+    if not cancha:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_canchas_admin'))
     if cancha:
         nombre_cancha = cancha.nombre
         db.session.delete(cancha)
@@ -303,8 +323,12 @@ def eliminar_cancha(id):
     return redirect(url_for('admin.vista_canchas_admin'))
 
 @admin_bp.route("/torneos/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_torneo(id):
     torneo = db.session.get(Torneo, id)
+    if not torneo:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_torneos_admin'))
     if request.method == "POST":
         torneo.nombre = request.form.get("nombre")
         torneo.dia_torneo = request.form.get("dia_torneo")
@@ -321,8 +345,12 @@ def editar_torneo(id):
     return render_template("admin/editar_torneo.html", torneo=torneo)
 
 @admin_bp.route("/torneos/eliminar/<int:id>")
+@login_required
 def eliminar_torneo(id):
     torneo = db.session.get(Torneo, id)
+    if not torneo:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_torneos_admin'))
     if torneo:
         nombre_torneo = torneo.nombre
         db.session.delete(torneo)
@@ -331,8 +359,12 @@ def eliminar_torneo(id):
     return redirect(url_for('admin.vista_torneos_admin'))
 
 @admin_bp.route("/equipos/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_equipo(id):
     equipo = db.session.get(Equipo, id)
+    if not equipo:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_equipos_admin'))
     if request.method == "POST":
         equipo.nombre = request.form.get("nombre")
         equipo.representante_nombre = request.form.get("representante_nombre")
@@ -349,8 +381,12 @@ def editar_equipo(id):
     return render_template("admin/editar_equipo.html", equipo=equipo, jugadores=jugadores)
 
 @admin_bp.route("/equipos/eliminar/<int:id>")
+@login_required
 def eliminar_equipo(id):
     equipo = db.session.get(Equipo, id)
+    if not equipo:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_equipos_admin'))
     if equipo:
         nombre_eq = equipo.nombre
         db.session.delete(equipo)
@@ -359,8 +395,12 @@ def eliminar_equipo(id):
     return redirect(url_for('admin.vista_equipos_admin'))
 
 @admin_bp.route("/anuncios/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_anuncio(id):
     anuncio = db.session.get(Anuncio, id)
+    if not anuncio:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_anuncios_admin'))
     if request.method == "POST":
         anuncio.titulo = request.form.get("titulo")
         anuncio.contenido = request.form.get("contenido")
@@ -372,8 +412,12 @@ def editar_anuncio(id):
     return render_template("admin/editar_anuncio.html", anuncio=anuncio)
 
 @admin_bp.route("/anuncios/eliminar/<int:id>")
+@login_required
 def eliminar_anuncio(id):
     anuncio = db.session.get(Anuncio, id)
+    if not anuncio:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_anuncios_admin'))
     if anuncio:
         titulo_an = anuncio.titulo
         db.session.delete(anuncio)
@@ -382,14 +426,18 @@ def eliminar_anuncio(id):
     return redirect(url_for('admin.vista_anuncios_admin'))
 
 @admin_bp.route("/partidos/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_partido(id):
     partido = db.session.get(Partido, id)
+    if not partido:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_partidos_admin'))
     if request.method == "POST":
         partido.torneo_id = request.form.get("torneo_id")
         partido.inscripcion_1_id = request.form.get("inscripcion_1_id")
         partido.inscripcion_2_id = request.form.get("inscripcion_2_id")
 
-        if partido.inscripcion_1_id == partido.inscripcion_2_id:
+        if int(partido.inscripcion_1_id) == int(partido.inscripcion_2_id):
             flash("Error: Un equipo no puede jugar contra sí mismo.", "error")
             return redirect(url_for('admin.editar_partido', id=id))
         
@@ -411,8 +459,12 @@ def editar_partido(id):
     return render_template("admin/editar_partido.html", partido=partido, torneos=torneos, canchas=canchas, inscripciones=inscripciones)
 
 @admin_bp.route("/partidos/eliminar/<int:id>")
+@login_required
 def eliminar_partido(id):
     partido = db.session.get(Partido, id)
+    if not partido:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_partidos_admin'))
     if partido:
         id_partido = partido.id
         db.session.delete(partido)
@@ -425,11 +477,13 @@ def eliminar_partido(id):
 # -----------------------------
 
 @admin_bp.route("/jugadores")
+@login_required
 def vista_jugadores_admin():
     jugadores_db = db.session.execute(db.select(Jugador)).scalars().all()
     return render_template("admin/jugadores_admin.html", jugadores=jugadores_db)
 
 @admin_bp.route("/jugadores/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_jugador():
     if request.method == "POST":
         f_nac_str = request.form.get("fecha_nacimiento")
@@ -472,8 +526,12 @@ def crear_jugador():
     return render_template("admin/form_jugador.html")
 
 @admin_bp.route("/jugadores/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_jugador(id):
     jugador = db.session.get(Jugador, id)
+    if not jugador:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_jugadores_admin'))
     if request.method == "POST":
         jugador.nombre = request.form.get("nombre")
         jugador.apellido_paterno = request.form.get("apellido_paterno")
@@ -506,8 +564,12 @@ def editar_jugador(id):
     return render_template("admin/editar_jugador.html", jugador=jugador)
 
 @admin_bp.route("/jugadores/eliminar/<int:id>")
+@login_required
 def eliminar_jugador(id):
     jugador = db.session.get(Jugador, id)
+    if not jugador:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_jugadores_admin'))
     if jugador:
         nom_completo = f"{jugador.nombre} {jugador.apellido_paterno}"
         db.session.delete(jugador)
@@ -520,11 +582,13 @@ def eliminar_jugador(id):
 # -----------------------------
 
 @admin_bp.route("/inscripciones")
+@login_required
 def vista_inscripciones_admin():
     inscripciones_db = db.session.execute(db.select(Inscripcion)).scalars().all()
     return render_template("admin/inscripciones_admin.html", inscripciones=inscripciones_db)
 
 @admin_bp.route("/inscripciones/nueva", methods=["GET", "POST"])
+@login_required
 def crear_inscripcion():
     if request.method == "POST":
         nueva_insc = Inscripcion(
@@ -541,8 +605,12 @@ def crear_inscripcion():
     return render_template("admin/form_inscripcion.html", torneos=torneos, equipos=equipos)
 
 @admin_bp.route("/inscripciones/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_inscripcion(id):
     inscripcion = db.session.get(Inscripcion, id)
+    if not inscripcion:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_inscripciones_admin'))
     if request.method == "POST":
         inscripcion.estado_inscripcion = request.form.get("estado_inscripcion")
         db.session.commit()
@@ -551,8 +619,12 @@ def editar_inscripcion(id):
     return render_template("admin/editar_inscripcion.html", inscripcion=inscripcion)
 
 @admin_bp.route("/inscripciones/eliminar/<int:id>")
+@login_required
 def eliminar_inscripcion(id):
     inscripcion = db.session.get(Inscripcion, id)
+    if not inscripcion:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_inscripciones_admin'))
     if inscripcion:
         id_insc = inscripcion.id
         db.session.delete(inscripcion)
@@ -561,8 +633,12 @@ def eliminar_inscripcion(id):
     return redirect(url_for('admin.vista_inscripciones_admin'))
 
 @admin_bp.route("/inscripciones/<int:id>/roster", methods=["GET", "POST"])
+@login_required
 def gestionar_roster(id):
     inscripcion = db.session.get(Inscripcion, id)
+    if not inscripcion:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_inscripciones_admin'))
     if request.method == "POST":
         jugador_id = request.form.get("jugador_id")
         # Validar que el jugador no pertenezca ya a otro equipo en el mismo torneo
@@ -595,8 +671,12 @@ def gestionar_roster(id):
     return render_template("admin/gestionar_roster.html", inscripcion=inscripcion, jugadores=jugadores_libres)
 
 @admin_bp.route("/inscripciones/quitar_jugador/<int:registro_id>")
+@login_required
 def quitar_jugador_inscripcion(registro_id):
     registro = db.session.get(RegistroJugador, registro_id)
+    if not registro:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_inscripciones_admin'))
     if registro:
         insc_id = registro.inscripcion_id
         nom_jugador = registro.jugador.nombre
@@ -611,11 +691,13 @@ def quitar_jugador_inscripcion(registro_id):
 # -----------------------------
 
 @admin_bp.route("/arbitros")
+@login_required
 def vista_arbitros_admin():
     arbitros_db = db.session.execute(db.select(Arbitro)).scalars().all()
     return render_template("admin/arbitros_admin.html", arbitros=arbitros_db)
 
 @admin_bp.route("/arbitros/nuevo", methods=["GET", "POST"])
+@login_required
 def crear_arbitro():
     if request.method == "POST":
         nuevo_arbitro = Arbitro(
@@ -632,8 +714,12 @@ def crear_arbitro():
     return render_template("admin/form_arbitro.html")
 
 @admin_bp.route("/arbitros/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_arbitro(id):
     arbitro = db.session.get(Arbitro, id)
+    if not arbitro:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_arbitros_admin'))
     if request.method == "POST":
         arbitro.nombre = request.form.get("nombre")
         arbitro.apellido_paterno = request.form.get("apellido_paterno")
@@ -646,8 +732,12 @@ def editar_arbitro(id):
     return render_template("admin/editar_arbitro.html", arbitro=arbitro)
 
 @admin_bp.route("/arbitros/eliminar/<int:id>")
+@login_required
 def eliminar_arbitro(id):
     arbitro = db.session.get(Arbitro, id)
+    if not arbitro:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_arbitros_admin'))
     if arbitro:
         nom_arb = arbitro.nombre
         db.session.delete(arbitro)
@@ -660,8 +750,12 @@ def eliminar_arbitro(id):
 # -----------------------------
 
 @admin_bp.route("/partidos/<int:id>/resultados", methods=["GET", "POST"])
+@login_required
 def resultados_partido(id):
     partido = db.session.get(Partido, id)
+    if not partido:
+        flash("Registro no encontrado.")
+        return redirect(url_for('admin.vista_partidos_admin'))
     if request.method == "POST":
         nuevo_estado = request.form.get("estado")
         no_presento_1 = True if request.form.get("no_presento_1") else False
@@ -753,6 +847,7 @@ def eliminar_incidencia(partido_id, incidencia_id):
 # -----------------------------
 
 @admin_bp.get("/adeudos")
+@login_required
 def vista_adeudos_admin():
     inscripciones_sin_pago = db.session.execute(
         db.select(Inscripcion)

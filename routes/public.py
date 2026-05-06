@@ -318,7 +318,8 @@ def listar_equipos():
         {
             "id": e.id,
             "nombre": e.nombre,
-            "representante": e.representante,
+            "representante_nombre": e.representante_nombre,
+            "representante_apellido": e.representante_apellido,
             "telefono": e.telefono,
             "logo_url": e.logo_url,
             "categoria": e.categoria,
@@ -338,8 +339,8 @@ def listar_anuncios():
             "id": a.id,
             "titulo": a.titulo,
             "contenido": a.contenido,
-            "fecha": a.fecha_publicacion,
-            "estado": a.estado
+            "categoria": a.categoria,
+            "fecha": a.fecha_publicacion.isoformat() if a.fecha_publicacion else None
         }
         for a in anuncios
     ])
