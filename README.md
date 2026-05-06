@@ -93,19 +93,3 @@ Para que no se pierdan buscando dónde modificar el código, esta es la estructu
 
 ---
 
-##  CAMBIOS IMPORTANTES SUBIDOS ESTA NOCHE 2:20 AM 03/05
-
-Se cambiaron demasiadas cosas:
-
-Se ha implementado la arquitectura base del administrador, logrando la integración de los siguientes módulos:
-
-*   **Dashboard Inteligente:** Panel principal con KPIs dinámicos que reflejan en tiempo real el conteo de torneos, equipos, partidos y anuncios activos.
-*   **Bitácora de Actividad (Logs):** Sistema de auditoría automática que registra cada movimiento (altas, bajas, cambios) realizado por el administrador, mostrando fecha, responsable y estatus del movimiento.
-*   **Gestión de Inscripciones y Rosters:** Nueva lógica de negocio que desacopla equipos de torneos, permitiendo gestionar plantillas (rosters) específicas por cada inscripción, incluyendo dorsales y capitanes.
-*   **Padrón Global de Jugadores:** Registro centralizado de futbolistas con información detallada y sección de **Contacto de Emergencia** obligatoria para la seguridad en cancha.
-*   **Cuerpo Arbitral:** Módulo independiente para el control y asignación de árbitros a la liga.
-*   **Infraestructura:** Control de canchas, tipos de superficie y ubicación operativa.
-
-La app ya es "inteligente" se comunica entre si, ya hay bajas y altas, arbitros, goles, faltan unas cositas
-de pulir pero ya pueden analizar todo si tienen dudas me preguntan
-Solo queda pendiente el modulo de los partidos, lo hago mañana ya estoy cansado  -Kenner
