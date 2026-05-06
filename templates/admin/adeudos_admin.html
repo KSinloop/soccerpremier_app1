@@ -76,18 +76,11 @@
                     <td><strong>${{ "%.2f"|format(pago.monto) }}</strong></td>
                     <td>{{ pago.fecha_pago }}</td>
                     <td>
-                        <form action="{{ url_for('admin.pagar_arbitraje', id=pago.id) }}" method="POST"
-                              style="display: flex; gap: 8px; align-items: center;">
-                            <select name="metodo_pago"
-                                    style="min-height: 40px; border-radius: 12px; border: 1px solid #d9e1ee; padding: 0 12px; font-size: 0.9rem; color: var(--text); outline: none;">
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Tarjeta">Tarjeta</option>
-                            </select>
-                            <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 40px; font-size: 0.9rem;">
-                                Marcar pagado
-                            </button>
-                        </form>
+                        <a href="{{ url_for('admin.resultados_partido', id=pago.partido_id) }}"
+                           class="admin-chip admin-chip-gold"
+                           style="min-height: 40px; font-size: 0.9rem; display: inline-flex; align-items: center; text-decoration: none;">
+                            Ver partido →
+                        </a>
                     </td>
                 </tr>
                 {% else %}

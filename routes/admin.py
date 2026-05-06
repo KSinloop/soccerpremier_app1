@@ -245,6 +245,26 @@ def crear_partido():
         db.session.add(nuevo_partido)
         db.session.commit()
         registrar_movimiento('Partidos', f'Partido programado ID: {nuevo_partido.id}')
+
+        # Generar pagos de arbitraje automáticamente al crear el partido
+        pago_arb_1 = PagoArbitraje(
+            partido_id=nuevo_partido.id,
+            inscripcion_id=int(inscripcion_1_id),
+            fecha_pago=date_type.today(),
+            monto=COSTO_ARBITRAJE,
+            metodo_pago="Pendiente"
+        )
+        pago_arb_2 = PagoArbitraje(
+            partido_id=nuevo_partido.id,
+            inscripcion_id=int(inscripcion_2_id),
+            fecha_pago=date_type.today(),
+            monto=COSTO_ARBITRAJE,
+            metodo_pago="Pendiente"
+        )
+        db.session.add(pago_arb_1)
+        db.session.add(pago_arb_2)
+        db.session.commit()
+        registrar_movimiento('Adeudos', f'Arbitraje generado para partido ID {nuevo_partido.id}')
         return redirect(url_for('admin.vista_partidos_admin'))
 
     torneos = db.session.execute(db.select(Torneo).where(Torneo.activo==True)).scalars().all()
@@ -760,17 +780,8 @@ def pagar_inscripcion_rapido(id):
         registrar_movimiento('Adeudos', f'Inscripción ID {inscripcion.id} marcada como pagada')
     return redirect(url_for('admin.vista_adeudos_admin'))
 
-@admin_bp.route("/adeudos/arbitraje/pagar/<int:id>", methods=["POST"])
-@login_required
-def pagar_arbitraje(id):
-    from datetime import date as _date
-    pago = db.session.get(PagoArbitraje, id)
-    if pago:
-        pago.metodo_pago = request.form.get("metodo_pago", "Efectivo")
-        pago.fecha_pago = _date.today()
-        db.session.commit()
-        registrar_movimiento('Adeudos', f'Arbitraje ID {pago.id} marcado como pagado')
-    return redirect(url_for('admin.vista_adeudos_admin'))
+# RUTA pagar_arbitraje eliminada — el pago ahora se gestiona exclusivamente
+# desde resultados_partido.html usando la ruta pagar_arbitraje_equipo.
 
 
 @admin_bp.route("/partidos/<int:partido_id>/pagar_arbitraje_equipo/<int:inscripcion_id>", methods=["POST"])
