@@ -1244,6 +1244,11 @@ a {
     flex-direction: column;
     justify-content: space-between;
     box-shadow: 10px 0 24px rgba(16, 34, 73, 0.08);
+    
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto; 
 }
 
 .admin-brand {
@@ -1292,6 +1297,7 @@ a {
 .admin-nav-link {
     display: flex;
     align-items: center;
+    gap: 12px; 
     min-height: 48px;
     padding: 12px 14px;
     border-radius: 14px;
@@ -1310,13 +1316,16 @@ a {
 }
 
 .admin-sidebar-footer {
-    margin-top: 28px;
+    
+    margin-top: auto; 
+    padding-top: 28px; 
 }
 
 .admin-logout {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     width: 100%;
     min-height: 48px;
     padding: 12px 14px;
@@ -2105,4 +2114,4 @@ a {
     color: var(--muted);
     font-weight: 700;
     font-size: 0.9rem;
-}
+}

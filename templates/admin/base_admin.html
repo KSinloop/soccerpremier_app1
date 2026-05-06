@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel administrativo | Soccer Premier Juárez</title>
     <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='img/SPJ.jpeg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body class="admin-body">
@@ -26,25 +27,46 @@
             </div>
         </div>
 
-        <nav class="admin-nav">
-            <a href="{{ url_for('admin.vista_dashboard') }}" class="admin-nav-link">Dashboard</a>
-            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">Canchas</a>
-            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">Árbitros</a>
-            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-nav-link">Torneos</a>
-            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-nav-link">Equipos</a>
-            <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-nav-link">Jugadores</a>
-            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">Inscripciones</a>
-            <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-nav-link">Adeudos</a>
-            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-nav-link">Partidos</a>
-            <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-nav-link">Estadísticas</a>
-            <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-nav-link">Anuncios</a>
+<nav class="admin-nav">
+            <a href="{{ url_for('admin.vista_dashboard') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">grid_view</span> Dashboard
+            </a>
+            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">stadium</span> Canchas
+            </a>
+            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">sports</span> Árbitros
+            </a>
+            <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">emoji_events</span> Torneos
+            </a>
+            <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">groups</span> Equipos
+            </a>
+            <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">badge</span> Jugadores
+            </a>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">how_to_reg</span> Inscripciones
+            </a>
+            <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">payments</span> Adeudos
+            </a>
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">calendar_month</span> Partidos
+            </a>
+            <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">bar_chart</span> Estadísticas
+            </a>
+            <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-nav-link">
+                <span class="material-symbols-outlined">campaign</span> Anuncios
+            </a>
         </nav>
         
         <div class="admin-sidebar-footer">
-            <!-- Se actualizó a un formulario POST para que de verdad cierre la sesión -->
             <form action="{{ url_for('auth.logout') }}" method="POST" style="margin: 0; padding: 0;">
                 <button type="submit" class="admin-logout" style="width: 100%; border: none; cursor: pointer; text-align: left; background: none; font-family: inherit;" onclick="return confirm('¿Estás seguro de que deseas salir? Se cerrará tu sesión y volverás al portal principal.');">
-                    Volver al portal
+                    <span class="material-symbols-outlined">logout</span> Volver al portal
                 </button>
             </form>
         </div>
