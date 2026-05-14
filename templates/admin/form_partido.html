@@ -145,4 +145,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.querySelector('input[name="fecha_hora"]');
+    if (fechaInput) {
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0); 
+        hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+        
+        const minDate = hoy.toISOString().slice(0, 16);
+        
+        fechaInput.setAttribute('min', minDate);
+    }
+});
+</script>
 {% endblock %}
