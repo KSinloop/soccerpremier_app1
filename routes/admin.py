@@ -788,34 +788,47 @@ def pagar_inscripcion_rapido(id):
 @login_required
 def pagar_arbitraje_equipo(partido_id, inscripcion_id):
     metodo = request.form.get("metodo_pago", "Efectivo")
-    monto = float(request.form.get("monto", COSTO_ARBITRAJE))
+    monto_ingresado = float(request.form.get("monto", 0))
     
-    # Buscar si ya existe un registro previo de este partido/equipo
-    pago = db.session.execute(
+    # 1. Buscar el adeudo pendiente exacto de este equipo
+    pago_pendiente = db.session.execute(
         db.select(PagoArbitraje)
         .where(PagoArbitraje.partido_id == partido_id)
         .where(PagoArbitraje.inscripcion_id == inscripcion_id)
-    ).scalar_one_or_none()
+        .where(PagoArbitraje.metodo_pago == "Pendiente")
+    ).scalars().first()
     
-    if pago:
-        pago.metodo_pago = metodo
-        pago.fecha_pago = date_type.today()
-        pago.monto = monto
-    else:
-        nuevo_pago = PagoArbitraje(
-            partido_id=partido_id,
-            inscripcion_id=inscripcion_id,
-            fecha_pago=date_type.today(),
-            monto=monto,
-            metodo_pago=metodo
-        )
-        db.session.add(nuevo_pago)
+    if pago_pendiente:
+        from datetime import date
+        # CORRECCIÓN AQUÍ: Convertimos a float para que no choque con el formulario
+        monto_original = float(pago_pendiente.monto)
         
-    db.session.commit()
-    registrar_movimiento('Adeudos', f'Arbitraje pagado en partido ID {partido_id} por equipo ID {inscripcion_id}')
-    flash("Pago de arbitraje registrado con éxito.")
-    return redirect(url_for('admin.resultados_partido', id=partido_id))
+        if monto_ingresado >= monto_original:
+            # Pagó el total (liquidó la deuda)
+            pago_pendiente.metodo_pago = metodo
+            pago_pendiente.fecha_pago = date.today()
+            pago_pendiente.monto = monto_ingresado
+        else:
+            # Pagó solo una parte (ABONO)
+            pago_pendiente.metodo_pago = metodo
+            pago_pendiente.fecha_pago = date.today()
+            pago_pendiente.monto = monto_ingresado
+            
+            # Creamos una NUEVA deuda por la diferencia restante
+            nuevo_pendiente = PagoArbitraje(
+                partido_id=partido_id,
+                inscripcion_id=inscripcion_id,
+                fecha_pago=date.today(),
+                monto=(monto_original - monto_ingresado),
+                metodo_pago="Pendiente"
+            )
+            db.session.add(nuevo_pendiente)
+            
+        db.session.commit()
+        registrar_movimiento('Adeudos', f'Abono de ${monto_ingresado} en partido {partido_id}')
 
+    url_volver = request.referrer or url_for('admin.resultados_partido', id=partido_id)
+    return redirect(url_volver)
 
 
 #============

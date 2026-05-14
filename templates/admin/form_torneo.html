@@ -102,5 +102,21 @@ document.getElementById('dia_torneo').addEventListener('change', function() {
         catSelect.appendChild(opt);
     });
 });
+
+// === CANDADO DE FECHAS ===
+    const inputInicio = document.querySelector('input[name="fecha_inicio"]');
+    const inputFin = document.querySelector('input[name="fecha_fin"]');
+
+    if(inputInicio && inputFin) {
+        inputInicio.addEventListener('change', function() {
+            // El atributo 'min' bloquea los días anteriores en el calendario
+            inputFin.min = this.value; 
+            
+            // Si el admin ya había puesto una fecha fin que ahora quedó en el pasado, se la borramos
+            if(inputFin.value && inputFin.value < this.value) {
+                inputFin.value = '';
+            }
+        });
+    }
 </script>
 {% endblock %}

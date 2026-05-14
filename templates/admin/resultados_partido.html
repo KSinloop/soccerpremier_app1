@@ -104,50 +104,75 @@
     </div>
     <div style="padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         
-        <!-- Filtros rápidos para saber si ya pagaron -->
-        {% set pago_1_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | list %}
-        {% set pago_1 = pago_1_list[0] if pago_1_list else none %}
-        {% set pagado_1 = pago_1 and pago_1.metodo_pago != 'Pendiente' %}
-
-        {% set pago_2_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | list %}
-        {% set pago_2 = pago_2_list[0] if pago_2_list else none %}
-        {% set pagado_2 = pago_2 and pago_2.metodo_pago != 'Pendiente' %}
-
-        <!-- Equipo Local -->
+        {% set pagos_1_realizados = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | selectattr("metodo_pago", "!=", "Pendiente") | list %}
+        {% set pagos_1_pendientes = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | selectattr("metodo_pago", "equalto", "Pendiente") | list %}
+        
         <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
             <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">L: {{ partido.inscripcion_1.equipo.nombre }}</h4>
-            {% if pagado_1 %}
-                <span class="status-badge status-active" style="margin-bottom: 10px; display: inline-block;">Pagado ({{ pago_1.metodo_pago }})</span>
-                <p style="margin: 0; font-size: 0.95rem; color: #555;">Fecha: {{ pago_1.fecha_pago.strftime('%d/%m/%Y') }} <br> Monto: <strong>${{ "%.2f"|format(pago_1.monto) }}</strong></p>
-            {% else %}
-                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Adeudo pendiente</span>
+            
+            {% for p in pagos_1_realizados %}
+                <div style="background: #eef2f7; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--gold);">
+                    <span style="font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">Abono ({{ p.metodo_pago }})</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <span style="font-size: 0.85rem; color: #555;">{{ p.fecha_pago.strftime('%d/%m/%Y') }}</span>
+                        <strong style="color: var(--navy); font-size: 1.1rem;">+${{ "%.2f"|format(p.monto) }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if pagos_1_pendientes %}
+                {% set pen1 = pagos_1_pendientes[0] %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Resta: ${{ "%.2f"|format(pen1.monto) }}</span>
                 <form action="{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_1_id) }}" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <select name="metodo_pago" required style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
                         <option value="Efectivo">Efectivo</option>
                         <option value="Transferencia">Transferencia</option>
                     </select>
-                    <input type="number" step="0.5" name="monto" value="150" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
-                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Pago</button>
+                    <input type="number" step="0.5" name="monto" value="{{ pen1.monto }}" max="{{ pen1.monto }}" min="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Abono</button>
                 </form>
+            {% else %}
+                {% if pagos_1_realizados %}
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span class="status-badge status-active" style="display: inline-block;">¡Liquidado!</span>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
 
-        <!-- Equipo Visitante -->
+        {% set pagos_2_realizados = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | selectattr("metodo_pago", "!=", "Pendiente") | list %}
+        {% set pagos_2_pendientes = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | selectattr("metodo_pago", "equalto", "Pendiente") | list %}
+        
         <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
             <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">V: {{ partido.inscripcion_2.equipo.nombre }}</h4>
-            {% if pagado_2 %}
-                <span class="status-badge status-active" style="margin-bottom: 10px; display: inline-block;">Pagado ({{ pago_2.metodo_pago }})</span>
-                <p style="margin: 0; font-size: 0.95rem; color: #555;">Fecha: {{ pago_2.fecha_pago.strftime('%d/%m/%Y') }} <br> Monto: <strong>${{ "%.2f"|format(pago_2.monto) }}</strong></p>
-            {% else %}
-                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Adeudo pendiente</span>
+            
+            {% for p in pagos_2_realizados %}
+                <div style="background: #eef2f7; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--gold);">
+                    <span style="font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">Abono ({{ p.metodo_pago }})</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <span style="font-size: 0.85rem; color: #555;">{{ p.fecha_pago.strftime('%d/%m/%Y') }}</span>
+                        <strong style="color: var(--navy); font-size: 1.1rem;">+${{ "%.2f"|format(p.monto) }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if pagos_2_pendientes %}
+                {% set pen2 = pagos_2_pendientes[0] %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Resta: ${{ "%.2f"|format(pen2.monto) }}</span>
                 <form action="{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_2_id) }}" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <select name="metodo_pago" required style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
                         <option value="Efectivo">Efectivo</option>
                         <option value="Transferencia">Transferencia</option>
                     </select>
-                    <input type="number" step="0.5" name="monto" value="150" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
-                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Pago</button>
+                    <input type="number" step="0.5" name="monto" value="{{ pen2.monto }}" max="{{ pen2.monto }}" min="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46" required style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="submit" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Abono</button>
                 </form>
+            {% else %}
+                {% if pagos_2_realizados %}
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span class="status-badge status-active" style="display: inline-block;">¡Liquidado!</span>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
 
