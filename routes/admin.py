@@ -565,6 +565,7 @@ def gestionar_roster(id):
     inscripcion = db.session.get(Inscripcion, id)
     if request.method == "POST":
         jugador_id = request.form.get("jugador_id")
+        
         # Validar que el jugador no pertenezca ya a otro equipo en el mismo torneo
         conflicto = db.session.execute(
             db.select(RegistroJugador)
@@ -576,11 +577,25 @@ def gestionar_roster(id):
             flash("Error: ese jugador ya pertenece a otro equipo en este torneo.")
             return redirect(url_for('admin.gestionar_roster', id=inscripcion.id))
 
+        es_capitan_form = True if request.form.get("es_capitan") else False
+
+        if es_capitan_form:
+            # 1. Buscamos si ya había algún capitán en este equipo
+            capitanes_anteriores = db.session.execute(
+                db.select(RegistroJugador)
+                .where(RegistroJugador.inscripcion_id == inscripcion.id)
+                .where(RegistroJugador.es_capitan == True)
+            ).scalars().all()
+            
+            # 2. Le quitamos el gafete a todos los anteriores
+            for capitan in capitanes_anteriores:
+                capitan.es_capitan = False
+
         nuevo_registro = RegistroJugador(
             inscripcion_id=inscripcion.id,
             jugador_id=jugador_id,
             dorsal=request.form.get("dorsal"),
-            es_capitan=True if request.form.get("es_capitan") else False
+            es_capitan=es_capitan_form
         )
         db.session.add(nuevo_registro)
         db.session.commit()

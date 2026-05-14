@@ -5,13 +5,25 @@
 {% block content %}
 <section class="admin-page-grid">
     <article class="admin-panel-card" style="grid-column: 1 / -1;">
-        <div class="admin-section-head">
-            <div>
-                <span class="section-kicker">PADRÓN INDIVIDUAL</span>
-                <h3 class="admin-panel-title">Jugadores registrados</h3>
-            </div>
-            <a href="{{ url_for('admin.crear_jugador') }}" class="admin-chip admin-chip-gold">+ Alta de jugador</a>
+        <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">PADRÓN INDIVIDUAL</span>
+            <h3 class="admin-panel-title">Jugadores registrados</h3>
         </div>
+        
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            
+            <div style="position: relative;">
+                <span class="material-symbols-outlined" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px;">search</span>
+                <input type="text" id="buscadorJugadores" placeholder="Buscar por nombre o ID..." 
+                       style="min-height: 46px; border-radius: 14px; border: 1px solid #d9e1ee; padding: 0 16px 0 42px; font-size: 0.95rem; color: var(--navy); outline: none; min-width: 260px; transition: border-color 0.2s;">
+            </div>
+
+            <a href="{{ url_for('admin.crear_jugador') }}" class="admin-chip admin-chip-gold">
+                + Alta de jugador
+            </a>
+        </div>
+    </div>
 
         <div class="admin-table-wrap">
             <table class="admin-table">
@@ -27,7 +39,7 @@
                 <tbody>
                     {% for jugador in jugadores %}
                     <tr>
-                        <td>{{ '%04d' % jugador.id }}</td>
+                        <td>{{ '%03d' % jugador.id }}</td>
                         <td><strong>{{ jugador.nombre }} {{ jugador.apellido_paterno }} {{ jugador.apellido_materno or '' }}</strong></td>
                         <td>{{ jugador.fecha_nacimiento.strftime('%d/%m/%Y') if jugador.fecha_nacimiento else 'N/A' }}</td>
                         <td>{{ jugador.sexo }}</td>
@@ -56,4 +68,19 @@
         </div>
     </article>
 </section>
+
+<script>
+    document.getElementById('buscadorJugadores').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll('.admin-table tbody tr');
+        filas.forEach(function(fila) {
+            let textoFila = fila.textContent.toLowerCase();
+            if (textoFila.includes(filtro)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
