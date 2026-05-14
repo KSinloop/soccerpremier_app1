@@ -33,12 +33,12 @@
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Nombre(s) del DT</label>
 
-                    <input type="text" name="representante_nombre" 
+                    <input type="text" name="representante_nombre" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Apellidos del DT</label>
-                    <input type="text" name="representante_apellido" value=""
+                    <input type="text" name="representante_apellido" value="" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
             </div>
@@ -55,7 +55,7 @@
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
             </div>
 
-            <div style="display: grid; gap: 6px;">
+            <!-- <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Capitán del equipo (opcional)</label>
                 <select name="capitan_id"
                         style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
@@ -64,7 +64,7 @@
                     <option value="{{ j.id }}">{{ j.nombre }} {{ j.apellido_paterno }}</option>
                     {% endfor %}
                 </select>
-            </div>
+            </div> -->
 
             <div>
                 <button type="submit"

@@ -10,7 +10,7 @@
             </div>
             <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-chip">← Volver</a>
         </div>
-       
+        
         <form action="{{ url_for('admin.crear_jugador') }}" method="POST" enctype="multipart/form-data" style="padding: 28px; display: grid; gap: 18px;">
 
             <div style="display: grid; gap: 6px;">
@@ -54,14 +54,12 @@
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; text-transform: uppercase;">
             </div>
 
-           
             <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Foto del jugador</label>
                 <input type="file" name="foto_archivo" accept="image/png, image/jpeg, image/jpg" required
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 12px 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
             </div>
 
-            <!-- CONTACTO DE EMERGENCIA -->
             <div style="background: #fff6d9; border-radius: 20px; padding: 22px; border-left: 4px solid var(--gold);">
                 <h4 style="margin: 0 0 16px; color: var(--navy); font-size: 1rem; font-weight: 800;">En caso de emergencia avisar a:</h4>
                 <div style="display: grid; gap: 14px;">
@@ -71,18 +69,16 @@
                                style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
                     </div>
 
-                        <div style="display: grid; gap: 6px;">
-                            <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Teléfono</label>
-                           
-                            <input type="tel" name="telefono_contacto" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Debe contener exactamente 10 dígitos numéricos" required
-                                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
-                        </div>
+                    <div style="display: grid; gap: 6px;">
+                        <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Teléfono</label>
+                        <input type="tel" name="telefono_contacto" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Debe contener exactamente 10 dígitos numéricos" required
+                               style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
+                    </div>
                         
-                        <div style="display: grid; gap: 6px;">
-                            <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Parentesco</label>
-                            <input type="text" name="parentesco" required
-                                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
-                        </div>
+                    <div style="display: grid; gap: 6px;">
+                        <label style="color: var(--navy); font-weight: 800; font-size: 0.9rem;">Parentesco</label>
+                        <input type="text" name="parentesco" required
+                               style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%; background: white;">
                     </div>
                 </div>
             </div>
@@ -96,4 +92,16 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.querySelector('input[name="fecha_nacimiento"]');
+        if (fechaInput) {
+            // Obtenemos la fecha de hoy en formato YYYY-MM-DD
+            const hoy = new Date().toISOString().split('T')[0];
+            // Le asignamos el límite máximo al input
+            fechaInput.setAttribute('max', hoy);
+        }
+    });
+</script>
 {% endblock %}

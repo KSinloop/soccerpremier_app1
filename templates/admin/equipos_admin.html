@@ -36,8 +36,20 @@
                                 Sin representante
                             {% endif %}
                         </p>
+
+                        <p style="color: var(--muted); font-size: 0.9rem; margin: 4px 0;">
+                            <strong>Capitán:</strong> 
+                            {% if equipo.capitan %}
+                                {{ equipo.capitan.nombre }} {{ equipo.capitan.apellido_paterno }}
+                             {% else %}
+                            <span style="color: #cc0000; font-style: italic;">Sin asignar</span>
+                        {% endif %}
+                        </p>
+
                     </div>
+
                 </div>
+                
                 <div class="admin-record-meta">
                     <span>Tel: {{ equipo.telefono or 'N/A' }}</span>
                     {% if equipo.activo %}

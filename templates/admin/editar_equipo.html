@@ -31,12 +31,12 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Nombre(s) del DT</label>
-                    <input type="text" name="representante_nombre" value="{{ equipo.representante_nombre or '' }}"
+                    <input type="text" name="representante_nombre" value="{{ equipo.representante_nombre or '' }}" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Apellido del DT</label>
-                    <input type="text" name="representante_apellido" value="{{ equipo.representante_apellido or '' }}"
+                    <input type="text" name="representante_apellido" value="{{ equipo.representante_apellido or '' }}" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
             </div>
@@ -53,7 +53,7 @@
                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
             </div>
 
-            <div style="display: grid; gap: 6px;">
+            <!-- <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Capitán del equipo (opcional)</label>
                 <select name="capitan_id"
                         style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
@@ -62,7 +62,7 @@
                     <option value="{{ j.id }}" {% if equipo.capitan_id == j.id %}selected{% endif %}>{{ j.nombre }} {{ j.apellido_paterno }}</option>
                     {% endfor %}
                 </select>
-            </div>
+            </div> -->
 
             <div>
                 <button type="submit"

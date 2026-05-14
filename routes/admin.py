@@ -591,6 +591,8 @@ def gestionar_roster(id):
             for capitan in capitanes_anteriores:
                 capitan.es_capitan = False
 
+            inscripcion.equipo.capitan_id = jugador_id    
+
         nuevo_registro = RegistroJugador(
             inscripcion_id=inscripcion.id,
             jugador_id=jugador_id,
@@ -609,17 +611,23 @@ def gestionar_roster(id):
 
     return render_template("admin/gestionar_roster.html", inscripcion=inscripcion, jugadores=jugadores_libres)
 
-@admin_bp.route("/inscripciones/quitar_jugador/<int:registro_id>")
+@admin_bp.route("/quitar_jugador_inscripcion/<int:registro_id>", methods=["GET", "POST"])
+@login_required
 def quitar_jugador_inscripcion(registro_id):
     registro = db.session.get(RegistroJugador, registro_id)
     if registro:
-        insc_id = registro.inscripcion_id
-        nom_jugador = registro.jugador.nombre
+        inscripcion_id = registro.inscripcion_id
+        equipo = registro.inscripcion.equipo 
+
+        if equipo.capitan_id == registro.jugador_id:
+            equipo.capitan_id = None 
+
         db.session.delete(registro)
         db.session.commit()
-        registrar_movimiento('Plantillas', f'Se quitó a {nom_jugador} de la plantilla')
-        return redirect(url_for('admin.gestionar_roster', id=insc_id))
-    return redirect(url_for('admin.vista_inscripciones_admin'))
+        registrar_movimiento('Plantillas', f'Jugador removido del equipo {equipo.nombre}')
+        return redirect(url_for('admin.gestionar_roster', id=inscripcion_id))
+        
+    return redirect(request.referrer)
 
 # -----------------------------
 # ÁRBITROS
