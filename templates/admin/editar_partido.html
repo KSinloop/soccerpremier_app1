@@ -23,7 +23,8 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('admin.editar_partido', id=partido.id) }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+        <form action="{{ url_for('admin.editar_partido', id=partido.id) }}" method="POST" style="padding: 28px; display: grid; gap: 18px;"
+      onsubmit="if(this.inscripcion_1_id.value === this.inscripcion_2_id.value) { alert('¡Error! Un equipo no puede jugar contra sí mismo. Cambia al local o al visitante.'); return false; }">
 
             <div style="display: grid; gap: 6px;">
                 <label style="color: var(--navy); font-weight: 800;">Torneo</label>
@@ -40,8 +41,9 @@
                     <label style="color: var(--navy); font-weight: 800;">Equipo Local</label>
                     <select name="inscripcion_1_id" required
                             style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona el local...</option>
                         {% for i in inscripciones %}
-                        <option value="{{ i.id }}" {% if partido.inscripcion_1_id == i.id %}selected{% endif %}>{{ i.equipo.nombre }} – {{ i.torneo.nombre }}</option>
+                        <option value="{{ i.id }}" data-torneo="{{ i.torneo_id }}" {% if partido.inscripcion_1_id == i.id %}selected{% endif %}>{{ i.equipo.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -49,8 +51,9 @@
                     <label style="color: var(--navy); font-weight: 800;">Equipo Visitante</label>
                     <select name="inscripcion_2_id" required
                             style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona el visitante...</option>
                         {% for i in inscripciones %}
-                        <option value="{{ i.id }}" {% if partido.inscripcion_2_id == i.id %}selected{% endif %}>{{ i.equipo.nombre }} – {{ i.torneo.nombre }}</option>
+                        <option value="{{ i.id }}" data-torneo="{{ i.torneo_id }}" {% if partido.inscripcion_2_id == i.id %}selected{% endif %}>{{ i.equipo.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -89,4 +92,51 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const torneoSelect = document.querySelector('select[name="torneo_id"]');
+    const equipo1Select = document.querySelector('select[name="inscripcion_1_id"]');
+    const equipo2Select = document.querySelector('select[name="inscripcion_2_id"]');
+
+    function filtrarEquipos(limpiarCampos) {
+        const torneoId = torneoSelect.value;
+
+        if (limpiarCampos) {
+            equipo1Select.value = "";
+            equipo2Select.value = "";
+        }
+
+        Array.from(equipo1Select.options).forEach(opcion => {
+            if (!opcion.value) return; 
+            if (opcion.getAttribute('data-torneo') === torneoId) {
+                opcion.style.display = '';     
+                opcion.disabled = false;       
+            } else {
+                opcion.style.display = 'none'; 
+                opcion.disabled = true;        
+            }
+        });
+
+        Array.from(equipo2Select.options).forEach(opcion => {
+            if (!opcion.value) return;
+            if (opcion.getAttribute('data-torneo') === torneoId) {
+                opcion.style.display = '';
+                opcion.disabled = false;
+            } else {
+                opcion.style.display = 'none';
+                opcion.disabled = true;
+            }
+        });
+    }
+
+    if (torneoSelect && equipo1Select && equipo2Select) {
+        torneoSelect.addEventListener('change', function() {
+            filtrarEquipos(true);
+        });
+        
+        filtrarEquipos(false);
+    }
+});
+</script>
 {% endblock %}
