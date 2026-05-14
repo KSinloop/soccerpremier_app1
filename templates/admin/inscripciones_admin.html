@@ -5,12 +5,22 @@
 {% block content %}
 <section class="admin-page-grid">
     <article class="admin-panel-card" style="grid-column: 1 / -1;">
-        <div class="admin-section-head">
+        <div class="admin-section-head" style="flex-wrap: wrap;">
             <div>
                 <span class="section-kicker">CONTROL OPERATIVO</span>
                 <h3 class="admin-panel-title">Equipos Inscritos a Torneos</h3>
             </div>
-            <a href="{{ url_for('admin.crear_inscripcion') }}" class="admin-chip admin-chip-gold">+ Nueva Inscripción</a>
+            
+            <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+                
+                <div style="position: relative;">
+                    <span class="material-symbols-outlined" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px;">search</span>
+                    <input type="text" id="buscadorInscripciones" placeholder="Buscar equipo, torneo o estado..." 
+                           style="min-height: 46px; border-radius: 14px; border: 1px solid #d9e1ee; padding: 0 16px 0 42px; font-size: 0.95rem; color: var(--navy); outline: none; min-width: 260px; transition: border-color 0.2s;">
+                </div>
+
+                <a href="{{ url_for('admin.crear_inscripcion') }}" class="admin-chip admin-chip-gold">+ Nueva Inscripción</a>
+            </div>
         </div>
 
         <div class="admin-table-wrap">
@@ -28,7 +38,7 @@
                 <tbody>
                     {% for insc in inscripciones %}
                     <tr>
-                        <td><strong>{{ '%04d' % insc.id }}</strong></td>
+                        <td><strong>{{ '%03d' % insc.id }}</strong></td>
                         <td>{{ insc.torneo.nombre }}</td>
                         <td>{{ insc.equipo.nombre }}</td>
                         <td>{{ insc.fecha_inscripcion.strftime('%d/%m/%Y') }}</td>
@@ -55,4 +65,23 @@
         </div>
     </article>
 </section>
+
+<script>
+    document.getElementById('buscadorInscripciones').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        
+        // Seleccionamos específicamente las filas dentro del tbody
+        let filas = document.querySelectorAll('.admin-table tbody tr');
+
+        filas.forEach(function(fila) {
+            let textoFila = fila.textContent.toLowerCase();
+            
+            if (textoFila.includes(filtro)) {
+                fila.style.display = ''; 
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
