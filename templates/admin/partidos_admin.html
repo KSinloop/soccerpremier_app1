@@ -9,8 +9,17 @@
             <span class="section-kicker">CALENDARIO</span>
             <h3 class="admin-panel-title">Partidos programados</h3>
         </div>
-        <!-- Botón para agendar un nuevo encuentro -->
-        <a href="{{ url_for('admin.crear_partido') }}" class="admin-chip admin-chip-gold">+ Programar partido</a>
+        
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            
+            <div style="position: relative;">
+                <span class="material-symbols-outlined" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px;">search</span>
+                <input type="text" id="buscadorPartidos" placeholder="Buscar equipo, jornada, etc..." 
+                       style="min-height: 46px; border-radius: 14px; border: 1px solid #d9e1ee; padding: 0 16px 0 42px; font-size: 0.95rem; color: var(--navy); outline: none; min-width: 260px; transition: border-color 0.2s;">
+            </div>
+
+            <a href="{{ url_for('admin.crear_partido') }}" class="admin-chip admin-chip-gold">+ Programar partido</a>
+        </div>
     </div>
 
     <div class="admin-table-wrap">
@@ -52,7 +61,6 @@
                         {% set p2_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | list %}
                         {% set p2_pagado = p2_list and p2_list[0].metodo_pago != 'Pendiente' %}
                         
-                        <!-- Lógica Local -->
                         {% if p1_pagado %}
                             <span style="color: #28a745;" title="Local">✓</span>
                         {% else %}
@@ -61,7 +69,6 @@
                         
                         <span style="color: #ccc; margin: 0 4px;">|</span>
                         
-                        <!-- Lógica Visitante -->
                         {% if p2_pagado %}
                             <span style="color: #28a745;" title="Visitante">✓</span>
                         {% else %}
@@ -86,4 +93,23 @@
         </table>
     </div>
 </section>
+
+<script>
+    document.getElementById('buscadorPartidos').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        
+        // Seleccionamos específicamente las filas dentro del tbody de tu admin-table
+        let filas = document.querySelectorAll('.admin-table tbody tr');
+
+        filas.forEach(function(fila) {
+            let textoFila = fila.textContent.toLowerCase();
+            
+            if (textoFila.includes(filtro)) {
+                fila.style.display = ''; 
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
