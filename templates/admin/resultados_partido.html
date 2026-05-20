@@ -2,7 +2,6 @@
 {% block admin_title %}Control de Partido{% endblock %}
 {% block content %}
 
-<!-- INFO DEL PARTIDO -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -59,7 +58,6 @@
     </div>
 </div>
 
-<!-- MARCADOR ACTUAL -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -94,7 +92,6 @@
     </div>
 </div>
 
-<!-- PAGO DE ARBITRAJE -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -179,7 +176,6 @@
     </div>
 </div>
 
-<!-- REGISTRAR GOL -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -216,7 +212,6 @@
     </form>
 </div>
 
-<!-- REGISTRAR INCIDENCIA -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -264,7 +259,6 @@
     </form>
 </div>
 
-<!-- INASISTENCIAS Y ESTADO -->
 <div class="admin-panel-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -318,7 +312,6 @@
     </form>
 </div>
 
-<!-- GOLES REGISTRADOS -->
 <div class="admin-table-card" style="margin-bottom: 24px;">
     <div class="admin-table-head">
         <div>
@@ -333,7 +326,7 @@
                     <th>#</th>
                     <th>Jugador</th>
                     <th>Equipo</th>
-                    <th>Acciones</th> <!-- Nueva columna -->
+                    <th>Acciones</th> 
                 </tr>
             </thead>
             <tbody>
@@ -353,9 +346,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <!-- Botón de eliminar con confirmación -->
-                        <form action="{{ url_for('admin.eliminar_gol', gol_id=gol.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
-                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar este gol? Se restará del marcador.');">
+                        <form action="{{ url_for('admin.eliminar_gol', gol_id=gol.id, partido_id=partido.id) }}" method="POST" style="margin: 0;" onsubmit="confirmarBorradoFormulario(event, this, 'Gol de {% if gol.registro_jugador %}{{ gol.registro_jugador.jugador.nombre | escape }}{% else %}Jugador desconocido{% endif %}')">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">
                                 Eliminar
                             </button>
                         </form>
@@ -371,7 +363,6 @@
     </div>
 </div>
 
-<!-- INCIDENCIAS REGISTRADAS -->
 <div class="admin-table-card">
     <div class="admin-table-head">
         <div>
@@ -400,9 +391,8 @@
                     <td>{{ inc.registro_jugador.inscripcion.equipo.nombre }}</td>
                     <td>{{ inc.descripcion }}</td>
                     <td>
-                        <!-- Botón de eliminar con confirmación -->
-                        <form action="{{ url_for('admin.eliminar_incidencia', incidencia_id=inc.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
-                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar esta incidencia?');">
+                        <form action="{{ url_for('admin.eliminar_incidencia', incidencia_id=inc.id, partido_id=partido.id) }}" method="POST" style="margin: 0;" onsubmit="confirmarBorradoFormulario(event, this, '{{ inc.tipo }} a {{ inc.registro_jugador.jugador.nombre | escape }}')">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">
                                 Eliminar
                             </button>
                         </form>
@@ -419,6 +409,26 @@
 </div>
 
 <script>
+function confirmarBorradoFormulario(event, form, textoElemento) {
+    event.preventDefault();
+    Swal.fire({
+        title: '¿Estás seguro?',
+        html: `Estás a punto de eliminar: <strong>${textoElemento}</strong>.<br>Esta acción afectará los registros del partido.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545', 
+        cancelButtonColor: '#102249', 
+        confirmButtonText: '<span style="color: #ffffff; font-weight: bold;">Sí, eliminar</span>',
+        cancelButtonText: 'Cancelar',
+        background: '#ffffff',
+        borderRadius: '24px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
 function toggleMotivo(sel) {
     var box = document.getElementById('motivo_box');
     if (sel.value === 'Cancelado' || sel.value === 'Reprogramado') {

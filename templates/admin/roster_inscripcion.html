@@ -14,7 +14,6 @@
             <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="btn" style="background-color: #e0e0e0; color: #333; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">← Volver a Inscripciones</a>
         </div>
 
-        <!-- FORMULARIO PARA AGREGAR JUGADOR A ESTE TORNEO -->
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee;">
             <h4 style="margin-bottom: 15px; color: #002266;">Dar de alta jugador en este torneo</h4>
             <form action="{{ url_for('admin.roster_inscripcion', id=inscripcion.id) }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
@@ -43,7 +42,6 @@
             </form>
         </div>
 
-        <!-- TABLA DE JUGADORES REGISTRADOS EN ESTA INSCRIPCIÓN -->
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -67,7 +65,9 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ url_for('admin.quitar_jugador_inscripcion', registro_id=registro.id) }}" onclick="return confirm('¿Seguro que deseas sacar a este jugador del torneo?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Dar de baja</a>
+                            {% set url_borrar_jugador = url_for('admin.quitar_jugador_inscripcion', registro_id=registro.id) %}
+                            
+                            <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_jugador }}', '{{ registro.jugador.nombre | escape }} {{ registro.jugador.apellido_paterno | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Dar de baja</a>
                         </td>
                     </tr>
                     {% else %}

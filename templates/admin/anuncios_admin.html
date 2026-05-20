@@ -1,7 +1,6 @@
 {% extends "admin/base_admin.html" %}
 
 {% block admin_title %}Gestión de Anuncios{% endblock %}
-<!-- Este template muestra una tabla con los anuncios publicados, permitiendo al administrador editarlos o cambiar su estado de visibilidad. -->
 {% block content %}
 <section class="admin-table-card">
     <div class="admin-table-head">
@@ -24,7 +23,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-<tbody>
+            <tbody>
                 {% for anuncio in anuncios %}
                 <tr>
                     <td>{{ anuncio.id }}</td>
@@ -33,7 +32,10 @@
                     <td>{{ anuncio.categoria }}</td>
                     <td>
                         <a href="{{ url_for('admin.editar_anuncio', id=anuncio.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        <a href="{{ url_for('admin.eliminar_anuncio', id=anuncio.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este anuncio?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                        
+                        {% set url_borrar_anuncio = url_for('admin.eliminar_anuncio', id=anuncio.id) %}
+                        
+                        <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_anuncio }}', '{{ anuncio.titulo | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                     </td>
                 </tr>
                 {% else %}
@@ -46,8 +48,3 @@
     </div>
 </section>
 {% endblock %}
-<!-- Comentarios para el administrador -->
-<!-- 
-    - El botón "Crear nuevo anuncio" debe redirigir a un formulario de creación.
-    - Las acciones de "Editar" y "Ocultar/Visible" deben estar conectadas a funciones del backend para actualizar el estado del anuncio.
--->

@@ -40,7 +40,6 @@
                         <td><strong>{{ torneo.nombre }}</strong></td>
                         <td>{{ torneo.categoria or 'N/A' }} - {{ torneo.tipo or 'N/A' }}</td>
                         <td>
-                            <!-- ETIQUETAS DE ESTATUS -->
                             {% if torneo.estado == 'Activo' %}
                                 <span class="status-badge status-active">Activo</span>
                             {% elif torneo.estado == 'Próximo' %}
@@ -59,16 +58,21 @@
                             <div class="admin-actions" style="display: flex; gap: 12px; align-items: center;">
                                 <a href="{{ url_for('admin.editar_torneo', id=torneo.id) }}" class="admin-action-link">Editar</a>
                                 
-                                <!-- BOTÓN DE LIGUILLA -->
                                 {% if torneo.estado == 'Activo' or torneo.estado == 'Finalizado' %}
-                                <form action="{{ url_for('admin.generar_liguilla', torneo_id=torneo.id) }}" method="POST" style="margin: 0; display: inline;">
-                                    <button type="submit" class="admin-action-link" style="background: none; border: none; padding: 0; color: #d4af37; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: 800;" onclick="return confirm('¿Seguro que deseas iniciar la Liguilla? Esto clasificará a los 8 mejores automáticamente y agendará sus partidos de eliminación.');">
+                                <form id="form-liguilla-{{ torneo.id }}" action="{{ url_for('admin.generar_liguilla', torneo_id=torneo.id) }}" method="POST" style="margin: 0; display: inline;">
+                                    <button type="button" class="admin-action-link" style="background: none; border: none; padding: 0; color: #d4af37; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: 800;" 
+                                            onclick="confirmarLiguilla('form-liguilla-{{ torneo.id }}', '{{ torneo.nombre|escape }}')">
                                         Generar Liguilla
                                     </button>
                                 </form>
                                 {% endif %}
 
-                                <a href="{{ url_for('admin.eliminar_torneo', id=torneo.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este torneo?');" class="admin-action-link danger">Eliminar</a>
+                                {% set url_borrar_torneo = url_for('admin.eliminar_torneo', id=torneo.id) %}
+                                <a href="#" 
+                                   onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_torneo }}', '{{ torneo.nombre|escape }}')" 
+                                   class="admin-action-link danger" style="color: #cc0000;">
+                                   Eliminar
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -82,4 +86,30 @@
         </div>
     </article>
 </section>
+
+<script>
+    function confirmarLiguilla(formId, nombreTorneo) {
+        Swal.fire({
+            title: '¿Iniciar la Liguilla?',
+            html: `Estás a punto de clasificar a los mejores del torneo <strong>${nombreTorneo}</strong>.<br>Esto agendará automáticamente sus partidos de eliminación.`,
+            customClass: {
+                icon: 'no-border'
+            },
+            showCancelButton: true,
+            confirmButtonColor: '#ffd23f', /* Dorado */
+            cancelButtonColor: '#102249', /* Azul marino */
+            confirmButtonText: '<span style="color: #102249; font-weight: bold;">Sí, generar</span>',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            borderRadius: '24px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        })
+    }
+</script>
+<style>
+    .no-border { border: none !important; font-size: 2.5rem; }
+</style>
 {% endblock %}

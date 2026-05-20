@@ -8,11 +8,10 @@
         <div class="admin-section-head" style="flex-wrap: wrap;">
             <div>
                 <span class="section-kicker">CONTROL OPERATIVO</span>
-                <h3 class="admin-panel-title">Equipos Inscritos a Torneos</h3>
+                <h3 class="admin-panel-title">Equipos Inscritos a Torneos y Plantillas</h3>
             </div>
             
             <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-                
                 <div style="position: relative;">
                     <span class="material-symbols-outlined" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px;">search</span>
                     <input type="text" id="buscadorInscripciones" placeholder="Buscar equipo, torneo o estado..." 
@@ -52,7 +51,9 @@
                         <td>
                             <a href="{{ url_for('admin.gestionar_roster', id=insc.id) }}" style="color: #17a2b8; font-weight: bold; margin-right: 15px; text-decoration: none;">Plantilla</a>
                             <a href="{{ url_for('admin.editar_inscripcion', id=insc.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Cambiar Estado</a>
-                            <a href="{{ url_for('admin.eliminar_inscripcion', id=insc.id) }}" onclick="return confirm('¿Seguro que deseas eliminar esta inscripción?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                            
+                            {% set url_borrar_insc = url_for('admin.eliminar_inscripcion', id=insc.id) %}
+                            <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_insc }}', 'Inscripción de {{ insc.equipo.nombre | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                         </td>
                     </tr>
                     {% else %}
@@ -69,13 +70,10 @@
 <script>
     document.getElementById('buscadorInscripciones').addEventListener('keyup', function() {
         let filtro = this.value.toLowerCase();
-        
-        // Seleccionamos específicamente las filas dentro del tbody
         let filas = document.querySelectorAll('.admin-table tbody tr');
 
         filas.forEach(function(fila) {
             let textoFila = fila.textContent.toLowerCase();
-            
             if (textoFila.includes(filtro)) {
                 fila.style.display = ''; 
             } else {

@@ -171,6 +171,28 @@
             }
         })
     }
+
+    function confirmarEliminacionGlobal(event, urlAccion, textoElemento) {
+        event.preventDefault(); // Evita que el link brinque
+        Swal.fire({
+            title: '¿Estás seguro?',
+            html: `Estás a punto de eliminar: <strong>${textoElemento}</strong>.<br>Esta acción no se puede deshacer.`,
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#cc0000', /* Rojo de peligro */
+            cancelButtonColor: '#102249', /* Tu azul marino */
+            confirmButtonText: '<span style="color: #ffffff; font-weight: bold;">Sí, eliminar</span>',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            borderRadius: '24px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si dice que sí, lo mandamos a la ruta de eliminación
+                window.location.href = urlAccion;
+            }
+        })
+    }
+
     </script>
 
 </body>

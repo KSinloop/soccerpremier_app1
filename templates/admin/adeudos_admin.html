@@ -2,7 +2,6 @@
 {% block admin_title %}Panel de Adeudos{% endblock %}
 {% block content %}
 
-<!-- ADEUDOS DE INSCRIPCIÓN -->
 <div class="admin-table-card" style="margin-bottom: 28px;">
     <div class="admin-table-head">
         <div>
@@ -30,8 +29,11 @@
                     <td><span class="status-badge status-soon">{{ insc.estado_inscripcion }}</span></td>
                     <td>
                         
-                        <form action="{{ url_for('admin.pagar_inscripcion_rapido', id=insc.id) }}" method="POST" style="margin: 0;">
-                            <button type="submit" class="admin-chip admin-chip-gold" style="border: none; cursor: pointer;">
+                        {% set url_pago = url_for('admin.pagar_inscripcion_rapido', id=insc.id) %}
+                        
+                        <form action="{{ url_pago }}" method="POST" style="margin: 0;" id="formPago_{{ insc.id }}">
+                            <button type="button" class="admin-chip admin-chip-gold" style="border: none; cursor: pointer;"
+                                    onclick="confirmarPago('formPago_{{ insc.id }}', '{{ insc.equipo.nombre | escape }}')">
                                 Marcar pagada
                             </button>
                         </form>
@@ -49,7 +51,6 @@
     </div>
 </div> 
 
-<!-- ADEUDOS DE ARBITRAJE -->
 <div class="admin-table-card">
     <div class="admin-table-head">
         <div>
@@ -94,5 +95,26 @@
         </table>
     </div>
 </div>
+
+<script>
+function confirmarPago(formId, nombreEquipo) {
+    Swal.fire({
+        title: '¿Confirmar pago?',
+        html: `Estás a punto de registrar el pago de inscripción del equipo <strong>${nombreEquipo}</strong>.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#ffd23f', /* Dorado */
+        cancelButtonColor: '#102249', /* Azul marino */
+        confirmButtonText: '<span style="color: #102249; font-weight: bold;">Sí, marcar pagada</span>',
+        cancelButtonText: 'Cancelar',
+        background: '#ffffff',
+        borderRadius: '24px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(formId).submit();
+        }
+    })
+}
+</script>
 
 {% endblock %}

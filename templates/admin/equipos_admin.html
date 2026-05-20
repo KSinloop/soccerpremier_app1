@@ -24,7 +24,6 @@
             {% for equipo in equipos %}
             <article class="admin-record-card">
                 <div class="admin-record-head">
-                    <!-- Sacamos las primeras dos letras del nombre para el ícono circular -->
                     <div class="admin-record-id">{{ equipo.nombre[:2] | upper }}</div>
                     <div>
                         <h4>{{ equipo.nombre }}</h4>
@@ -60,8 +59,9 @@
                 </div>
                 <div class="admin-actions">
                     <a href="{{ url_for('admin.editar_equipo', id=equipo.id) }}" class="admin-action-link">Editar</a>
-                    <!-- <a href="#" class="admin-action-link">Jugadores</a> -->
-                    <a href="{{ url_for('admin.eliminar_equipo', id=equipo.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este equipo?');" class="admin-action-link danger">Eliminar</a>
+                    {% set url_borrar_equipo = url_for('admin.eliminar_equipo', id=equipo.id) %}
+                    
+                    <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_equipo }}', '{{ equipo.nombre | escape }}')" class="admin-action-link danger">Eliminar</a>
                 </div>
             </article>
             {% else %}

@@ -78,10 +78,11 @@
 
                     <td>
                         <a href="{{ url_for('admin.editar_partido', id=partido.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                        
                         <a href="{{ url_for('admin.resultados_partido', id=partido.id) }}" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;">Resultado</a>
 
-                        <a href="{{ url_for('admin.eliminar_partido', id=partido.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este partido?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                        {% set url_borrar_partido = url_for('admin.eliminar_partido', id=partido.id) %}
+                        
+                        <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_partido }}', 'Partido de {{ partido.inscripcion_1.equipo.nombre | escape }} vs {{ partido.inscripcion_2.equipo.nombre | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                     </td>
                 </tr>
                 {% else %}
@@ -97,13 +98,10 @@
 <script>
     document.getElementById('buscadorPartidos').addEventListener('keyup', function() {
         let filtro = this.value.toLowerCase();
-        
-        // Seleccionamos específicamente las filas dentro del tbody de tu admin-table
         let filas = document.querySelectorAll('.admin-table tbody tr');
 
         filas.forEach(function(fila) {
             let textoFila = fila.textContent.toLowerCase();
-            
             if (textoFila.includes(filtro)) {
                 fila.style.display = ''; 
             } else {

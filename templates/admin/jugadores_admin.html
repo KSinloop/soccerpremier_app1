@@ -55,7 +55,10 @@
                             {% endif %}
                            
                             <a href="{{ url_for('admin.editar_jugador', id=jugador.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                            <a href="{{ url_for('admin.eliminar_jugador', id=jugador.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este jugador?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                            
+                            {% set url_borrar_jugador = url_for('admin.eliminar_jugador', id=jugador.id) %}
+                            
+                            <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_jugador }}', '{{ jugador.nombre | escape }} {{ jugador.apellido_paterno | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                         </td>
                     </tr>
                     {% else %}

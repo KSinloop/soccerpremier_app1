@@ -28,12 +28,24 @@
                     <tr>
                         <td><strong style="font-size: 1.15rem;">#{{ registro.dorsal }}</strong></td>
                         <td style="word-wrap: break-word;">{{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }} {{ registro.jugador.apellido_materno or '' }}</td>
+                        
                         <td>
-                            {% if registro.es_capitan %}
-                                <span class="status-badge status-active">Capitán</span>
-                            {% else %}
-                                <span style="color: var(--muted); font-weight: 700;">Jugador</span>
-                            {% endif %}
+                            <form id="form-rol-{{ registro.id }}" action="{{ url_for('admin.cambiar_rol_roster', registro_id=registro.id) }}" method="POST" style="margin: 0;">
+                                {% if registro.es_capitan %}
+                                    <button type="button" onclick="confirmarCambioRol('form-rol-{{ registro.id }}', '¿Quitar la capitanía?', 'Este jugador pasará a ser un elemento regular del equipo.')" 
+                                            class="status-badge status-active" 
+                                            style="border: none; cursor: pointer; padding: 6px 12px; font-family: inherit; transition: transform 0.2s;" 
+                                            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Clic para quitar capitanía">
+                                        Capitán
+                                    </button>
+                                {% else %}
+                                    <button type="button" onclick="confirmarCambioRol('form-rol-{{ registro.id }}', '¿Designar nuevo Capitán?', 'Al hacerlo, el capitán actual (si existe) perderá su gafete y este jugador tomará el liderazgo.')" 
+                                            style="background: #f1f3f5; color: var(--muted); border: 1px solid #d9e1ee; border-radius: 20px; padding: 6px 12px; font-weight: 800; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: all 0.2s;" 
+                                            onmouseover="this.style.background='#eef2f7'; this.style.color='var(--navy)';" onmouseout="this.style.background='#f1f3f5'; this.style.color='var(--muted)';" title="Clic para hacer capitán">
+                                        Jugador
+                                    </button>
+                                {% endif %}
+                            </form>
                         </td>
                     </tr>
                     {% else %}
@@ -106,9 +118,10 @@
                     <h3 class="admin-panel-title">Remover jugador</h3>
                 </div>
             </div>
+            
             <form id="formBajaJugador" action="" method="GET"
                   style="padding: 24px 28px; display: grid; gap: 18px;"
-                  onsubmit="return confirm('¿Seguro que deseas sacar a este jugador del equipo?');">
+                  onsubmit="confirmarBajaRoster(event, this);">
 
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Jugador actual del equipo</label>
@@ -137,6 +150,7 @@
 </div>
 
 <script>
+    // Buscador Alta
     document.getElementById('buscadorAlta').addEventListener('input', function() {
         let filtro = this.value.toLowerCase();
         let opciones = document.querySelectorAll('#selectAltaJugador option:not([value=""])');
@@ -151,9 +165,53 @@
                 opcion.disabled = true;        
             }
         });
-        
-        // Resetear la selección al buscar para evitar bugs visuales
         document.getElementById('selectAltaJugador').value = "";
     });
+
+    // Modal de Baja
+    function confirmarBajaRoster(event, form) {
+        event.preventDefault();
+        let select = document.getElementById('selectBajaJugador');
+        if (select.value === "") {
+            Swal.fire('Atención', 'Selecciona a un jugador de la lista primero.', 'warning');
+            return;
+        }
+        let nombreJugador = select.options[select.selectedIndex].text;
+        Swal.fire({
+            title: '¿Sacar de la plantilla?',
+            html: `Estás a punto de dar de baja a: <br><strong style="font-size: 1.1rem; color: #cc0000;">${nombreJugador}</strong>.<br><br>Su registro se eliminará de este equipo.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#cc0000',
+            cancelButtonColor: '#102249',
+            confirmButtonText: '<span style="color: #ffffff; font-weight: bold;">Sí, dar de baja</span>',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            borderRadius: '24px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function confirmarCambioRol(formId, tituloAccion, textoExplicativo) {
+        Swal.fire({
+            title: tituloAccion,
+            text: textoExplicativo,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ffd23f', /* Dorado SPJ */
+            cancelButtonColor: '#102249',  /* Azul Marino */
+            confirmButtonText: '<span style="color: #102249; font-weight: bold;">Confirmar</span>',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            borderRadius: '24px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
 </script>
 {% endblock %}

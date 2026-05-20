@@ -965,3 +965,42 @@ def generar_liguilla(torneo_id):
     registrar_movimiento('Torneos', f'Liguilla generada para {torneo.nombre} ({n} equipos)')
     flash("¡Liguilla armada con éxito! Ve a la pestaña de Partidos para confirmar canchas.")
     return redirect(url_for('admin.vista_partidos_admin'))
+
+
+@admin_bp.route("/cambiar_rol_roster/<int:registro_id>", methods=["POST"])
+@login_required
+def cambiar_rol_roster(registro_id):
+    registro = db.session.get(RegistroJugador, registro_id)
+    
+    if registro:
+        inscripcion = registro.inscripcion
+        equipo = inscripcion.equipo
+
+        if registro.es_capitan:
+            registro.es_capitan = False
+            
+            if equipo.capitan_id == registro.jugador_id:
+                equipo.capitan_id = None
+                
+            flash(f"Se le ha quitado la capitanía a {registro.jugador.nombre}.", "info")
+            
+        else:
+            capitanes_anteriores = db.session.execute(
+                db.select(RegistroJugador)
+                .where(RegistroJugador.inscripcion_id == inscripcion.id)
+                .where(RegistroJugador.es_capitan == True)
+            ).scalars().all()
+            
+            for capitan_antiguo in capitanes_anteriores:
+                capitan_antiguo.es_capitan = False
+                
+            registro.es_capitan = True
+            
+            equipo.capitan_id = registro.jugador_id
+            
+            flash(f"{registro.jugador.nombre} es el nuevo capitán del equipo.", "success")
+
+        db.session.commit()
+        return redirect(url_for('admin.gestionar_roster', id=inscripcion.id))
+        
+    return redirect(request.referrer)

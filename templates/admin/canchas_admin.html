@@ -9,7 +9,6 @@
             <span class="section-kicker">INFRAESTRUCTURA</span>
             <h3 class="admin-panel-title">Canchas registradas</h3>
         </div>
-        <!-- Botón para dar de alta una nueva cancha -->
         <a href="{{ url_for('admin.crear_cancha') }}" class="admin-chip admin-chip-gold">+ Agregar cancha</a>
     </div>
 
@@ -25,7 +24,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-<tbody>
+            <tbody>
                 {% for cancha in canchas %}
                 <tr>
                     <td>{{ cancha.id }}</td>
@@ -42,7 +41,9 @@
                     <td>
                         <a href="{{ url_for('admin.editar_cancha', id=cancha.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
                         
-                        <a href="{{ url_for('admin.eliminar_cancha', id=cancha.id) }}" onclick="return confirm('¿Estás seguro de que quieres eliminar esta cancha?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                        {% set url_borrar_cancha = url_for('admin.eliminar_cancha', id=cancha.id) %}
+                        
+                        <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_cancha }}', '{{ cancha.nombre | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                     </td>
                 </tr>
                 {% else %}

@@ -39,7 +39,10 @@
                         </td>
                         <td>
                             <a href="{{ url_for('admin.editar_arbitro', id=arbitro.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
-                            <a href="{{ url_for('admin.eliminar_arbitro', id=arbitro.id) }}" onclick="return confirm('¿Seguro que deseas eliminar a este árbitro?');" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
+                            
+                            {% set url_borrar_arbitro = url_for('admin.eliminar_arbitro', id=arbitro.id) %}
+                            
+                            <a href="#" onclick="confirmarEliminacionGlobal(event, '{{ url_borrar_arbitro }}', '{{ arbitro.nombre | escape }} {{ arbitro.apellido_paterno | escape }}')" style="color: #cc0000; font-weight: bold; text-decoration: none;">Eliminar</a>
                         </td>
                     </tr>
                     {% else %}
