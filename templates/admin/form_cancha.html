@@ -1,0 +1,44 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Nueva Cancha{% endblock %}
+{% block content %}
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">INFRAESTRUCTURA</span>
+                <h3 class="admin-panel-title">Registrar nueva cancha</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+        <form action="{{ url_for('admin.crear_cancha') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Nombre de la cancha</label>
+                <input type="text" name="nombre" placeholder="Ej. Cancha 1 (Central)" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Ubicación</label>
+                <input type="text" name="ubicacion" placeholder="Ej. Unidad Deportiva Principal" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Tipo de fútbol</label>
+                <select name="tipo"
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="Fútbol 7">Fútbol 7</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Guardar cancha
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Panel de Adeudos{% endblock %}
+{% block content %}
+
+<div class="admin-table-card" style="margin-bottom: 28px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Adeudos de inscripción</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Equipo</th>
+                    <th>Torneo</th>
+                    <th>Fecha inscripción</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for insc in inscripciones_sin_pago %}
+                <tr>
+                    <td>{{ insc.equipo.nombre }}</td>
+                    <td>{{ insc.torneo.nombre }}</td>
+                    <td>{{ insc.fecha_inscripcion }}</td>
+                    <td><span class="status-badge status-soon">{{ insc.estado_inscripcion }}</span></td>
+                    <td>
+                        <button type="button" 
+                            onclick='abrirModalPago({{ url_for('admin.pagar_inscripcion_rapido', id=insc.id) | tojson }}, {{ insc.equipo.nombre | tojson }})' 
+                            class="admin-chip admin-chip-gold" 
+                            style="border: none; cursor: pointer;">
+                            Marcar pagada
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color: #000000; padding: 32px; font-weight: 700;">
+                         No hay inscripciones con adeudos pendientes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div> 
+
+<div class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Adeudos de arbitraje</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Partido</th>
+                    <th>Equipo</th>
+                    <th>Monto</th>
+                    <th>Fecha registro</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in arbitrajes_pendientes %}
+                <tr>
+                    <td>#{{ pago.partido_id }}</td>
+                    <td>{{ pago.inscripcion.equipo.nombre }}</td>
+                    <td><strong>${{ "%.2f"|format(pago.monto) }}</strong></td>
+                    <td>{{ pago.fecha_pago }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.resultados_partido', id=pago.partido_id) }}"
+                           class="admin-chip admin-chip-gold"
+                           style="min-height: 40px; font-size: 0.9rem; display: inline-flex; align-items: center; text-decoration: none;">
+                            Ver partido →
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color: #000000; padding: 32px; font-weight: 700;">
+                         No hay adeudos de arbitraje pendientes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="miModalPago" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarPago 0.3s ease-out;">
+        
+        <div style="background: #fffdf5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #f2cc59;">
+            <span style="color: #d4af37; font-size: 2.2rem; font-weight: bold; line-height: 1;">$</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Confirmar pago recibido?</h4>
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+           Estás a punto de registrar la inscripción del equipo <strong id="nombreEquipoModal" style="color: var(--navy);"></strong> como totalmente <span style="font-weight: 800; color: #000000;">PAGADA</span>.
+        </p>
+        
+        <form id="formConfirmarPago" action="" method="POST" style="margin: 0;">
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" onclick="cerrarModalPago()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                    Cancelar
+                </button>
+                <button type="submit" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #f2cc59; color: #000000; font-weight: 700; cursor: pointer; font-size: 0.95rem; transition: background 0.2s;">
+                    Sí, registrar pago
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarPago {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
+
+<script>
+    function abrirModalPago(urlAction, nombreEquipo) {
+        // Colocar el nombre del equipo dinámicamente en el texto del modal
+        document.getElementById('nombreEquipoModal').textContent = nombreEquipo;
+        
+        // Asignar el action correcto de Flask al formulario interno del modal
+        document.getElementById('formConfirmarPago').action = urlAction;
+        
+        // Mostrar modal centrado
+        document.getElementById('miModalPago').style.display = 'flex';
+    }
+
+    function cerrarModalPago() {
+        document.getElementById('miModalPago').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

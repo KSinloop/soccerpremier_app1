@@ -1,0 +1,493 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Control de Partido{% endblock %}
+{% block content %}
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">PARTIDO #{{ partido.id }}</span>
+            <h3 class="admin-panel-title">
+                {{ partido.inscripcion_1.equipo.nombre if partido.inscripcion_1 and partido.inscripcion_1.equipo else 'Por definir' }} vs {{ partido.inscripcion_2.equipo.nombre if partido.inscripcion_2 and partido.inscripcion_2.equipo else 'Por definir' }}
+            </h3>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            {% if partido.estado == 'Programado' %}
+                <span class="status-badge status-scheduled">Programado</span>
+            {% elif partido.estado == 'En directo' %}
+                <span class="status-badge status-soon">En directo</span>
+            {% elif partido.estado == 'Finalizado' %}
+                <span class="status-badge status-end">Finalizado</span>
+            {% elif partido.estado == 'Cancelado' %}
+                <span class="status-badge status-end">Cancelado</span>
+            {% else %}
+                <span class="status-badge status-scheduled">{{ partido.estado }}</span>
+            {% endif %}
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 24px 28px;">
+        <div class="admin-mini-card">
+            <h4>Torneo</h4>
+            <p>{{ partido.torneo.nombre }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Cancha</h4>
+            <p>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Árbitro</h4>
+            <p>{{ (partido.arbitro.nombre + ' ' + partido.arbitro.apellido_paterno) if partido.arbitro else 'Por definir' }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Jornada</h4>
+            <p>{{ partido.jornada }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>Fecha y hora</h4>
+            <p>{{ partido.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+        </div>
+        <div class="admin-mini-card">
+            <h4>No presentaciones</h4>
+            <p>
+                {% if partido.no_presento_1 %}{{ partido.inscripcion_1.equipo.nombre if partido.inscripcion_1 and partido.inscripcion_1.equipo else 'Local' }}{% endif %}
+                {% if partido.no_presento_2 %}{{ partido.inscripcion_2.equipo.nombre if partido.inscripcion_2 and partido.inscripcion_2.equipo else 'Visitante' }}{% endif %}
+                {% if not partido.no_presento_1 and not partido.no_presento_2 %}Ninguna{% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">MARCADOR ACTUAL</span>
+            <h3 class="admin-panel-title">Resultado</h3>
+        </div>
+    </div>
+    <div style="padding: 24px 28px;">
+        {% set roster_ids_1 = partido.inscripcion_1.roster_jugadores | map(attribute='id') | list if partido.inscripcion_1 else [] %}
+        {% set roster_ids_2 = partido.inscripcion_2.roster_jugadores | map(attribute='id') | list if partido.inscripcion_2 else [] %}
+        {% set g1 = namespace(count=0) %}
+        {% set g2 = namespace(count=0) %}
+        {% for gol in partido.goles %}
+            {% if gol.registro_jugador_id in roster_ids_1 %}
+                {% set g1.count = g1.count + 1 %}
+            {% elif gol.registro_jugador_id in roster_ids_2 %}
+                {% set g2.count = g2.count + 1 %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="result-match" style="max-width: 600px; margin: 0 auto;">
+            <div class="team-score">
+                <h3>{{ partido.inscripcion_1.equipo.nombre if partido.inscripcion_1 and partido.inscripcion_1.equipo else 'Local' }}</h3>
+                <strong>{{ g1.count }}</strong>
+            </div>
+            <span class="vs-sep">VS</span>
+            <div class="team-score">
+                <h3>{{ partido.inscripcion_2.equipo.nombre if partido.inscripcion_2 and partido.inscripcion_2.equipo else 'Visitante' }}</h3>
+                <strong>{{ g2.count }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">FINANZAS</span>
+            <h3 class="admin-panel-title">Pago de Arbitraje</h3>
+        </div>
+    </div>
+    <div style="padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        
+        {% set pagos_1_realizados = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | selectattr("metodo_pago", "!=", "Pendiente") | list if partido.inscripcion_1_id else [] %}
+        {% set pagos_1_pendientes = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | selectattr("metodo_pago", "equalto", "Pendiente") | list if partido.inscripcion_1_id else [] %}
+        
+        <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">L: {{ partido.inscripcion_1.equipo.nombre if partido.inscripcion_1 and partido.inscripcion_1.equipo else 'Por definir' }}</h4>
+            
+            {% for p in pagos_1_realizados %}
+                <div style="background: #eef2f7; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--gold);">
+                    <span style="font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">Abono ({{ p.metodo_pago }})</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <span style="font-size: 0.85rem; color: #555;">{{ p.fecha_pago.strftime('%d/%m/%Y') }}</span>
+                        <strong style="color: var(--navy); font-size: 1.1rem;">+${{ "%.2f"|format(p.monto) }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if pagos_1_pendientes and partido.inscripcion_1_id %}
+                {% set pen1 = pagos_1_pendientes[0] %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Resta: ${{ "%.2f"|format(pen1.monto) }}</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select id="metodo_pago_1" style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                    <input type="number" step="0.5" id="monto_pago_1" value="{{ pen1.monto }}" max="{{ pen1.monto }}" min="0" style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="button" onclick="lanzarModalArbitraje('1', '{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_1_id) }}', '{{ partido.inscripcion_1.equipo.nombre|escape }}')" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Abono</button>
+                </div>
+            {% else %}
+                {% if pagos_1_realizados %}
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span class="status-badge status-active" style="display: inline-block;">¡Liquidado!</span>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% set pagos_2_realizados = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | selectattr("metodo_pago", "!=", "Pendiente") | list if partido.inscripcion_2_id else [] %}
+        {% set pagos_2_pendientes = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | selectattr("metodo_pago", "equalto", "Pendiente") | list if partido.inscripcion_2_id else [] %}
+        
+        <div style="border: 1px solid #d9e1ee; border-radius: 16px; padding: 20px; background: #fafbfc;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--navy); font-size: 1.1rem;">V: {{ partido.inscripcion_2.equipo.nombre if partido.inscripcion_2 and partido.inscripcion_2.equipo else 'Por definir' }}</h4>
+            
+            {% for p in pagos_2_realizados %}
+                <div style="background: #eef2f7; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--gold);">
+                    <span style="font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">Abono ({{ p.metodo_pago }})</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <span style="font-size: 0.85rem; color: #555;">{{ p.fecha_pago.strftime('%d/%m/%Y') }}</span>
+                        <strong style="color: var(--navy); font-size: 1.1rem;">+${{ "%.2f"|format(p.monto) }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if pagos_2_pendientes and partido.inscripcion_2_id %}
+                {% set pen2 = pagos_2_pendientes[0] %}
+                <span class="status-badge status-soon" style="margin-bottom: 15px; display: inline-block;">Resta: ${{ "%.2f"|format(pen2.monto) }}</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select id="metodo_pago_2" style="flex: 1; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                    <input type="number" step="0.5" id="monto_pago_2" value="{{ pen2.monto }}" max="{{ pen2.monto }}" min="0" style="width: 80px; min-height: 42px; border-radius: 8px; border: 1px solid #d9e1ee; padding: 0 10px;">
+                    <button type="button" onclick="lanzarModalArbitraje('2', '{{ url_for('admin.pagar_arbitraje_equipo', partido_id=partido.id, inscripcion_id=partido.inscripcion_2_id) }}', '{{ partido.inscripcion_2.equipo.nombre|escape }}')" class="admin-chip admin-chip-gold" style="min-height: 42px; padding: 0 16px; border: none; cursor: pointer; width: 100%;">Registrar Abono</button>
+                </div>
+            {% else %}
+                {% if pagos_2_realizados %}
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span class="status-badge status-active" style="display: inline-block;">¡Liquidado!</span>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ESTADÍSTICAS</span>
+            <h3 class="admin-panel-title">Registrar gol</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; gap: 14px;">
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Jugador que anotó</label>
+            <select name="registro_jugador_id" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Selecciona quién anotó...</option>
+                {% if partido.inscripcion_1 %}
+                <optgroup label="{{ partido.inscripcion_1.equipo.nombre }}">
+                    {% for r in partido.inscripcion_1.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% else %}
+                        <option disabled>Sin jugadores en el roster</option>
+                    {% endfor %}
+                </optgroup>
+                {% endif %}
+                {% if partido.inscripcion_2 %}
+                <optgroup label="{{ partido.inscripcion_2.equipo.nombre }}">
+                    {% for r in partido.inscripcion_2.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% else %}
+                        <option disabled>Sin jugadores en el roster</option>
+                    {% endfor %}
+                </optgroup>
+                {% endif %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="admin-chip admin-chip-gold">Cantar gol</button>
+        </div>
+    </form>
+</div>
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">DISCIPLINA</span>
+            <h3 class="admin-panel-title">Registrar incidencia</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Tipo de incidencia</label>
+            <select name="tipo_incidencia" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Tipo...</option>
+                <option value="Tarjeta Amarilla">Tarjeta Amarilla</option>
+                <option value="Tarjeta Roja">Tarjeta Roja</option>
+                <option value="Falta">Falta</option>
+            </select>
+        </div>
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Jugador implicado</label>
+            <select name="jugador_incidencia_id" required
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="">Selecciona al jugador...</option>
+                {% if partido.inscripcion_1 %}
+                <optgroup label="Local: {{ partido.inscripcion_1.equipo.nombre }}">
+                    {% for r in partido.inscripcion_1.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% endfor %}
+                </optgroup>
+                {% endif %}
+                {% if partido.inscripcion_2 %}
+                <optgroup label="Visitante: {{ partido.inscripcion_2.equipo.nombre }}">
+                    {% for r in partido.inscripcion_2.roster_jugadores %}
+                        <option value="{{ r.id }}">#{{ r.dorsal }} – {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}</option>
+                    {% endfor %}
+                </optgroup>
+                {% endif %}
+            </select>
+        </div>
+        <div style="grid-column: 1 / -1; display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Descripción</label>
+            <input type="text" name="descripcion" placeholder="Ej. Falta fuerte por detrás, reclamo al árbitro..." required
+                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+        </div>
+        <div style="grid-column: 1 / -1;">
+            <button type="submit" class="admin-chip admin-chip-gold">Registrar incidencia</button>
+        </div>
+    </form>
+</div>
+
+<div class="admin-panel-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">CONTROL</span>
+            <h3 class="admin-panel-title">Inasistencias y estado</h3>
+        </div>
+    </div>
+    <form action="{{ url_for('admin.resultados_partido', id=partido.id) }}" method="POST"
+          style="padding: 24px 28px; display: grid; gap: 18px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div style="background: #fff6d9; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="no_presento_1" name="no_presento_1" value="1"
+                       {% if partido.no_presento_1 %}checked{% endif %}
+                       style="width: 20px; height: 20px; flex-shrink: 0;">
+                <label for="no_presento_1" style="color: var(--navy); font-weight: 800; cursor: pointer;">
+                    No se presentó: {{ partido.inscripcion_1.equipo.nombre if partido.inscripcion_1 and partido.inscripcion_1.equipo else 'Local' }}
+                </label>
+            </div>
+            <div style="background: #fff6d9; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="no_presento_2" name="no_presento_2" value="1"
+                       {% if partido.no_presento_2 %}checked{% endif %}
+                       style="width: 20px; height: 20px; flex-shrink: 0;">
+                <label for="no_presento_2" style="color: var(--navy); font-weight: 800; cursor: pointer;">
+                    No se presentó: {{ partido.inscripcion_2.equipo.nombre if partido.inscripcion_2 and partido.inscripcion_2.equipo else 'Visitante' }}
+                </label>
+            </div>
+        </div>
+
+        <div style="display: grid; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Estado del partido</label>
+            <select name="estado" id="estado_select" onchange="toggleMotivo(this)"
+                    style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                <option value="Programado"   {% if partido.estado == 'Programado'   %}selected{% endif %}>Programado</option>
+                <option value="En directo"   {% if partido.estado == 'En directo'   %}selected{% endif %}>En directo</option>
+                <option value="Finalizado"   {% if partido.estado == 'Finalizado'   %}selected{% endif %}>Finalizado</option>
+                <option value="Cancelado"    {% if partido.estado == 'Cancelado'    %}selected{% endif %}>Cancelado</option>
+                <option value="Reprogramado" {% if partido.estado == 'Reprogramado' %}selected{% endif %}>Reprogramado</option>
+            </select>
+        </div>
+
+        <div id="motivo_box" style="display: none; gap: 6px;">
+            <label style="color: var(--navy); font-weight: 800;">Motivo de cancelación / observaciones</label>
+            <input type="text" name="motivo_cancelacion" value="{{ partido.motivo_cancelacion or '' }}"
+                   placeholder="Ej. Lluvia, conflicto de horario..."
+                   style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+        </div>
+
+        <div>
+            <button type="submit" class="admin-chip admin-chip-gold">Guardar estado</button>
+        </div>
+    </form>
+</div>
+
+<div class="admin-table-card" style="margin-bottom: 24px;">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ESTADÍSTICAS</span>
+            <h3 class="admin-table-title">Goles registrados ({{ partido.goles|length }})</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Jugador</th>
+                    <th>Equipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gol in partido.goles %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        {% if gol.registro_jugador %}
+                            #{{ gol.registro_jugador.dorsal }} {{ gol.registro_jugador.jugador.nombre }} {{ gol.registro_jugador.jugador.apellido_paterno }}
+                        {% else %}
+                            Gol sin jugador registrado
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if gol.registro_jugador %}
+                            {{ gol.registro_jugador.inscripcion.equipo.nombre }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('admin.eliminar_gol', gol_id=gol.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar este gol? Se restará del marcador.');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center; color: var(--muted); padding: 32px;">Sin goles registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">DISCIPLINA</span>
+            <h3 class="admin-panel-title">Incidencias registradas ({{ partido.incidencias|length }})</h3>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tipo</th>
+                    <th>Jugador</th>
+                    <th>Equipo</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for inc in partido.incidencias %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ inc.tipo }}</td>
+                    <td>#{{ inc.registro_jugador.dorsal }} {{ inc.registro_jugador.jugador.nombre }} {{ inc.registro_jugador.jugador.apellido_paterno }}</td>
+                    <td>{{ inc.registro_jugador.inscripcion.equipo.nombre }}</td>
+                    <td>{{ inc.descripcion }}</td>
+                    <td>
+                        <form action="{{ url_for('admin.eliminar_incidencia', incidencia_id=inc.id, partido_id=partido.id) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="color: #dc3545; border: 1px solid #dc3545; background: transparent; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="return confirm('¿Seguro que quieres borrar esta incidencia?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color: var(--muted); padding: 32px;">Sin incidencias registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="miModalArbitraje" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarArbitraje 0.3s ease-out;">
+        
+        <div style="background: #fffdf5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #f2cc59;">
+            <span style="color: #d4af37; font-size: 2.2rem; font-weight: bold; line-height: 1;">$</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Registrar abono de arbitraje?</h4>
+        <p id="textoModalArbitraje" style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;"></p>
+        
+        <form id="formModalArbitraje" action="" method="POST" style="margin: 0;">
+            <input type="hidden" name="metodo_pago" id="hidden_metodo">
+            <input type="hidden" name="monto" id="hidden_monto">
+            
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" onclick="cerrarModalArbitraje()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                    Cancelar
+                </button>
+                <button type="submit" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #f2cc59; color: #000000; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                    Confirmar Abono
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarArbitraje {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
+
+<script>
+function toggleMotivo(sel) {
+    var box = document.getElementById('motivo_box');
+    if (sel.value === 'Cancelado' || sel.value === 'Reprogramado') {
+        box.style.display = 'grid';
+    } else {
+        box.style.display = 'none';
+    }
+}
+toggleMotivo(document.getElementById('estado_select'));
+
+// Lógica para capturar datos y lanzar el modal de arbitraje
+function lanzarModalArbitraje(sufijo, urlAction, nombreEquipo) {
+    let selectMetodo = document.getElementById('metodo_pago_' + sufijo);
+    let inputMonto = document.getElementById('monto_pago_' + sufijo);
+    
+    let metodo = selectMetodo.value;
+    let monto = parseFloat(inputMonto.value);
+
+    // Validación rápida de front
+    if (isNaN(monto) || monto <= 0) {
+        alert('Por favor ingresa un monto válido mayor a 0.');
+        return;
+    }
+
+    // Inyectar texto descriptivo con formato de negritas nativo
+    document.getElementById('textoModalArbitraje').innerHTML = `Vas a registrar un abono de <span style="font-weight: 800; color: #000000;">$${monto.toFixed(2)}</span> vía <span style="font-weight: 800; color: #000000;">${metodo}</span> para el arbitraje del equipo <span style="color: var(--navy); font-weight: 800;">${nombreEquipo}</span>.`;
+
+    // Sincronizar los inputs ocultos del modal
+    document.getElementById('hidden_metodo').value = metodo;
+    document.getElementById('hidden_monto').value = monto;
+    document.getElementById('formModalArbitraje').action = urlAction;
+
+    // Desplegar modal
+    document.getElementById('miModalArbitraje').style.display = 'flex';
+}
+
+function cerrarModalArbitraje() {
+    document.getElementById('miModalArbitraje').style.display = 'none';
+}
+</script>
+{% endblock %}

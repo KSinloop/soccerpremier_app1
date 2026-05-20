@@ -1,0 +1,149 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Administración de equipos{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">PARTICIPANTES</span>
+                <h3 class="admin-panel-title">Equipos registrados</h3>
+            </div>
+            <a href="{{ url_for('admin.crear_equipo') }}" class="admin-chip admin-chip-gold">Nuevo equipo</a>
+        </div>
+
+        <div class="admin-toolbar">
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Todos') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Todos' else '' }}">Todos</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Juvenil') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Juvenil' else '' }}">Juvenil</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Libre') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Libre' else '' }}">Libre</a>
+            <a href="{{ url_for('admin.vista_equipos_admin', categoria='Femenil') }}" class="toolbar-pill {{ 'active' if categoria_actual == 'Femenil' else '' }}">Femenil</a>
+        </div>
+
+        <div class="admin-cards-list">
+            {% for equipo in equipos %}
+            <article class="admin-record-card">
+                <div class="admin-record-head">
+                    <div class="admin-record-id">{{ equipo.nombre[:2] | upper }}</div>
+                    <div>
+                        <h4>{{ equipo.nombre }}</h4>
+                    
+                        <p>DT/Rep: 
+                            {% if equipo.representante_nombre or equipo.representante_apellido %}
+                                {{ equipo.representante_nombre or '' }} {{ equipo.representante_apellido or '' }}
+                            {% else %}
+                                Sin representante
+                            {% endif %}
+                        </p>
+
+                        <p style="color: var(--muted); font-size: 0.9rem; margin: 4px 0;">
+                            <strong>Capitán:</strong> 
+                            {% if equipo.capitan %}
+                                {{ equipo.capitan.nombre }} {{ equipo.capitan.apellido_paterno }}
+                             {% else %}
+                            <span style="color: #cc0000; font-style: italic;">Sin asignar</span>
+                        {% endif %}
+                        </p>
+
+                    </div>
+
+                </div>
+                
+                <div class="admin-record-meta">
+                    <span>Tel: {{ equipo.telefono or 'N/A' }}</span>
+                    {% if equipo.activo %}
+                        <span class="status-badge status-active">Activo</span>
+                    {% else %}
+                        <span class="status-badge status-end">Baja</span>
+                    {% endif %}
+                </div>
+                <div class="admin-actions">
+                    <a href="{{ url_for('admin.editar_equipo', id=equipo.id) }}" class="admin-action-link">Editar</a>
+                    
+                    <a href="#" 
+                       onclick="abrirModalEliminarEquipo(event, '{{ url_for('admin.eliminar_equipo', id=equipo.id) }}', '{{ equipo.nombre|escape }}')" 
+                       class="admin-action-link danger" 
+                       style="color: #cc0000; font-weight: bold; text-decoration: none;">
+                       Eliminar
+                    </a>
+                </div>
+            </article>
+            {% else %}
+            <div style="text-align: center; padding: 20px; width: 100%;">
+                <p>No hay equipos registrados aún.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </article>
+
+    <aside class="admin-side-stack">
+        <article class="admin-panel-card">
+            <span class="section-kicker">RESUMEN</span>
+            <h3 class="admin-panel-title">Vista rápida</h3>
+            <div class="admin-mini-grid single-col">
+                <div class="admin-mini-card">
+                    <h4>Equipos activos</h4>
+                    <p>{{ total_activos }} registros visibles en sistema.</p>
+                </div>
+                <div class="admin-mini-card">
+                    <h4>Categorías</h4>
+                    <p>Juvenil, Libre y Femenil.</p>
+                </div>
+            </div>
+        </article>
+    </aside>
+</section>
+
+<div id="modalEliminarEquipo" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarModalEquipo 0.3s ease-out;">
+        
+        <div style="background: #fff5f5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcccc;">
+            <span style="color: #cc0000; font-size: 2.2rem; font-weight: bold; line-height: 1;">🗑</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Eliminar equipo?</h4>
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+            Estás a punto de borrar al equipo <strong id="nombreEquipoModal" style="color: var(--navy);"></strong>. Esto podría afectar los torneos y rosters registrados.
+        </p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalEliminarEquipo()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                Cancelar
+            </button>
+            <a id="btnConfirmarEliminarEquipo" href="#" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #cc0000; color: #ffffff; font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; transition: background 0.2s;">
+                Sí, eliminar
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarModalEquipo {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+#btnConfirmarEliminarEquipo:hover {
+    background: #a30000 !important;
+}
+</style>
+
+<script>
+    function abrirModalEliminarEquipo(event, urlAction, nombreEquipo) {
+        event.preventDefault(); // Evita que la página brinque
+        
+        // Coloca el nombre del equipo de forma limpia
+        document.getElementById('nombreEquipoModal').textContent = nombreEquipo;
+        
+        // Asigna la ruta de Flask al botón rojo
+        document.getElementById('btnConfirmarEliminarEquipo').href = urlAction;
+        
+        // Muestra el modal
+        document.getElementById('modalEliminarEquipo').style.display = 'flex';
+    }
+
+    function cerrarModalEliminarEquipo() {
+        document.getElementById('modalEliminarEquipo').style.display = 'none';
+    }
+</script>
+{% endblock %}

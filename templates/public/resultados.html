@@ -1,0 +1,65 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">MARCADORES</span>
+            <h2 class="section-title">Resultados recientes</h2>
+            <p class="page-description">
+                Consulta los marcadores finales de los partidos jugados en la temporada actual.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Partidos jugados</span>
+            <strong>{{ resultados|length }}</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="toolbar-simple">
+        <a href="{{ url_for('public.pagina_resultados') }}" class="toolbar-pill {% if not torneo_seleccionado %}active{% endif %}">Todos</a>
+        {% for t in torneos %}
+        <a href="{{ url_for('public.pagina_resultados', torneo_id=t.id) }}" class="toolbar-pill {% if torneo_seleccionado == t.id %}active{% endif %}">{{ t.nombre }}
+        </a>
+        {% endfor %}
+
+    </section>
+
+    {% if resultados %}
+    <section class="results-grid">
+            {% for r in resultados %}
+            <article class="result-card">
+                <div class="result-top">
+                    <span class="result-meta">{{ r.partido.fecha_hora.strftime('%d/%m/%Y %H:%M') }} · {{ r.partido.jornada }}</span>
+                </div>
+
+                <div class="result-match">
+                    <div class="team-score">
+                        <h3>{{ r.partido.inscripcion_1.equipo.nombre }}</h3>
+                        <strong>{{ r.goles_1 }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="vs-sep">vs</span>
+                    </div>
+
+                    <div class="team-score">
+                        <h3>{{ r.partido.inscripcion_2.equipo.nombre }}</h3>
+                        <strong>{{ r.goles_2 }}</strong>
+                    </div>
+                </div>
+
+                <p>{{ r.partido.torneo.nombre }}{% if r.partido.cancha %} · {{ r.partido.cancha.nombre }}{% endif %}</p>
+            </article>
+        {% endfor %}
+    </section>
+    {% else %}
+    <div style="text-align: center; padding: 48px 0; color: var(--muted);">
+        <p style="font-size: 1.1rem; font-weight: 700;">No hay partidos registrados aún.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

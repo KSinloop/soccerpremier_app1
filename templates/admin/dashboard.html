@@ -1,0 +1,173 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="admin-stats-grid">
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Torneos activos</p>
+        <strong class="admin-stat-number">{{ '%02d' % tot_torneos }}</strong>
+        <span class="admin-stat-note">Competencias en curso</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Equipos registrados</p>
+        <strong class="admin-stat-number">{{ '%02d' % tot_equipos }}</strong>
+        <span class="admin-stat-note">Participantes totales</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Partidos próximos</p>
+        <strong class="admin-stat-number">{{ '%02d' % tot_partidos }}</strong>
+        <span class="admin-stat-note">Agenda vigente</span>
+    </article>
+
+    <article class="admin-stat-card">
+        <p class="admin-stat-label">Anuncios activos</p>
+        <strong class="admin-stat-number">{{ '%02d' % tot_anuncios }}</strong>
+        <span class="admin-stat-note">Difusión disponible</span>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+
+    <article class="admin-panel-card" style="grid-column: 1 / -1">
+        <span class="section-kicker">ACCESOS RÁPIDOS</span>
+        <h3 class="admin-panel-title">Módulos principales</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="admin-links-list" >
+                <a href="{{ url_for('admin.vista_torneos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Torneos</h4>
+                        <p>Alta, edición y control general de torneos.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_equipos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Equipos</h4>
+                        <p>Consulta y administración de participantes.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+
+                <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Inscripciones</h4>
+                    <p>Control de equipos registrados en cada torneo.</p>
+                        </div>
+                    <span>Ir</span>
+                </a>
+
+
+                <a href="{{ url_for('admin.vista_jugadores_admin') }}" class="admin-link-row">
+                        <div>
+                            <h4>Jugadores</h4>
+                            <p>Gestiona todos los registros individuales del padrón.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Partidos</h4>
+                        <p>Programación, reprogramación y resultados.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+            </div>
+
+            <div class="admin-links-list" >
+                <a href="{{ url_for('admin.vista_canchas_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Canchas</h4>
+                        <p>Disponibilidad, ocupación y control de espacios.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Árbitros</h4>
+                        <p>Administración y seguimiento de árbitros.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_estadisticas_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Estadísticas</h4>
+                        <p>Seguimiento de goles, tarjetas y rendimiento.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_anuncios_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Anuncios</h4>
+                        <p>Gestión de avisos y difusión pública.</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+
+                <a href="{{ url_for('admin.vista_adeudos_admin') }}" class="admin-link-row">
+                    <div>
+                        <h4>Adeudos</h4>
+                        <p>Administración Pagos de arbitraje e inscripciones</p>
+                    </div>
+                    <span>Ir</span>
+                </a>
+            </div>
+        </div>
+    </article>
+</section>
+
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">ACTIVIDAD</span>
+            <h3 class="admin-panel-title">Movimientos recientes</h3>
+        </div>
+        <!-- <a href="#" class="admin-chip">Ver historial</a> -->
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Módulo</th>
+                    <th>Movimiento</th>
+                    <th>Responsable</th>
+                    <th>Estatus</th>
+                </tr>
+            </thead>
+            <tbody>
+    {% for mov in movimientos_recientes %}
+    <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px 10px;">{{ mov.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td style="padding: 12px 10px; font-weight: bold; color: var(--navy);">{{ mov.modulo }}</td>
+        <td style="padding: 12px 10px; color: var(--muted);">{{ mov.movimiento }}</td>
+        <td style="padding: 12px 10px;">{{ mov.responsable }}</td>
+        <td style="padding: 12px 10px;">
+            {% if mov.estatus == 'Completado' %}
+                <span class="status-badge status-active">{{ mov.estatus }}</span>
+            {% elif mov.estatus == 'Pendiente' %}
+                <span class="status-badge status-soon">{{ mov.estatus }}</span>
+            {% else %}
+                <span class="status-badge status-end">{{ mov.estatus }}</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">No se han registrado movimientos el día de hoy.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

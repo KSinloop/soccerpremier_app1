@@ -1,0 +1,237 @@
+from datetime import datetime, date, time
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from db import db
+
+# =========================================================
+# USUARIOS DEL SISTEMA
+# =========================================================
+class Admin(UserMixin, db.Model):
+    __tablename__ = "admins"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    activo = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+# =========================================================
+# ENTIDADES BASE 
+# =========================================================
+class Cancha(db.Model):
+    __tablename__ = "canchas"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), nullable=False)
+    ubicacion = db.Column(db.String(150))
+    tipo = db.Column(db.String(50))
+    disponibilidad = db.Column(db.String(20), default="Disponible")
+
+class Arbitro(db.Model):
+    __tablename__ = "arbitros"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(60), nullable=False)
+    apellido_paterno = db.Column(db.String(60), nullable=False)
+    apellido_materno = db.Column(db.String(60))
+    telefono = db.Column(db.String(20), nullable=False)
+    estado = db.Column(db.String(35), default="Activo")
+
+class Torneo(db.Model):
+    __tablename__ = "torneos"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), nullable=False)
+    dia_torneo = db.Column(db.String(20), nullable=True)
+    categoria = db.Column(db.String(80))
+    tipo = db.Column(db.String(50))
+    estado = db.Column(db.String(30), default="Próximo") # Puede ser: Próximo, Activo, Finalizado
+    fecha_inicio = db.Column(db.Date)
+    fecha_fin = db.Column(db.Date)
+    activo = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    inscripciones = db.relationship('Inscripcion', back_populates='torneo', cascade='all, delete-orphan')
+    partidos = db.relationship('Partido', back_populates='torneo', cascade='all, delete-orphan')
+
+class Equipo(db.Model):
+    __tablename__ = "equipos"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), unique=True, nullable=False)
+    representante_nombre = db.Column(db.String(60))
+    representante_apellido = db.Column(db.String(60))
+    telefono = db.Column(db.String(30))
+    logo_url = db.Column(db.String(255))
+    categoria = db.Column(db.String(50))
+    color_uniforme = db.Column(db.String(60), nullable=True)
+    capitan_id = db.Column(db.Integer, db.ForeignKey("jugadores.id"), nullable=True)
+    activo = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    capitan = db.relationship("Jugador", foreign_keys=[capitan_id])
+
+
+
+class Jugador(db.Model):
+    __tablename__ = "jugadores"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(60), nullable=False)
+    apellido_paterno = db.Column(db.String(60), nullable=False)
+    apellido_materno = db.Column(db.String(60))
+    fecha_nacimiento = db.Column(db.Date)
+    sexo = db.Column(db.String(20))
+    curp = db.Column(db.String(18), unique=True, nullable=True)
+    foto_url = db.Column(db.String(255), nullable=True)
+
+
+
+class Anuncio(db.Model):
+    __tablename__ = "anuncios"
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    contenido = db.Column(db.Text, nullable=False)
+    categoria = db.Column(db.String(50), nullable=False)
+    fecha_publicacion = db.Column(db.Date, nullable=False)
+
+# =========================================================
+# ENTIDADES DE RELACIÓN
+# =========================================================
+class Inscripcion(db.Model):
+    __tablename__ = "inscripciones"
+    id = db.Column(db.Integer, primary_key=True)
+    torneo_id = db.Column(db.Integer, db.ForeignKey("torneos.id"), nullable=False)
+    equipo_id = db.Column(db.Integer, db.ForeignKey("equipos.id"), nullable=False)
+    fecha_inscripcion = db.Column(db.Date, default=datetime.utcnow)
+    estado_inscripcion = db.Column(db.String(35), default="Pagada")
+    torneo = db.relationship("Torneo", back_populates="inscripciones")
+    equipo = db.relationship("Equipo", backref="mis_torneos")
+    roster_jugadores = db.relationship("RegistroJugador", back_populates="inscripcion", cascade="all, delete-orphan")
+
+class RegistroJugador(db.Model):
+    __tablename__ = "registro_jugador"
+    id = db.Column(db.Integer, primary_key=True)
+    inscripcion_id = db.Column(db.Integer, db.ForeignKey("inscripciones.id"), nullable=False)
+    jugador_id = db.Column(db.Integer, db.ForeignKey("jugadores.id"), nullable=False)
+    dorsal = db.Column(db.Integer, nullable=False)
+    es_capitan = db.Column(db.Boolean, default=False)
+
+    __table_args__ = (
+        db.UniqueConstraint('inscripcion_id', 'jugador_id', name='uq_jugador_inscripcion'),
+    )
+
+    inscripcion = db.relationship("Inscripcion", back_populates="roster_jugadores")
+    jugador = db.relationship("Jugador", backref=db.backref("mis_registros", cascade="all, delete-orphan"))
+
+class Partido(db.Model):
+    __tablename__ = "partidos"
+    id = db.Column(db.Integer, primary_key=True)
+    torneo_id = db.Column(db.Integer, db.ForeignKey("torneos.id"), nullable=False)
+    cancha_id = db.Column(db.Integer, db.ForeignKey("canchas.id"), nullable=True)
+    arbitro_id = db.Column(db.Integer, db.ForeignKey("arbitros.id"), nullable=True)
+    
+    inscripcion_1_id = db.Column(db.Integer, db.ForeignKey("inscripciones.id"), nullable=False)
+    inscripcion_2_id = db.Column(db.Integer, db.ForeignKey("inscripciones.id"), nullable=False)
+    
+    fecha_hora = db.Column(db.DateTime, nullable=False)
+    jornada = db.Column(db.String(20))
+    estado = db.Column(db.String(35), default="Programado")
+    no_presento_1 = db.Column(db.Boolean, default=False)
+    no_presento_2 = db.Column(db.Boolean, default=False)
+    motivo_cancelacion = db.Column(db.String(255), nullable=True)
+
+    inscripcion_1 = db.relationship("Inscripcion", foreign_keys=[inscripcion_1_id])
+    inscripcion_2 = db.relationship("Inscripcion", foreign_keys=[inscripcion_2_id])
+    cancha = db.relationship("Cancha")
+    arbitro = db.relationship("Arbitro")
+    torneo = db.relationship("Torneo", back_populates="partidos")
+
+class Gol(db.Model):
+    __tablename__ = "goles"
+    id = db.Column(db.Integer, primary_key=True)
+    partido_id = db.Column(db.Integer, db.ForeignKey("partidos.id"), nullable=False)
+    registro_jugador_id = db.Column(db.Integer, db.ForeignKey("registro_jugador.id"), nullable=True)
+    
+    partido = db.relationship("Partido", backref=db.backref("goles", lazy=True, cascade="all, delete-orphan"))
+    registro_jugador = db.relationship("RegistroJugador", backref="goles")
+
+class Incidencia(db.Model):
+    __tablename__ = "incidencias"
+    id = db.Column(db.Integer, primary_key=True)
+    partido_id = db.Column(db.Integer, db.ForeignKey("partidos.id"), nullable=False)
+    registro_jugador_id = db.Column(db.Integer, db.ForeignKey("registro_jugador.id"), nullable=False)
+    tipo = db.Column(db.String(40), nullable=False) 
+    descripcion = db.Column(db.String(255), nullable=False)
+
+    partido = db.relationship("Partido", backref=db.backref("incidencias", lazy=True, cascade="all, delete-orphan"))
+    registro_jugador = db.relationship("RegistroJugador", backref=db.backref("incidencias_jugador", cascade="all, delete-orphan"))
+
+
+# =========================================================
+# CONTACTO DE EMERGENCIA
+# =========================================================
+class ContactoEmergencia(db.Model):
+    __tablename__ = "contacto_emergencia"
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Se conecta directo al jugador
+    jugador_id = db.Column(db.Integer, db.ForeignKey("jugadores.id"), nullable=False)
+    
+    nombre_contacto = db.Column(db.String(100), nullable=False)
+    telefono = db.Column(db.String(20), nullable=False)
+    parentesco = db.Column(db.String(40), nullable=False)
+
+    jugador = db.relationship("Jugador", backref=db.backref("contacto_emergencia", uselist=False, cascade="all, delete-orphan"))
+
+# =========================================================
+# PAGOS (Inscripción y Arbitraje)
+# =========================================================
+class PagoInscripcion(db.Model):
+    __tablename__ = "pago_inscripcion"
+    id = db.Column(db.Integer, primary_key=True)
+    inscripcion_id = db.Column(db.Integer, db.ForeignKey("inscripciones.id"), unique=True, nullable=False)
+    fecha_pago = db.Column(db.Date, nullable=False)
+    monto = db.Column(db.Numeric(10, 2), nullable=False)
+    metodo_pago = db.Column(db.String(30), nullable=False)
+
+    inscripcion = db.relationship("Inscripcion", backref=db.backref("pago", uselist=False, cascade="all, delete-orphan"))
+
+class PagoArbitraje(db.Model):
+    __tablename__ = "pago_arbitraje"
+    id = db.Column(db.Integer, primary_key=True)
+    partido_id = db.Column(db.Integer, db.ForeignKey("partidos.id"), nullable=False)
+    inscripcion_id = db.Column(db.Integer, db.ForeignKey("inscripciones.id"), nullable=False)
+    fecha_pago = db.Column(db.Date, nullable=False)
+    monto = db.Column(db.Numeric(10, 2), nullable=False)
+    metodo_pago = db.Column(db.String(30), nullable=False)
+
+    partido = db.relationship("Partido", backref=db.backref("pagos_arbitraje", cascade="all, delete-orphan"))
+    inscripcion = db.relationship("Inscripcion", backref=db.backref("pagos_arbitraje_inscripcion", cascade="all, delete-orphan"))
+
+
+# =========================================================
+# BLOQUES DE HORARIO
+# =========================================================
+class BloqueHorario(db.Model):
+    __tablename__ = "bloques_horario"
+    id = db.Column(db.Integer, primary_key=True)
+    cancha_id = db.Column(db.Integer, db.ForeignKey("canchas.id"), nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
+    hora_inicio = db.Column(db.Time, nullable=False)
+    hora_fin = db.Column(db.Time, nullable=False)
+    disponible = db.Column(db.Boolean, default=True)
+    partido_id = db.Column(db.Integer, db.ForeignKey("partidos.id"), nullable=True)
+
+    cancha = db.relationship("Cancha", backref="bloques")
+    partido = db.relationship("Partido", backref=db.backref("bloque_horario", uselist=False))
+
+
+class LogMovimiento(db.Model):
+    __tablename__ = 'log_movimientos'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow) # Guarda la fecha y hora exacta
+    modulo = db.Column(db.String(50), nullable=False)       # Ej. "Partidos", "Inscripciones"
+    movimiento = db.Column(db.String(255), nullable=False)  # Ej. "Se eliminó el equipo EnanosFC"
+    responsable = db.Column(db.String(100), nullable=False) # Ej. "pepe"
+    estatus = db.Column(db.String(20), default="Completado")

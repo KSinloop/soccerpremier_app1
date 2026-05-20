@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Nuevo Árbitro{% endblock %}
+{% block content %}
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">CUERPO ARBITRAL</span>
+                <h3 class="admin-panel-title">Alta de nuevo árbitro</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_arbitros_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+        <form action="{{ url_for('admin.crear_arbitro') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Nombre(s)</label>
+                <input type="text" name="nombre" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Apellido Paterno</label>
+                    <input type="text" name="apellido_paterno" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Apellido Materno (opcional)</label>
+                    <input type="text" name="apellido_materno"
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Teléfono (WhatsApp/Celular)</label>
+                
+                <input type="tel" name="telefono" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Debe contener exactamente 10 dígitos numéricos" placeholder="Ej. 8123456789" required
+                       style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Estado</label>
+                <select name="estado" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo / Suspendido</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Registrar árbitro
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

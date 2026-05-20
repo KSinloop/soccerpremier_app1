@@ -1,0 +1,190 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Gestión de Partidos{% endblock %}
+
+{% block content %}
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">CALENDARIO</span>
+            <h3 class="admin-panel-title">Partidos programados</h3>
+        </div>
+        
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            
+            <div style="position: relative;">
+                <span class="material-symbols-outlined" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px;">search</span>
+                <input type="text" id="buscadorPartidos" placeholder="Buscar equipo, jornada, etc..." 
+                       style="min-height: 46px; border-radius: 14px; border: 1px solid #d9e1ee; padding: 0 16px 0 42px; font-size: 0.95rem; color: var(--navy); outline: none; min-width: 260px; transition: border-color 0.2s;">
+            </div>
+
+            <a href="{{ url_for('admin.crear_partido') }}" class="admin-chip admin-chip-gold">+ Programar partido</a>
+        </div>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Torneo / Jornada</th>
+                    <th>Encuentro (Local vs Visitante)</th>
+                    <th>Fecha y Hora</th>
+                    <th>Cancha</th>
+                    <th>Estado</th>
+                    <th style="text-align: center;">Arbitraje (L - V)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partido in partidos %}
+                <tr>
+                    <td>{{ '%03d' % partido.id }}</td>
+                    <td>{{ partido.torneo.nombre }} - {{ partido.jornada }}</td>
+                    <td>
+                        <strong>
+                            {% if partido.inscripcion_1 and partido.inscripcion_1.equipo %}
+                                {{ partido.inscripcion_1.equipo.nombre }}
+                            {% else %}
+                                Por definir
+                            {% endif %}
+                        </strong> 
+                        vs 
+                        <strong>
+                            {% if partido.inscripcion_2 and partido.inscripcion_2.equipo %}
+                                {{ partido.inscripcion_2.equipo.nombre }}
+                            {% else %}
+                                Por definir
+                            {% endif %}
+                        </strong>
+                    </td>
+                    <td>{{ partido.fecha_hora.strftime('%d/%m/%Y - %H:%M') }}</td>
+                    <td>{{ partido.cancha.nombre if partido.cancha else 'Por definir' }}</td>
+                    <td>
+                        {% if partido.estado|lower == 'programado' %}
+                            <span class="status-badge status-soon">{{ partido.estado }}</span>
+                        {% elif partido.estado|lower == 'finalizado' %}
+                            <span class="status-badge status-active">{{ partido.estado }}</span>
+                        {% else %}
+                            <span class="status-badge">{{ partido.estado }}</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td style="text-align: center; font-weight: 900; font-size: 1.1rem;">
+                        {% if partido.inscripcion_1_id %}
+                            {% set p1_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_1_id) | list %}
+                            {% set p1_pagado = p1_list and p1_list[0].metodo_pago != 'Pendiente' %}
+                            {% if p1_pagado %}
+                                <span style="color: #28a745;" title="Local">✓</span>
+                            {% else %}
+                                <span style="color: #cc0000;" title="Local">✗</span>
+                            {% endif %}
+                        {% else %}
+                            <span style="color: #ccc;" title="Sin equipo">-</span>
+                        {% endif %}
+                        
+                        <span style="color: #ccc; margin: 0 4px;">|</span>
+                        
+                        {% if partido.inscripcion_2_id %}
+                            {% set p2_list = partido.pagos_arbitraje | selectattr("inscripcion_id", "equalto", partido.inscripcion_2_id) | list %}
+                            {% set p2_pagado = p2_list and p2_list[0].metodo_pago != 'Pendiente' %}
+                            {% if p2_pagado %}
+                                <span style="color: #28a745;" title="Visitante">✓</span>
+                            {% else %}
+                                <span style="color: #cc0000;" title="Visitante">✗</span>
+                            {% endif %}
+                        {% else %}
+                            <span style="color: #ccc;" title="Sin equipo">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{{ url_for('admin.editar_partido', id=partido.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                        
+                        <a href="{{ url_for('admin.resultados_partido', id=partido.id) }}" style="color: #28a745; font-weight: bold; margin-right: 15px; text-decoration: none;">Resultado</a>
+
+                        <a href="#" 
+                           onclick="abrirModalEliminarPartido(event, '{{ url_for('admin.eliminar_partido', id=partido.id) }}', 'Partido #{{ partido.id }} del torneo {{ partido.torneo.nombre|escape }}')" 
+                           style="color: #cc0000; font-weight: bold; text-decoration: none;">
+                           Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 20px;">No hay partidos programados aún.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div id="modalEliminarPartido" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarModalPartido 0.3s ease-out;">
+        
+        <div style="background: #fff5f5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcccc;">
+            <span style="color: #cc0000; font-size: 2.2rem; font-weight: bold; line-height: 1;">🗑</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Eliminar partido?</h4>
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+            Estás a punto de borrar el <strong id="nombrePartidoModal" style="color: var(--navy);"></strong>. Se perderán también los goles y tarjetas registrados en este encuentro.
+        </p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalEliminarPartido()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                Cancelar
+            </button>
+            <a id="btnConfirmarEliminarPartido" href="#" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #cc0000; color: #ffffff; font-weight: 700; text-decoration: none; display: inline-block; font-size: 0.95rem; transition: background 0.2s;">
+                Sí, eliminar
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarModalPartido {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+#btnConfirmarEliminarPartido:hover {
+    background: #a30000 !important;
+}
+</style>
+
+<script>
+    // Buscador interactivo
+    document.getElementById('buscadorPartidos').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll('.admin-table tbody tr');
+
+        filas.forEach(function(fila) {
+            let textoFila = fila.textContent.toLowerCase();
+            if (textoFila.includes(filtro)) {
+                fila.style.display = ''; 
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+
+    // Lógica del Modal Personalizado
+    function abrirModalEliminarPartido(event, urlAction, nombrePartido) {
+        event.preventDefault(); // Evita que la página brinque
+        
+        // Inyecta el texto del partido en el modal
+        document.getElementById('nombrePartidoModal').textContent = nombrePartido;
+        
+        // Asigna la ruta de Flask al botón rojo
+        document.getElementById('btnConfirmarEliminarPartido').href = urlAction;
+        
+        // Muestra el modal
+        document.getElementById('modalEliminarPartido').style.display = 'flex';
+    }
+
+    function cerrarModalEliminarPartido() {
+        document.getElementById('modalEliminarPartido').style.display = 'none';
+    }
+</script>
+{% endblock %}

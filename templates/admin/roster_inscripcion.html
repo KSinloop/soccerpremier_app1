@@ -1,0 +1,138 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Roster de Inscripción{% endblock %}
+
+{% block content %}
+<section class="admin-page-grid">
+    <article class="admin-panel-card" style="grid-column: 1 / -1;">
+        <div class="admin-section-head">
+            <div>
+                <span class="section-kicker">GESTIÓN DE PLANTILLA</span>
+                <h3 class="admin-panel-title">Equipo: {{ inscripcion.equipo.nombre }}</h3>
+                <p style="color: #666; margin-top: 5px;"><strong>Torneo:</strong> {{ inscripcion.torneo.nombre }}</p>
+            </div>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="btn" style="background-color: #e0e0e0; color: #333; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">← Volver a Inscripciones</a>
+        </div>
+
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee;">
+            <h4 style="margin-bottom: 15px; color: #002266;">Dar de alta jugador en este torneo</h4>
+            <form action="{{ url_for('admin.roster_inscripcion', id=inscripcion.id) }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                
+                <div style="flex: 3; min-width: 250px;">
+                    <label for="jugador_id" style="font-size: 0.9em; font-weight: bold; color: #555;">Seleccionar del Padrón:</label>
+                    <select id="jugador_id" name="jugador_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <option value="">-- Elige un jugador --</option>
+                        {% for j in jugadores_disponibles %}
+                            <option value="{{ j.id }}">{{ j.nombre }} {{ j.apellido_paterno }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="flex: 1; min-width: 100px;">
+                    <label for="dorsal" style="font-size: 0.9em; font-weight: bold; color: #555;">No. Playera:</label>
+                    <input type="number" id="dorsal" name="dorsal" placeholder="Ej. 10" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                </div>
+
+                <div style="flex: 1; min-width: 100px; text-align: center;">
+                    <label for="es_capitan" style="font-size: 0.9em; font-weight: bold; color: #555; display: block;">¿Es Capitán?</label>
+                    <input type="checkbox" id="es_capitan" name="es_capitan" value="1" style="transform: scale(1.5); margin-top: 10px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="flex: 1; padding: 10px; min-width: 150px;">+ Registrar</button>
+            </form>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Dorsal</th>
+                        <th>Nombre del Jugador</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in inscripcion.roster_jugadores %}
+                    <tr>
+                        <td><strong>#{{ registro.dorsal }}</strong></td>
+                        <td>{{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }} {{ registro.jugador.apellido_materno or '' }}</td>
+                        <td>
+                            {% if registro.es_capitan %}
+                                <span class="status-badge status-active" style="background-color: #ffd700; color: #856404;">Capitán (C)</span>
+                            {% else %}
+                                <span style="color: #666;">Jugador</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" 
+                               onclick="abrirModalBaja(event, '{{ url_for('admin.quitar_jugador_inscripcion', registro_id=registro.id) }}', '{{ registro.jugador.nombre|escape }} {{ registro.jugador.apellido_paterno|escape }}')" 
+                               style="color: #cc0000; font-weight: bold; text-decoration: none;">
+                               Dar de baja
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px;">No hay jugadores registrados en esta plantilla aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<div id="modalBaja" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarBaja 0.3s ease-out;">
+        
+        <div style="background: #fff5f5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcccc;">
+            <span style="color: #cc0000; font-size: 2.2rem; font-weight: bold; line-height: 1;">🗑</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Dar de baja jugador?</h4>
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+            Estás por sacar a <strong id="nombreBajaModal" style="color: var(--navy);"></strong> de este torneo. Seguirá en el padrón, pero no podrá jugar con este equipo.
+        </p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalBaja()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                Cancelar
+            </button>
+            <a id="btnConfirmarBaja" href="#" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #cc0000; color: #ffffff; font-weight: 700; text-decoration: none; display: inline-block; font-size: 0.95rem; transition: background 0.2s;">
+                Sí, dar de baja
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarBaja {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+#btnConfirmarBaja:hover {
+    background: #a30000 !important;
+}
+</style>
+
+<script>
+    // Lógica del Modal Personalizado
+    function abrirModalBaja(event, urlAction, nombreJugador) {
+        event.preventDefault(); // Evita que la página brinque
+        
+        // Inyecta el nombre del jugador en el modal
+        document.getElementById('nombreBajaModal').textContent = nombreJugador;
+        
+        // Asigna la ruta de Flask al botón rojo
+        document.getElementById('btnConfirmarBaja').href = urlAction;
+        
+        // Muestra el modal
+        document.getElementById('modalBaja').style.display = 'flex';
+    }
+
+    function cerrarModalBaja() {
+        document.getElementById('modalBaja').style.display = 'none';
+    }
+</script>
+{% endblock %}

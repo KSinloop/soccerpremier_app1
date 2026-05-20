@@ -1,0 +1,90 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">CLASIFICACIÓN</span>
+            <h2 class="section-title">Tabla de posiciones</h2>
+            <p class="page-description">
+                Consulta la clasificación general de los equipos, puntos acumulados,
+                partidos jugados, victorias, empates, derrotas y diferencia de goles.
+            </p>
+        </div>
+
+        <div class="page-hero-badge">
+            <span>Equipos en tabla</span>
+            <strong>{{ tabla|length }}</strong>
+        </div>
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="tabla-box">
+        <div class="tabla-header">
+            <div>
+                <span class="section-kicker">ACTUALIZACIÓN</span>
+                <h3>Clasificación actual</h3>
+            </div>
+            <select onchange="window.location.href='?torneo_id=' + this.value" class="toolbar-pill">
+                {% for torneo in torneos %}
+                <option value="{{ torneo.id }}" {% if torneo.id == torneo_id %}selected{% endif %}>
+                    {{ torneo.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="tabla-wrap">
+            <table class="tabla-posiciones">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Equipo</th>
+                        <th>PJ</th>
+                        <th>G</th>
+                        <th>E</th>
+                        <th>P</th>
+                        <th>GF</th>
+                        <th>GC</th>
+                        <th>DG</th>
+                        <th>PTS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tabla %}
+                    <tr {% if loop.index <= 8 %}class="top-row"{% endif %}>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <div class="equipo-tabla">
+                                <span class="equipo-mini-avatar">{{ t.nombre[:2].upper() }} </span>
+                                <span>{{ t.nombre }}</span>
+                            </div>
+                        </td>
+                        <td>{{ t.PJ }}</td>
+                        <td>{{ t.G }}</td>
+                        <td>{{ t.E }}</td>
+                        <td>{{ t.P }}</td>
+                        <td>{{ t.GF }}</td>
+                        <td>{{ t.GC }}</td>
+                        <td>{% if t.DG > 0 %}+{% endif %}{{ t.DG }}</td>
+                        <td><strong>{{ t.PTS }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="legend-box">
+        <div class="legend-item">
+            <span class="legend-mark legend-top"></span>
+            <p>Clasificados a liguilla</p>
+        </div>
+        <div class="legend-item">
+            <span class="legend-mark legend-regular"></span>
+            <p>Eliminados</p>
+        </div>
+    </section>
+</section>
+{% endblock %}

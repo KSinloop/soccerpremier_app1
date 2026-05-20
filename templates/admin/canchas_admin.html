@@ -1,0 +1,112 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Gestión de Canchas{% endblock %}
+
+{% block content %}
+<section class="admin-table-card">
+    <div class="admin-table-head">
+        <div>
+            <span class="section-kicker">INFRAESTRUCTURA</span>
+            <h3 class="admin-panel-title">Canchas registradas</h3>
+        </div>
+        <a href="{{ url_for('admin.crear_cancha') }}" class="admin-chip admin-chip-gold">+ Agregar cancha</a>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Tipo</th>
+                    <th>Disponibilidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cancha in canchas %}
+                <tr>
+                    <td>{{ cancha.id }}</td>
+                    <td>{{ cancha.nombre }}</td>
+                    <td>{{ cancha.ubicacion }}</td>
+                    <td>{{ cancha.tipo }}</td>
+                    <td>
+                        {% if cancha.disponibilidad == "Disponible" %}
+                            <span class="status-badge status-active">{{ cancha.disponibilidad }}</span>
+                        {% else %}
+                            <span class="status-badge status-end">{{ cancha.disponibilidad }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.editar_cancha', id=cancha.id) }}" style="color: #0044cc; font-weight: bold; margin-right: 15px; text-decoration: none;">Editar</a>
+                        
+                        <a href="#" 
+                           onclick="abrirModalEliminarCancha(event, '{{ url_for('admin.eliminar_cancha', id=cancha.id) }}', '{{ cancha.nombre|escape }}')" 
+                           style="color: #cc0000; font-weight: bold; text-decoration: none;">
+                           Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No hay canchas registradas aún.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div id="modalEliminarCancha" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarModal 0.3s ease-out;">
+        
+        <div style="background: #fff5f5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcccc;">
+            <span style="color: #cc0000; font-size: 2.2rem; font-weight: bold; line-height: 1;">🗑</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Eliminar cancha?</h4>
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+            Estás por borrar la cancha <strong id="nombreCanchaModal" style="color: var(--navy);"></strong>. Se perderá el registro de infraestructura.
+        </p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalEliminarCancha()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                Cancelar
+            </button>
+            <a id="btnConfirmarEliminar" href="#" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #cc0000; color: #ffffff; font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; transition: background 0.2s;">
+                Sí, eliminar
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarModal {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+#btnConfirmarEliminar:hover {
+    background: #a30000 !important;
+}
+</style>
+
+<script>
+    function abrirModalEliminarCancha(event, urlAction, nombreCancha) {
+        event.preventDefault(); // Evita que la página brinque
+        
+        // Coloca el nombre de la cancha en el texto
+        document.getElementById('nombreCanchaModal').textContent = nombreCancha;
+        
+        // Asigna la ruta de Flask al botón rojo
+        document.getElementById('btnConfirmarEliminar').href = urlAction;
+        
+        // Muestra el modal
+        document.getElementById('modalEliminarCancha').style.display = 'flex';
+    }
+
+    function cerrarModalEliminarCancha() {
+        document.getElementById('modalEliminarCancha').style.display = 'none';
+    }
+</script>
+{% endblock %}

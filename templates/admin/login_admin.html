@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso administrativo | Soccer Premier Juárez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="admin-login-body">
+    <section class="admin-login-shell">
+        <div class="admin-login-brand">
+            <div class="brand-mark" style="width: 60px; height: 60px; padding: 0px; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-shrink: 0;">    
+                <img src="{{ url_for('static', filename='img/SPJ.jpeg') }}" alt="Logo SPJ" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <span class="section-kicker">ACCESO INTERNO</span>
+            <h1>Soccer Premier Juárez</h1>
+            <p>
+                Ingresa al panel administrativo para gestionar torneos, equipos, partidos,
+                canchas, estadísticas y anuncios.
+            </p>
+        </div>
+
+        <div class="admin-login-card">
+            <span class="section-kicker">INICIAR SESIÓN</span>
+            <h2>Panel administrativo</h2>
+
+<form class="admin-login-form" action="{{ url_for('auth.login') }}" method="POST">
+                
+                <!-- Error si te equivocas de contraseña -->
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div style="color: #d9534f; margin-bottom: 15px; background-color: #fdf7f7; padding: 10px; border-radius: 5px; border: 1px solid #d9534f;">
+                    {% for message in messages %}
+                      {{ message }}
+                    {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+
+                <label for="usuario">Usuario</label>
+                <!-- Para el usuario -->
+                <input type="text" id="usuario" name="username" placeholder="Ingresa tu usuario" required>
+
+                <label for="password">Contraseña</label>
+                <!-- Para la contraseña -->
+                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

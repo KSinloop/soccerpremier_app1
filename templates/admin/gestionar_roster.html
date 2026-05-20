@@ -1,0 +1,228 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Gestionar Plantilla{% endblock %}
+{% block content %}
+
+<div class="admin-page-grid">
+
+    <div class="admin-table-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">ROSTER OFICIAL</span>
+                <h3 class="admin-panel-title">Plantilla: {{ inscripcion.equipo.nombre }}</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_inscripciones_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+        <p style="padding: 12px 28px 0; color: var(--muted); font-weight: 700;">Torneo: {{ inscripcion.torneo.nombre }}</p>
+        
+        <div class="admin-table-wrap" style="overflow-x: hidden;">
+            <table class="admin-table" style="min-width: 100%; width: 100%; white-space: normal;">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">Dorsal</th>
+                        <th style="width: 50%;">Jugador</th>
+                        <th style="width: 30%;">Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in inscripcion.roster_jugadores %}
+                    <tr>
+                        <td><strong style="font-size: 1.15rem;">#{{ registro.dorsal }}</strong></td>
+                        <td style="word-wrap: break-word;">{{ registro.jugador.nombre }} {{ registro.jugador.apellido_paterno }} {{ registro.jugador.apellido_materno or '' }}</td>
+                        <td>
+                            {% if registro.es_capitan %}
+                                <span class="status-badge status-active">Capitán</span>
+                            {% else %}
+                                <span style="color: var(--muted); font-weight: 700;">Jugador</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align:center; color: var(--muted); padding: 32px;">
+                            No hay jugadores en esta plantilla todavía.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="admin-side-stack">
+        
+        <div class="admin-panel-card">
+            <div class="admin-table-head">
+                <div>
+                    <span class="section-kicker">ALTA</span>
+                    <h3 class="admin-panel-title">Agregar jugador</h3>
+                </div>
+            </div>
+            <form action="{{ url_for('admin.gestionar_roster', id=inscripcion.id) }}" method="POST"
+                  style="padding: 24px 28px; display: grid; gap: 18px;">
+
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Jugador del padrón</label>
+                    
+                    <input type="text" id="buscadorAlta" placeholder="Buscar por nombre..." 
+                           style="min-height: 42px; border-radius: 12px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 0.95rem; color: var(--navy); outline: none; width: 100%; margin-bottom: 4px; transition: border-color 0.2s;">
+
+                    <select name="jugador_id" id="selectAltaJugador" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona un jugador...</option>
+                        {% for j in jugadores %}
+                            <option value="{{ j.id }}">{{ j.nombre }} {{ j.apellido_paterno }} {{ j.apellido_materno or '' }}</option>
+                        {% else %}
+                            <option disabled>No hay jugadores disponibles</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Dorsal (número)</label>
+                    <input type="number" name="dorsal" placeholder="Ej. 10" min="1" max="99" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+
+                <div style="background: #f8fafd; border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" name="es_capitan" value="1" id="es_capitan"
+                           style="width: 20px; height: 20px; flex-shrink: 0;">
+                    <label for="es_capitan" style="color: var(--navy); font-weight: 800; cursor: pointer;">
+                        Designar como capitán del equipo
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit" class="admin-chip admin-chip-gold" style="width: 100%; justify-content: center;">
+                        + Registrar en plantilla
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-panel-card" style="margin-top: 24px;">
+            <div class="admin-table-head">
+                <div>
+                    <span class="section-kicker" style="color: #cc0000;">BAJA</span>
+                    <h3 class="admin-panel-title">Remover jugador</h3>
+                </div>
+            </div>
+            <div style="padding: 24px 28px; display: grid; gap: 18px;">
+
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Jugador actual del equipo</label>
+                    <select id="selectBajaJugador" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona quién sale...</option>
+                        {% for r in inscripcion.roster_jugadores %}
+                            <option value="{{ url_for('admin.quitar_jugador_inscripcion', registro_id=r.id) }}" data-nombre="{{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}">
+                                #{{ r.dorsal }} - {{ r.jugador.nombre }} {{ r.jugador.apellido_paterno }}
+                            </option>
+                        {% else %}
+                            <option disabled>El equipo no tiene jugadores</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <button type="button" onclick="abrirModalConfirmacion()" class="admin-chip" style="width: 100%; justify-content: center; background: #fff5f5; color: #cc0000; border: 1px solid #ffcccc; cursor: pointer;">
+                        - Dar de baja
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="miModalBaja" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); animation: descolgarBaja 0.3s ease-out;">
+        
+        <div style="background: #fff5f5; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcccc;">
+            <span style="color: #cc0000; font-size: 2.2rem; font-weight: bold; line-height: 1;">🗑</span>
+        </div>
+
+        <h4 style="color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¿Remover jugador del equipo?</h4>
+        
+        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 28px;">
+            Estás a punto de dar de baja a <strong id="nombreJugadorModal" style="color: var(--navy);"></strong> de esta plantilla. Seguirá registrado en el sistema general.
+        </p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalConfirmacion()" style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #d9e1ee; background: #ffffff; color: var(--navy); font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                Cancelar
+            </button>
+            <a id="enlaceConfirmarBaja" href="#" style="flex: 1; padding: 14px; border-radius: 14px; border: none; background: #cc0000; color: #ffffff; font-weight: 700; text-decoration: none; display: inline-block; font-size: 0.95rem; transition: background 0.2s;">
+                Sí, dar de baja
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes descolgarBaja {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+#enlaceConfirmarBaja:hover {
+    background: #a30000 !important;
+}
+</style>
+
+<script>
+    // Buscador del alta
+    document.getElementById('buscadorAlta').addEventListener('input', function() {
+        let filtro = this.value.toLowerCase();
+        let opciones = document.querySelectorAll('#selectAltaJugador option:not([value=""])');
+
+        opciones.forEach(function(opcion) {
+            let texto = opcion.textContent.toLowerCase();
+            if (texto.includes(filtro)) {
+                opcion.style.display = '';     
+                opcion.disabled = false;       
+            } else {
+                opcion.style.display = 'none'; 
+                opcion.disabled = true;        
+            }
+        });
+        document.getElementById('selectAltaJugador').value = "";
+    });
+
+    // Lógica del Modal Personalizado Homologado
+    function abrirModalConfirmacion() {
+        let selectJugador = document.getElementById('selectBajaJugador');
+        let urlDestino = selectJugador.value;
+
+     if (!urlDestino) {
+            // Alerta premium con tus colores exactos
+            Swal.fire({
+                title: 'Falta información',
+                text: 'Por favor, selecciona primero un jugador de la lista antes de darlo de baja.',
+                icon: 'warning',
+                iconColor: '#ffd23f', /* Tu dorado en lugar del azul por defecto */
+                confirmButtonColor: '#ffd23f',
+                confirmButtonText: '<span style="color: #102249; font-weight: bold;">Entendido</span>',
+                background: '#ffffff',
+                borderRadius: '24px'
+            });
+            return;
+        }
+
+        // Obtener el nombre del jugador seleccionado del atributo data-nombre
+        let opcionSeleccionada = selectJugador.options[selectJugador.selectedIndex];
+        let nombreJugador = opcionSeleccionada.getAttribute('data-nombre');
+
+        // Inyectar el nombre en el modal
+        document.getElementById('nombreJugadorModal').textContent = nombreJugador;
+
+        // Asignar el enlace de Flask real al botón rojo del modal
+        document.getElementById('enlaceConfirmarBaja').href = urlDestino;
+        
+        // Mostrar el modal centrado
+        let modal = document.getElementById('miModalBaja');
+        modal.style.display = 'flex';
+    }
+    function cerrarModalConfirmacion() {
+        document.getElementById('miModalBaja').style.display = 'none';
+    }
+</script>
+{% endblock %}

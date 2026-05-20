@@ -1,0 +1,163 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Programar Partido{% endblock %}
+{% block content %}
+<div class="admin-main" style="padding-top: 0;">
+    <div class="admin-panel-card">
+        <div class="admin-table-head">
+            <div>
+                <span class="section-kicker">CALENDARIO</span>
+                <h3 class="admin-panel-title">Programar nuevo encuentro</h3>
+            </div>
+            <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="padding: 20px 28px 0 28px;">
+                    {% for category, message in messages %}
+                        <div style="padding: 16px; border-radius: 12px; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; font-weight: 600;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+       <form action="{{ url_for('admin.crear_partido') }}" method="POST" style="padding: 28px; display: grid; gap: 18px;" 
+      onsubmit="if(this.inscripcion_1_id.value === this.inscripcion_2_id.value) { alert('¡Error! Un equipo no puede jugar contra sí mismo. Cambia al local o al visitante.'); return false; }">
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Torneo</label>
+                <select name="torneo_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    {% for t in torneos %}
+                        <option value="{{ t.id }}">{{ t.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Equipo Local</label>
+                    <select name="inscripcion_1_id" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona el local...</option>
+                        {% for i in inscripciones %}
+                            <option value="{{ i.id }}" data-torneo="{{ i.torneo_id }}">{{ i.equipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Equipo Visitante</label>
+                    <select name="inscripcion_2_id" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Selecciona el visitante...</option>
+                        {% for i in inscripciones %}
+                            <option value="{{ i.id }}" data-torneo="{{ i.torneo_id }}">{{ i.equipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Cancha</label>
+                <select name="cancha_id" required
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    {% for c in canchas %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 6px;">
+                <label style="color: var(--navy); font-weight: 800;">Árbitro Central (opcional)</label>
+                <select name="arbitro_id"
+                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    <option value="">Por definir</option>
+                    {% for a in arbitros %}
+                        <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Fecha y hora</label>
+                    <input type="datetime-local" name="fecha_hora" required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Jornada</label>
+                    <input type="text" name="jornada" placeholder="Ej. J1, Final..." required
+                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        style="min-height: 52px; padding: 14px 28px; border-radius: 16px; background: var(--gold); color: var(--navy); font-weight: 800; border: none; cursor: pointer; font-size: 1rem;">
+                    Agendar partido
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const torneoSelect = document.querySelector('select[name="torneo_id"]');
+    const equipo1Select = document.querySelector('select[name="inscripcion_1_id"]');
+    const equipo2Select = document.querySelector('select[name="inscripcion_2_id"]');
+
+    function filtrarEquipos() {
+        const torneoId = torneoSelect.value;
+
+        equipo1Select.value = "";
+        equipo2Select.value = "";
+
+        Array.from(equipo1Select.options).forEach(opcion => {
+            if (!opcion.value) return; 
+            if (opcion.getAttribute('data-torneo') === torneoId) {
+                opcion.style.display = '';     
+                opcion.disabled = false;       
+            } else {
+                opcion.style.display = 'none'; 
+                opcion.disabled = true;        
+            }
+        });
+
+        Array.from(equipo2Select.options).forEach(opcion => {
+            if (!opcion.value) return;
+            if (opcion.getAttribute('data-torneo') === torneoId) {
+                opcion.style.display = '';
+                opcion.disabled = false;
+            } else {
+                opcion.style.display = 'none';
+                opcion.disabled = true;
+            }
+        });
+    }
+
+    if (torneoSelect && equipo1Select && equipo2Select) {
+        torneoSelect.addEventListener('change', filtrarEquipos);
+        filtrarEquipos(); 
+    }
+});
+</script>
+
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.querySelector('input[name="fecha_hora"]');
+    if (fechaInput) {
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0); 
+        hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+        
+        const minDate = hoy.toISOString().slice(0, 16);
+        
+        fechaInput.setAttribute('min', minDate);
+    }
+});
+</script> -->
+{% endblock %}

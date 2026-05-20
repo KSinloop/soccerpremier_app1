@@ -1,0 +1,111 @@
+{% extends "public/base_public.html" %}
+
+{% block content %}
+<section class="page-hero page-hero-light">
+    <div class="container page-hero-inner">
+        <div>
+            <span class="section-kicker">RENDIMIENTO</span>
+            <h2 class="section-title">Estadísticas generales</h2>
+            <p class="page-description">
+                Consulta indicadores clave del torneo, líderes en goles, disciplina, rendimiento ofensivo
+                y resumen competitivo de la temporada actual.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<section class="container page-body">
+    <section class="stats-grid stats-grid-3">
+        <article class="stat-card">
+            <p class="stat-label">Goles anotados</p>
+            <strong class="stat-number">{{ '%02d' % total_goles }}</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Tarjetas amarillas</p>
+            <strong class="stat-number">{{ '%02d' % total_amarillas }}</strong>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Tarjetas rojas</p>
+            <strong class="stat-number">{{ '%02d' % total_rojas }}</strong>
+        </article>
+    </section>
+
+    <section class="stats-panels-grid">
+        <article class="stats-panel">
+            <div class="panel-title-row">
+                <div>
+                    <span class="section-kicker">GOLEO</span>
+                    <h3>Máximos goleadores</h3>
+                </div>
+                <span class="panel-season">Clausura 2026</span>
+            </div>
+
+            {% for goleador in top_goleadores %}
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">{{ loop.index }}</span>
+                        <div>
+                            <h4>{{ goleador.nombre }} {{ goleador.apellido_paterno }}</h4>
+                            <p>{{ goleador.equipo_nombre }}</p>
+                        </div>
+                    </div>
+                    <strong>{{ goleador.total_goles }} goles</strong>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <div>
+                            <h4>Aún no hay goles registrados.</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+        </article>
+
+        <article class="stats-panel">
+            <div class="panel-title-row">
+                <div>
+                    <span class="section-kicker">DISCIPLINA</span>
+                    <h3>Jugadores con más tarjetas</h3>
+                </div>
+                <span class="panel-season">Clausura 2026</span>
+            </div>
+
+            {% for amonestado in top_amonestados %}
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <span class="ranking-position">{{ loop.index }}</span>
+                        <div>
+                            <h4>{{ amonestado.nombre }} {{ amonestado.apellido_paterno }}</h4>
+                            <p>{{ amonestado.equipo_nombre }}</p>
+                        </div>
+                    </div>
+                    <strong>{{ amonestado.amarillas }}A / {{ amonestado.rojas }}R</strong>
+                </div>
+            </div>
+            {% else %}
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="ranking-left">
+                        <div>
+                            <h4>Aún no hay tarjetas registradas.</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </article>
+    </section>
+</section>
+{% endblock %}
