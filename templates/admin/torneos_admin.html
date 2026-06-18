@@ -55,8 +55,17 @@
                         
                         <td>{{ torneo.inscripciones|length }}</td> 
                         <td>
-                            <div class="admin-actions" style="display: flex; gap: 12px; align-items: center;">
+                            <div class="admin-actions" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                                 <a href="{{ url_for('admin.editar_torneo', id=torneo.id) }}" class="admin-action-link">Editar</a>
+                                
+                                {% if torneo.estado == 'Próximo' or torneo.estado == 'Activo' %}
+                                <form id="form-calendario-{{ torneo.id }}" action="{{ url_for('admin.generar_calendario', torneo_id=torneo.id) }}" method="POST" style="margin: 0; display: inline;">
+                                    <button type="button" class="admin-action-link" style="background: none; border: none; padding: 0; color: #28a745; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: 800;" 
+                                            onclick="confirmarCalendario('form-calendario-{{ torneo.id }}', '{{ torneo.nombre|escape }}')">
+                                        Generar Calendario
+                                    </button>
+                                </form>
+                                {% endif %}
                                 
                                 {% if torneo.estado == 'Activo' or torneo.estado == 'Finalizado' %}
                                 <form id="form-liguilla-{{ torneo.id }}" action="{{ url_for('admin.generar_liguilla', torneo_id=torneo.id) }}" method="POST" style="margin: 0; display: inline;">
@@ -88,6 +97,27 @@
 </section>
 
 <script>
+    // Alerta para Calendario (Fase Regular)
+    function confirmarCalendario(formId, nombreTorneo) {
+        Swal.fire({
+            title: '¿Generar Calendario?',
+            html: `Se crearán los partidos de <strong>Fase Regular</strong> para el torneo <strong>${nombreTorneo}</strong>.<br><br><span style="font-size: 0.9rem; color: #666;">El sistema evitará cruces repetidos y asignará horarios automáticamente.</span>`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745', /* Verde confirmación */
+            cancelButtonColor: '#102249', /* Azul marino */
+            confirmButtonText: '<span style="color: #ffffff; font-weight: bold;">Sí, generar partidos</span>',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            borderRadius: '24px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        })
+    }
+
+    // Alerta para Liguilla
     function confirmarLiguilla(formId, nombreTorneo) {
         Swal.fire({
             title: '¿Iniciar la Liguilla?',

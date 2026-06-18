@@ -1,6 +1,6 @@
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime, date as date_type
+from datetime import datetime, date as date_type, timedelta
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from db import db
@@ -40,7 +40,6 @@ def vista_dashboard():
     partidos_programados = len(db.session.execute(db.select(Partido).where(Partido.estado=='Programado')).scalars().all())
     anuncios_activos = len(db.session.execute(db.select(Anuncio)).scalars().all())
     
-    # Traemos los movimientos para el dashboard
     movimientos_recientes = db.session.execute(
         db.select(LogMovimiento).order_by(LogMovimiento.fecha.desc()).limit(7)
     ).scalars().all()
@@ -101,10 +100,30 @@ def vista_canchas_admin():
 
 @admin_bp.get("/estadisticas")
 def vista_estadisticas_admin():
-    total_goles = db.session.scalar(db.select(func.count(Gol.id))) or 0
-    total_amarillas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Amarilla")) or 0
-    total_rojas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Roja")) or 0
+    # 1. Total Goles (Solo Fase Regular)
+    total_goles = db.session.scalar(
+        db.select(func.count(Gol.id))
+        .join(Partido, Gol.partido_id == Partido.id)
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
 
+    # 2. Total Amarillas (Solo Fase Regular)
+    total_amarillas = db.session.scalar(
+        db.select(func.count(Incidencia.id))
+        .join(Partido, Incidencia.partido_id == Partido.id)
+        .where(Incidencia.tipo == "Tarjeta Amarilla")
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
+
+    # 3. Total Rojas (Solo Fase Regular)
+    total_rojas = db.session.scalar(
+        db.select(func.count(Incidencia.id))
+        .join(Partido, Incidencia.partido_id == Partido.id)
+        .where(Incidencia.tipo == "Tarjeta Roja")
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
+
+    # 4. Top Goleadores (Solo Fase Regular)
     top_goleadores_query = (
         db.select(
             Jugador.nombre,
@@ -113,10 +132,12 @@ def vista_estadisticas_admin():
             func.count(Gol.id).label('total_goles')
         )
         .select_from(Gol)
+        .join(Partido, Gol.partido_id == Partido.id) # <-- Conectamos con el partido
         .join(RegistroJugador, Gol.registro_jugador_id == RegistroJugador.id)
         .join(Jugador, RegistroJugador.jugador_id == Jugador.id)
         .join(Inscripcion, RegistroJugador.inscripcion_id == Inscripcion.id)
         .join(Equipo, Inscripcion.equipo_id == Equipo.id)
+        .where(Partido.tipo_partido == "Fase Regular") # <-- Filtro de blindaje
         .group_by(Jugador.id, Equipo.id)
         .order_by(func.count(Gol.id).desc())
         .limit(5)
@@ -229,7 +250,9 @@ def crear_partido():
         fecha_hora_str = request.form.get("fecha_hora")
         jornada = request.form.get("jornada")
         
-        # Convertimos el texto del formulario a un objeto de Fecha y Hora de Python
+        # NUEVO: Tipo de partido para separar Liguilla y Amistosos
+        tipo_partido = request.form.get("tipo_partido", "Fase Regular")
+        
         fecha_hora_obj = datetime.strptime(fecha_hora_str, "%Y-%m-%dT%H:%M")
 
         nuevo_partido = Partido( 
@@ -239,6 +262,7 @@ def crear_partido():
             cancha_id=cancha_id,
             fecha_hora=fecha_hora_obj,
             jornada=request.form.get("jornada"),
+            tipo_partido=tipo_partido, 
             estado="Programado",
             arbitro_id=request.form.get("arbitro_id") if request.form.get("arbitro_id") else None
         )
@@ -246,7 +270,6 @@ def crear_partido():
         db.session.commit()
         registrar_movimiento('Partidos', f'Partido programado ID: {nuevo_partido.id}')
 
-        # Generar pagos de arbitraje automáticamente al crear el partido
         pago_arb_1 = PagoArbitraje(
             partido_id=nuevo_partido.id,
             inscripcion_id=int(inscripcion_1_id),
@@ -273,7 +296,6 @@ def crear_partido():
     arbitros = db.session.execute(db.select(Arbitro).where(Arbitro.estado == "Activo")).scalars().all()
 
     return render_template("admin/form_partido.html", torneos=torneos, canchas=canchas, inscripciones=inscripciones, arbitros=arbitros)
-
 
 
 # ==========================================
@@ -393,10 +415,12 @@ def editar_partido(id):
             flash("Error: Un equipo no puede jugar contra sí mismo.", "error")
             return redirect(url_for('admin.editar_partido', id=id))
         
-        # Si no seleccionan cancha, guardamos None
         cancha_sel = request.form.get("cancha_id")
         partido.cancha_id = cancha_sel if cancha_sel else None
         partido.jornada = request.form.get("jornada")
+        
+        partido.tipo_partido = request.form.get("tipo_partido")
+        
         f_hora_str = request.form.get("fecha_hora")
         if f_hora_str:
             partido.fecha_hora = datetime.strptime(f_hora_str, "%Y-%m-%dT%H:%M")
@@ -440,13 +464,9 @@ def crear_jugador():
 
         if foto and foto.filename:
             nombre_seguro = secure_filename(foto.filename)
-            
             ruta_guardado = os.path.join('static', 'uploads', nombre_seguro)
-            
             os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
-            
             foto.save(ruta_guardado)
-            
             ruta_para_bd = f'uploads/{nombre_seguro}'
 
         nuevo_jugador = Jugador(
@@ -566,7 +586,6 @@ def gestionar_roster(id):
     if request.method == "POST":
         jugador_id = request.form.get("jugador_id")
         
-        # Validar que el jugador no pertenezca ya a otro equipo en el mismo torneo
         conflicto = db.session.execute(
             db.select(RegistroJugador)
             .join(Inscripcion)
@@ -580,14 +599,12 @@ def gestionar_roster(id):
         es_capitan_form = True if request.form.get("es_capitan") else False
 
         if es_capitan_form:
-            # 1. Buscamos si ya había algún capitán en este equipo
             capitanes_anteriores = db.session.execute(
                 db.select(RegistroJugador)
                 .where(RegistroJugador.inscripcion_id == inscripcion.id)
                 .where(RegistroJugador.es_capitan == True)
             ).scalars().all()
             
-            # 2. Le quitamos el gafete a todos los anteriores
             for capitan in capitanes_anteriores:
                 capitan.es_capitan = False
 
@@ -695,14 +712,12 @@ def resultados_partido(id):
             partido.estado = nuevo_estado
             partido.motivo_cancelacion = motivo_cancelacion or partido.motivo_cancelacion
 
-            # Auto-generar pagos de arbitraje si se cancela o reprograma
             if nuevo_estado in ("Cancelado", "Reprogramado"):
-                from datetime import date as _date
                 for insc_id in [partido.inscripcion_1_id, partido.inscripcion_2_id]:
                     pago_arb = PagoArbitraje(
                         partido_id=partido.id,
                         inscripcion_id=insc_id,
-                        fecha_pago=_date.today(),
+                        fecha_pago=date_type.today(),
                         monto=COSTO_ARBITRAJE,
                         metodo_pago="Pendiente"
                     )
@@ -713,7 +728,6 @@ def resultados_partido(id):
                 db.session.commit()
                 registrar_movimiento('Partidos', f'Estado del partido ID {partido.id} cambiado a {nuevo_estado}')
 
-        # Manejar no presentaciones
         if no_presento_1 or no_presento_2:
             partido.no_presento_1 = no_presento_1
             partido.no_presento_2 = no_presento_2
@@ -748,27 +762,21 @@ def resultados_partido(id):
 @admin_bp.route("/partidos/<int:partido_id>/eliminar_gol/<int:gol_id>", methods=["POST"])
 @login_required
 def eliminar_gol(partido_id, gol_id):
-    
     gol = db.session.get(Gol, gol_id) 
     if gol:
         db.session.delete(gol)
         db.session.commit()
         registrar_movimiento('Partidos', f'Se eliminó un gol del partido {partido_id}')
-    
-    
     return redirect(url_for('admin.resultados_partido', id=partido_id))
 
 @admin_bp.route("/partidos/<int:partido_id>/eliminar_incidencia/<int:incidencia_id>", methods=["POST"])
 @login_required
 def eliminar_incidencia(partido_id, incidencia_id):
-    
     incidencia = db.session.get(Incidencia, incidencia_id)
     if incidencia:
         db.session.delete(incidencia)
         db.session.commit()
         registrar_movimiento('Partidos', f'Se eliminó una incidencia del partido {partido_id}')
-
-    
     return redirect(url_for('admin.resultados_partido', id=partido_id))
 
 # -----------------------------
@@ -803,17 +811,12 @@ def pagar_inscripcion_rapido(id):
         registrar_movimiento('Adeudos', f'Inscripción ID {inscripcion.id} marcada como pagada')
     return redirect(url_for('admin.vista_adeudos_admin'))
 
-# RUTA pagar_arbitraje eliminada — el pago ahora se gestiona exclusivamente
-# desde resultados_partido.html usando la ruta pagar_arbitraje_equipo.
-
-
 @admin_bp.route("/partidos/<int:partido_id>/pagar_arbitraje_equipo/<int:inscripcion_id>", methods=["POST"])
 @login_required
 def pagar_arbitraje_equipo(partido_id, inscripcion_id):
     metodo = request.form.get("metodo_pago", "Efectivo")
     monto_ingresado = float(request.form.get("monto", 0))
     
-    # 1. Buscar el adeudo pendiente exacto de este equipo
     pago_pendiente = db.session.execute(
         db.select(PagoArbitraje)
         .where(PagoArbitraje.partido_id == partido_id)
@@ -822,26 +825,21 @@ def pagar_arbitraje_equipo(partido_id, inscripcion_id):
     ).scalars().first()
     
     if pago_pendiente:
-        from datetime import date
-        # CORRECCIÓN AQUÍ: Convertimos a float para que no choque con el formulario
         monto_original = float(pago_pendiente.monto)
         
         if monto_ingresado >= monto_original:
-            # Pagó el total (liquidó la deuda)
             pago_pendiente.metodo_pago = metodo
-            pago_pendiente.fecha_pago = date.today()
+            pago_pendiente.fecha_pago = date_type.today()
             pago_pendiente.monto = monto_ingresado
         else:
-            # Pagó solo una parte (ABONO)
             pago_pendiente.metodo_pago = metodo
-            pago_pendiente.fecha_pago = date.today()
+            pago_pendiente.fecha_pago = date_type.today()
             pago_pendiente.monto = monto_ingresado
             
-            # Creamos una NUEVA deuda por la diferencia restante
             nuevo_pendiente = PagoArbitraje(
                 partido_id=partido_id,
                 inscripcion_id=inscripcion_id,
-                fecha_pago=date.today(),
+                fecha_pago=date_type.today(),
                 monto=(monto_original - monto_ingresado),
                 metodo_pago="Pendiente"
             )
@@ -853,10 +851,119 @@ def pagar_arbitraje_equipo(partido_id, inscripcion_id):
     url_volver = request.referrer or url_for('admin.resultados_partido', id=partido_id)
     return redirect(url_volver)
 
+# =========================================
+# LIGUILLA Y CALENDARIO AUTOMÁTICO (BERGER)
+# =========================================
 
-#============
-#Liguilla
-#============
+@admin_bp.route("/torneos/<int:torneo_id>/generar_calendario", methods=["POST"])
+@login_required
+def generar_calendario(torneo_id):
+    torneo = db.session.get(Torneo, torneo_id)
+    if not torneo:
+        flash("Torneo no encontrado.", "error")
+        return redirect(url_for('admin.vista_torneos_admin'))
+
+    # 1. Validar que no se duplique la creación
+    partidos_existentes = db.session.execute(
+        db.select(Partido)
+        .where(Partido.torneo_id == torneo_id)
+        .where(Partido.tipo_partido == "Fase Regular")
+    ).scalars().first()
+    if partidos_existentes:
+        flash("El calendario de fase regular ya fue generado previamente.", "error")
+        return redirect(url_for('admin.vista_torneos_admin'))
+
+    inscripciones = db.session.execute(
+        db.select(Inscripcion).where(Inscripcion.torneo_id == torneo_id)
+    ).scalars().all()
+
+    if len(inscripciones) < 3:
+        flash("Se necesitan al menos 3 equipos inscritos para generar un calendario de todos contra todos.", "error")
+        return redirect(url_for('admin.vista_torneos_admin'))
+
+    # 2. Configurar Equipos y el "Descanso" si son impares
+    equipos = [insc.id for insc in inscripciones]
+    if len(equipos) % 2 != 0:
+        equipos.append(None) # None actuará como el equipo "Descanso"
+
+    n = len(equipos)
+    total_jornadas = n - 1
+    partidos_por_jornada = n // 2
+
+    # 3. Calcular la fecha base del torneo
+    hoy = datetime.now().date()
+    # Si el torneo no tiene fecha de inicio, la asignamos para la siguiente semana
+    fecha_base = torneo.fecha_inicio if torneo.fecha_inicio else hoy + timedelta(days=1)
+    
+    # Buscar el próximo día que coincida con la configuración del torneo
+    while True:
+        wd = fecha_base.weekday()
+        if torneo.dia_torneo == "Domingo" and wd == 6: break
+        elif torneo.dia_torneo == "Sabatino" and wd == 5: break
+        elif torneo.dia_torneo == "Lunes-Viernes" and wd < 5: break
+        elif not torneo.dia_torneo and wd == 5: break # Sábado por defecto
+        fecha_base += timedelta(days=1)
+
+    # 4. Generar el Calendario (Algoritmo de Berger)
+    for jornada in range(total_jornadas):
+        # A cada jornada le sumamos 1 semana de diferencia
+        fecha_jornada = fecha_base + timedelta(weeks=jornada)
+        
+        # Empezamos los partidos de ese día a las 08:00 AM
+        hora_inicio = datetime(fecha_jornada.year, fecha_jornada.month, fecha_jornada.day, 8, 0)
+        hora_actual = hora_inicio
+
+        for i in range(partidos_por_jornada):
+            local = equipos[i]
+            visitante = equipos[n - 1 - i]
+
+            # Intercalar quién es local y visitante para el equipo fijo (índice 0)
+            if jornada % 2 == 1 and i == 0:
+                local, visitante = visitante, local
+
+            # Si a uno de los dos le toca el equipo "Descanso", ignoramos el cruce
+            if local is not None and visitante is not None:
+                nuevo_partido = Partido(
+                    torneo_id=torneo_id,
+                    inscripcion_1_id=local,
+                    inscripcion_2_id=visitante,
+                    fecha_hora=hora_actual,
+                    jornada=f"Jornada {jornada + 1}",
+                    tipo_partido="Fase Regular",
+                    estado="Programado"
+                )
+                db.session.add(nuevo_partido)
+                db.session.flush() # Para obtener el ID del partido antes de guardar los adeudos
+                
+                # Generamos automáticamente el pago del arbitraje para ambos equipos
+                pago_arb_1 = PagoArbitraje(
+                    partido_id=nuevo_partido.id,
+                    inscripcion_id=local,
+                    fecha_pago=date_type.today(),
+                    monto=COSTO_ARBITRAJE,
+                    metodo_pago="Pendiente"
+                )
+                pago_arb_2 = PagoArbitraje(
+                    partido_id=nuevo_partido.id,
+                    inscripcion_id=visitante,
+                    fecha_pago=date_type.today(),
+                    monto=COSTO_ARBITRAJE,
+                    metodo_pago="Pendiente"
+                )
+                db.session.add(pago_arb_1)
+                db.session.add(pago_arb_2)
+
+                # El siguiente partido se programa 2 horas después
+                hora_actual += timedelta(hours=2)
+
+        # Rotación del algoritmo: dejamos el índice 0 fijo y movemos los demás
+        equipos.insert(1, equipos.pop())
+
+    db.session.commit()
+    registrar_movimiento('Torneos', f'Se generó el calendario Fase Regular para {torneo.nombre}')
+    flash(f"¡Calendario de la Fase Regular generado exitosamente para {len(inscripciones)} equipos!")
+    return redirect(url_for('admin.vista_partidos_admin'))
+
 
 @admin_bp.route("/torneos/<int:torneo_id>/generar_liguilla", methods=["POST"])
 @login_required
@@ -866,14 +973,13 @@ def generar_liguilla(torneo_id):
         flash("Torneo no encontrado.", "error")
         return redirect(url_for('admin.vista_torneos_admin'))
 
-    # 1. Traer todos los partidos finalizados de este torneo
     partidos = db.session.execute(
         db.select(Partido)
         .where(Partido.torneo_id == torneo_id)
         .where(Partido.estado == "Finalizado")
+        .where(Partido.tipo_partido == "Fase Regular") 
     ).scalars().all()
 
-    # 2. Replicar la lógica de cálculo de puntos
     stats = {}
     for p in partidos:
         for insc in [p.inscripcion_1, p.inscripcion_2]:
@@ -906,14 +1012,11 @@ def generar_liguilla(torneo_id):
         s["DG"] = s["GF"] - s["GC"]
         s["PTS"] = s["G"] * 3 + s["E"]
 
-    # 3. Ordenar: Puntos, luego Diferencia de Goles
     tabla = sorted(stats.values(), key=lambda x: (x["PTS"], x["DG"]), reverse=True)
 
-    # 4. Cortar estrictamente a los 8 mejores
     clasificados = tabla[:8]
     n = len(clasificados)
 
-    # Asegurarnos de que el número de clasificados sea par
     if n % 2 != 0:
         n -= 1
         clasificados = clasificados[:n]
@@ -922,31 +1025,24 @@ def generar_liguilla(torneo_id):
         flash("No hay suficientes equipos con partidos jugados para armar liguilla.", "error")
         return redirect(url_for('admin.vista_torneos_admin'))
 
-    # 5. Armar llaves y calcular fechas INTELIGENTES basadas en el tipo de torneo
-    from datetime import datetime, timedelta
-    
     hoy = datetime.now().date()
-    # Empezamos a buscar la fecha a partir de mañana para dar tiempo a los equipos
     dia_busqueda = hoy + timedelta(days=1)
     
     while True:
-        wd = dia_busqueda.weekday() # 0 = Lunes, 5 = Sábado, 6 = Domingo
+        wd = dia_busqueda.weekday() 
         if torneo.dia_torneo == "Domingo" and wd == 6:
             break
         elif torneo.dia_torneo == "Sabatino" and wd == 5:
             break
         elif torneo.dia_torneo == "Lunes-Viernes" and wd < 5:
             break
-        # Si por alguna razón el torneo no tiene día registrado, lo mandamos al sábado por defecto
         elif not torneo.dia_torneo and wd == 5:
             break
             
         dia_busqueda += timedelta(days=1)
 
-    # Programamos el primer partido a las 5:00 PM (17:00 hrs)
     fecha_base = datetime(dia_busqueda.year, dia_busqueda.month, dia_busqueda.day, 17, 0)
 
-    # Crear los partidos
     for i in range(n // 2):
         id_loc = clasificados[i]["id"]
         id_vis = clasificados[n - 1 - i]["id"]
@@ -955,15 +1051,16 @@ def generar_liguilla(torneo_id):
             torneo_id=torneo_id,
             inscripcion_1_id=id_loc,
             inscripcion_2_id=id_vis,
-            fecha_hora=fecha_base + timedelta(hours=i), # Partidos separados por 1 hora exacta
+            fecha_hora=fecha_base + timedelta(hours=i), 
             jornada="Cuartos de Final" if n >= 8 else "Liguilla",
+            tipo_partido="Liguilla", 
             estado="Programado"
         )
         db.session.add(nuevo_p)
 
     db.session.commit()
     registrar_movimiento('Torneos', f'Liguilla generada para {torneo.nombre} ({n} equipos)')
-    flash("¡Liguilla armada con éxito! Ve a la pestaña de Partidos para confirmar canchas.")
+    flash("¡Liguilla armada con éxito!")
     return redirect(url_for('admin.vista_partidos_admin'))
 
 
@@ -995,7 +1092,6 @@ def cambiar_rol_roster(registro_id):
                 capitan_antiguo.es_capitan = False
                 
             registro.es_capitan = True
-            
             equipo.capitan_id = registro.jugador_id
             
             flash(f"{registro.jugador.nombre} es el nuevo capitán del equipo.", "success")

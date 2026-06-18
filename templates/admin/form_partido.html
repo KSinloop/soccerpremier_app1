@@ -11,7 +11,6 @@
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-chip">← Volver</a>
         </div>
 
-
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div style="padding: 20px 28px 0 28px;">
@@ -70,27 +69,39 @@
                 </select>
             </div>
 
-            <div style="display: grid; gap: 6px;">
-                <label style="color: var(--navy); font-weight: 800;">Árbitro Central (opcional)</label>
-                <select name="arbitro_id"
-                        style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
-                    <option value="">Por definir</option>
-                    {% for a in arbitros %}
-                        <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Árbitro Central (opcional)</label>
+                    <select name="arbitro_id"
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                        <option value="">Por definir</option>
+                        {% for a in arbitros %}
+                            <option value="{{ a.id }}">{{ a.nombre }} {{ a.apellido_paterno }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div style="display: grid; gap: 6px;">
                     <label style="color: var(--navy); font-weight: 800;">Fecha y hora</label>
                     <input type="datetime-local" name="fecha_hora" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                 <div style="display: grid; gap: 6px;">
-                    <label style="color: var(--navy); font-weight: 800;">Jornada</label>
-                    <input type="text" name="jornada" placeholder="Ej. J1, Final..." required
+                    <label style="color: var(--navy); font-weight: 800;">Partido</label>
+                    <input type="text" name="jornada" placeholder="Amistoso, especial..." required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                </div>
+                <div style="display: grid; gap: 6px;">
+                    <label style="color: var(--navy); font-weight: 800;">Tipo de partido</label>
+                    <select name="tipo_partido" required
+                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: #666; background-color: #f1f3f5; outline: none; width: 100%; pointer-events: none;" tabindex="-1">
+                        <option value="Amistoso" selected>Amistoso / Especial</option>
+                    </select>
+                    <p style="margin: 0; font-size: 0.8rem; color: #dc3545; font-weight: bold;">
+                        * Las Jornadas y Liguillas se generan desde los botones automáticos del Torneo.
+                    </p>
                 </div>
             </div>
 
@@ -145,19 +156,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<!-- <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fechaInput = document.querySelector('input[name="fecha_hora"]');
-    if (fechaInput) {
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0); 
-        hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
-        
-        const minDate = hoy.toISOString().slice(0, 16);
-        
-        fechaInput.setAttribute('min', minDate);
-    }
-});
-</script> -->
 {% endblock %}

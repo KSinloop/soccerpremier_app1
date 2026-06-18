@@ -76,10 +76,22 @@
                     <input type="datetime-local" name="fecha_hora" value="{{ partido.fecha_hora.strftime('%Y-%m-%dT%H:%M') }}" required
                            style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
                 </div>
-                <div style="display: grid; gap: 6px;">
-                    <label style="color: var(--navy); font-weight: 800;">Jornada</label>
-                    <input type="text" name="jornada" value="{{ partido.jornada }}" required
-                           style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div style="display: grid; gap: 6px;">
+                        <label style="color: var(--navy); font-weight: 800;">Jornada</label>
+                        <input type="text" name="jornada" value="{{ partido.jornada }}" required
+                               style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                    </div>
+                    <div style="display: grid; gap: 6px;">
+                        <label style="color: var(--navy); font-weight: 800;">Tipo de partido</label>
+                        <select name="tipo_partido" required
+                                style="min-height: 52px; border-radius: 16px; border: 1px solid #d9e1ee; padding: 0 16px; font-size: 1rem; color: var(--text); outline: none; width: 100%;">
+                            <option value="Fase Regular" {% if partido.tipo_partido == 'Fase Regular' %}selected{% endif %}>Fase Regular</option>
+                            <option value="Liguilla" {% if partido.tipo_partido == 'Liguilla' %}selected{% endif %}>Liguilla</option>
+                            <option value="Amistoso" {% if partido.tipo_partido == 'Amistoso' %}selected{% endif %}>Amistoso / Especial</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

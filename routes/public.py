@@ -84,7 +84,6 @@ def calcular_marcador(partido):
     goles_1 = 0
     goles_2 = 0
     for gol in partido.goles:
-        # El gol tiene registro_jugador_id → ese RegistroJugador tiene inscripcion_id
         if gol.registro_jugador_id:
             reg = db.session.get(RegistroJugador, gol.registro_jugador_id)
             if reg:
@@ -122,20 +121,20 @@ def pagina_posiciones():
     torneos = db.session.execute(db.select(Torneo).order_by(Torneo.id.desc())).scalars().all()
     torneo_id = request.args.get("torneo_id", type=int)
 
-    # Si no mandan torneo_id, usamos el primero disponible
     if not torneo_id and torneos:
         torneo_id = torneos[0].id
 
     tabla = []
 
     if torneo_id:
+        # AQUÍ ESTÁ EL BLINDAJE: Solo Fase Regular
         partidos = db.session.execute(
             db.select(Partido)
             .where(Partido.torneo_id == torneo_id)
             .where(Partido.estado == "Finalizado")
+            .where(Partido.tipo_partido == "Fase Regular") 
         ).scalars().all()
 
-        # Inicializamos stats por inscripcion
         stats = {}
         for partido in partidos:
             for insc in [partido.inscripcion_1, partido.inscripcion_2]:
@@ -146,23 +145,19 @@ def pagina_posiciones():
                         "GF": 0, "GC": 0
                     }
 
-        # Procesamos cada partido
         for partido in partidos:
             g1, g2 = calcular_marcador(partido)
             id1 = partido.inscripcion_1_id
             id2 = partido.inscripcion_2_id
 
-            # Goles
             stats[id1]["GF"] += g1
             stats[id1]["GC"] += g2
             stats[id2]["GF"] += g2
             stats[id2]["GC"] += g1
 
-            # Partidos jugados
             stats[id1]["PJ"] += 1
             stats[id2]["PJ"] += 1
 
-            # Resultado
             if g1 > g2:
                 stats[id1]["G"] += 1
                 stats[id2]["P"] += 1
@@ -173,12 +168,10 @@ def pagina_posiciones():
                 stats[id2]["G"] += 1
                 stats[id1]["P"] += 1
 
-        # Calculamos DG y PTS, convertimos a lista
         for s in stats.values():
             s["DG"] = s["GF"] - s["GC"]
             s["PTS"] = s["G"] * 3 + s["E"]
 
-        # Ordenamos: primero por puntos, luego por DG como desempate
         tabla = sorted(stats.values(), key=lambda x: (x["PTS"], x["DG"]), reverse=True)
 
     return render_template(
@@ -190,9 +183,26 @@ def pagina_posiciones():
 
 @public_bp.get("/estadisticas")
 def pagina_estadisticas():
-    total_goles = db.session.scalar(db.select(func.count(Gol.id))) or 0
-    total_amarillas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Amarilla")) or 0
-    total_rojas = db.session.scalar(db.select(func.count(Incidencia.id)).where(Incidencia.tipo == "Tarjeta Roja")) or 0
+    # CANDADOS PARA ESTADÍSTICAS PÚBLICAS
+    total_goles = db.session.scalar(
+        db.select(func.count(Gol.id))
+        .join(Partido, Gol.partido_id == Partido.id)
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
+    
+    total_amarillas = db.session.scalar(
+        db.select(func.count(Incidencia.id))
+        .join(Partido, Incidencia.partido_id == Partido.id)
+        .where(Incidencia.tipo == "Tarjeta Amarilla")
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
+    
+    total_rojas = db.session.scalar(
+        db.select(func.count(Incidencia.id))
+        .join(Partido, Incidencia.partido_id == Partido.id)
+        .where(Incidencia.tipo == "Tarjeta Roja")
+        .where(Partido.tipo_partido == "Fase Regular")
+    ) or 0
 
     top_goleadores_query = (
         db.select(
@@ -202,10 +212,12 @@ def pagina_estadisticas():
             func.count(Gol.id).label('total_goles')
         )
         .select_from(Gol)
+        .join(Partido, Gol.partido_id == Partido.id)
         .join(RegistroJugador, Gol.registro_jugador_id == RegistroJugador.id)
         .join(Jugador, RegistroJugador.jugador_id == Jugador.id)
         .join(Inscripcion, RegistroJugador.inscripcion_id == Inscripcion.id)
         .join(Equipo, Inscripcion.equipo_id == Equipo.id)
+        .where(Partido.tipo_partido == "Fase Regular")
         .group_by(Jugador.id, Equipo.id)
         .order_by(func.count(Gol.id).desc())
         .limit(10)
@@ -225,11 +237,13 @@ def pagina_estadisticas():
             func.count(Incidencia.id).label('total_tarjetas')
         )
         .select_from(Incidencia)
+        .join(Partido, Incidencia.partido_id == Partido.id)
         .join(RegistroJugador, Incidencia.registro_jugador_id == RegistroJugador.id)
         .join(Jugador, RegistroJugador.jugador_id == Jugador.id)
         .join(Inscripcion, RegistroJugador.inscripcion_id == Inscripcion.id)
         .join(Equipo, Inscripcion.equipo_id == Equipo.id)
         .where(Incidencia.tipo.in_(["Tarjeta Amarilla", "Tarjeta Roja"]))
+        .where(Partido.tipo_partido == "Fase Regular")
         .group_by(Jugador.id, Equipo.id)
         .order_by(func.count(Incidencia.id).desc())
         .limit(10)

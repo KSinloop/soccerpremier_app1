@@ -108,7 +108,7 @@
             <div style="text-align: center; margin-bottom: 24px;">
                 <img src="{{ url_for('static', filename='img/SPJ.jpeg') }}" alt="Logo" style="width: 80px; border-radius: 12px; margin-bottom: 10px;">
                 <h4 style="margin: 0; color: var(--navy); font-size: 1.4rem; font-weight: 800;">Soccer Premier Juárez</h4>
-                <p style="margin: 5px 0 0; color: var(--muted); font-weight: 700; font-size: 1rem;">Versión 1.5.0</p>
+                <p style="margin: 5px 0 0; color: var(--muted); font-weight: 700; font-size: 1rem;">Versión 1.6.0</p>
             </div>
             
             <div style="display: grid; gap: 16px;">
@@ -116,10 +116,8 @@
                     <span style="display: block; color: var(--muted); font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;">Desarrollado por:</span>
                     <p style="margin: 0; color: var(--navy); font-weight: 800; font-size: 0.95rem; line-height: 1.6;">
                         Ing. Joselyn Dueñas Fabela<br>
-                        Ing. Kenner López Ramírez<br>
+                        Ing. Kenner Shahid López Ramírez<br>
                         Ing. Orlando Alvarado Vargas<br>
-                        Ing. Uriel Bravo Castillo<br>
-                        Ing. Sergio Butzmann Martínez
                     </p>
                 </div>
 
@@ -159,8 +157,8 @@
             text: "Tendrás que volver a ingresar tus credenciales para administrar.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ffd23f', /* Tu dorado */
-            cancelButtonColor: '#102249', /* Tu azul marino */
+            confirmButtonColor: '#ffd23f', 
+            cancelButtonColor: '#102249', 
             confirmButtonText: '<span style="color: #102249; font-weight: bold;">Sí, salir</span>',
             cancelButtonText: 'Cancelar',
             background: '#ffffff',
@@ -179,15 +177,14 @@
             html: `Estás a punto de eliminar: <strong>${textoElemento}</strong>.<br>Esta acción no se puede deshacer.`,
             icon: 'error',
             showCancelButton: true,
-            confirmButtonColor: '#cc0000', /* Rojo de peligro */
-            cancelButtonColor: '#102249', /* Tu azul marino */
+            confirmButtonColor: '#cc0000', 
+            cancelButtonColor: '#102249', 
             confirmButtonText: '<span style="color: #ffffff; font-weight: bold;">Sí, eliminar</span>',
             cancelButtonText: 'Cancelar',
             background: '#ffffff',
             borderRadius: '24px'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Si dice que sí, lo mandamos a la ruta de eliminación
                 window.location.href = urlAccion;
             }
         })

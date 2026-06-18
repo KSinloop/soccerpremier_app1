@@ -7,7 +7,7 @@
     <article class="admin-stat-card">
         <p class="admin-stat-label">Goles capturados</p>
         <h2 style="font-size: 2.5em; margin: 0; color: #002244;">{{ '%02d' % total_goles }}</h2>
-        <span class="admin-stat-note">Temporada actual</span>
+        <span class="admin-stat-note">En todos los torneos</span>
     </article>
 
     <article class="admin-stat-card">
@@ -27,10 +27,9 @@
     <article class="admin-panel-card">
         <div class="admin-section-head">
             <div>
-                <span class="section-kicker">RENDIMIENTO</span>
-                <h3 class="admin-panel-title">Líderes del torneo</h3>
+                <span class="section-kicker">RENDIMIENTO (FASE REGULAR)</span>
+                <h3 class="admin-panel-title">Tabla Histórica de Goleadores</h3>
             </div>
-            <!-- <a href="#" class="admin-chip">Actualizar datos</a> -->
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -38,19 +37,16 @@
     <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 15px; border-radius: 10px;">
         
         <div style="display: flex; gap: 15px; align-items: center;">
-            <!-- El número de ranking automático -->
             <div style="background-color: #e9ecef; color: #002244; font-weight: bold; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 5px;">
                 {{ loop.index }}
             </div>
             
-            <!-- Nombre y Equipo -->
             <div>
                 <h4 style="margin: 0; color: #002244;">{{ goleador.nombre }} {{ goleador.apellido_paterno }}</h4>
                 <p style="margin: 0; color: #6c757d; font-size: 0.85em;">{{ goleador.equipo_nombre }}</p>
             </div>
         </div>
 
-        <!-- Cantidad de Goles -->
         <div style="font-weight: bold; color: #002244;">
             {{ goleador.total_goles }} goles
         </div>
@@ -58,7 +54,7 @@
     </div>
     {% else %}
     <div style="text-align: center; color: #6c757d; padding: 20px;">
-        Aún no hay goles registrados en el sistema.
+        Aún no hay goles registrados en la fase regular del sistema.
     </div>
     {% endfor %}
 </div>
@@ -69,7 +65,6 @@
         <h3 class="admin-panel-title">Operaciones disponibles</h3>
         <div class="admin-links-list compact">
             
-            <!-- Conectado a los Partidos -->
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Capturar goles</h4>
@@ -78,7 +73,6 @@
                 <span>Ir</span>
             </a>
             
-            <!-- Conectado a los Partidos -->
             <a href="{{ url_for('admin.vista_partidos_admin') }}" class="admin-link-row">
                 <div>
                     <h4>Capturar tarjetas</h4>

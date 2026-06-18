@@ -31,6 +31,10 @@ class Torneo(db.Model):
     categoria = db.Column(db.String(80))
     tipo = db.Column(db.String(50))
     estado = db.Column(db.String(30), default="Próximo") # Puede ser: Próximo, Activo, Finalizado
+    
+    # NUEVO: Control estricto de la etapa del torneo
+    fase_actual = db.Column(db.String(30), default="Inscripciones") # Inscripciones, Regular, Liguilla, Finalizado
+    
     fecha_inicio = db.Column(db.Date)
     fecha_fin = db.Column(db.Date)
     activo = db.Column(db.Boolean, default=True, nullable=False)
@@ -131,6 +135,10 @@ class Partido(db.Model):
     
     fecha_hora = db.Column(db.DateTime, nullable=False)
     jornada = db.Column(db.String(20))
+    
+    # NUEVO: Clasificación del partido para congelar estadísticas
+    tipo_partido = db.Column(db.String(30), default="Fase Regular") # Fase Regular, Liguilla, Amistoso
+    
     estado = db.Column(db.String(35), default="Programado")
     no_presento_1 = db.Column(db.Boolean, default=False)
     no_presento_2 = db.Column(db.Boolean, default=False)
@@ -170,7 +178,6 @@ class ContactoEmergencia(db.Model):
     __tablename__ = "contacto_emergencia"
     id = db.Column(db.Integer, primary_key=True)
     
-    # Se conecta directo al jugador
     jugador_id = db.Column(db.Integer, db.ForeignKey("jugadores.id"), nullable=False)
     
     nombre_contacto = db.Column(db.String(100), nullable=False)
@@ -226,8 +233,8 @@ class LogMovimiento(db.Model):
     __tablename__ = 'log_movimientos'
     
     id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow) # Guarda la fecha y hora exacta
-    modulo = db.Column(db.String(50), nullable=False)       # Ej. "Partidos", "Inscripciones"
-    movimiento = db.Column(db.String(255), nullable=False)  # Ej. "Se eliminó el equipo EnanosFC"
-    responsable = db.Column(db.String(100), nullable=False) # Ej. "pepe"
+    fecha = db.Column(db.DateTime, default=datetime.utcnow) 
+    modulo = db.Column(db.String(50), nullable=False)       
+    movimiento = db.Column(db.String(255), nullable=False)  
+    responsable = db.Column(db.String(100), nullable=False) 
     estatus = db.Column(db.String(20), default="Completado")
